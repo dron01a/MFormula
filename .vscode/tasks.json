@@ -1,0 +1,17 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++ сборка активного файла",
+            "command": "g++",
+            "args": [
+                "-g",
+                "src/main.cpp",
+                "-o",
+                "main"
+            ],
+            "detail": "Задача создана отладчиком."
+        },
+    ],
+    "version": "2.0.0"
+}
