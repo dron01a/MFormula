@@ -3,7 +3,9 @@
 
 #include <string>
 #include <string.h>
+#include <algorithm>
 #include <vector>
+#include <stack>
 
 #define NPOS std::string::npos
 
@@ -20,8 +22,9 @@ struct unit{
     exmpElements type;
     int prior = 0;
     unit(exmpElements t,std::string s):type(t), exp(s) {}
+    unit(exmpElements t,std::string s, int pr):type(t), exp(s), prior(pr) {}
+    unit(){};
 };
-
 
 typedef std::vector<std::pair<exmpElements, char>> exmpChars;
 
@@ -36,8 +39,14 @@ exmpChars parceExmpl(std::string source);
 // collect chars
 exmpUnits parceChars(exmpChars & _chars);
 
+int getPriority(std::string exp);
+
+int findCloseBrt(exmpUnits & units, int position);
+
 // distribute char depending on the type of char
 void distChars(exmpUnits & _units,exmpElements elem, exmpElements curElem, char curChar, int & position); 
+
+void creatrePostfix(exmpUnits & _units, exmpUnits & _oprs);
 
 // throw unknown char
 void unknown(char c);

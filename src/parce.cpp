@@ -3,8 +3,8 @@
 exmpElements getCharType(std::string source, size_t position){
     std::string brackets = "[]()";
     std::string operators = "+-*/^%";
-    std::string special = "!~E";         
-    std::string numbers = "0123456789.,";
+    std::string special = "!~Ee";         
+    std::string numbers = "0123456789.";
     if(brackets.find(source[position]) != NPOS){
         return _brt;
     } 
@@ -123,6 +123,96 @@ void distChars(exmpUnits & _units,exmpElements elem, exmpElements curElem, char 
         _units.push_back(unit(curElem,""));
     }
     _units[position].exp += curChar;
+    _units[position].prior = getPriority(_units[position].exp);
+}
+
+int findCloseBrt(exmpUnits & units, int position){
+    std::string brtType;
+    int openChars = 0; 
+    int result = 0;
+    if(units[position].exp == "("){
+        brtType = ")";
+    }
+    if(units[position].exp == "["){
+        brtType = "]";
+    }
+    for(int count = position;; count++){
+        if(units[count].exp == units[position].exp){
+            openChars++;
+        }
+        if(units[count].exp == brtType){
+            break;
+        }
+    }
+    for(result = position;;result++){
+        if(units[result].exp == brtType){
+            openChars--;
+        }
+        if(openChars == 0){
+            break;
+        }
+    }
+    return result;
+}
+
+int getPriority(std::string exp){
+    if (exp == "+" || exp == "-" ) {
+        return 1;
+    }
+	if (exp == "*" || exp == "/" || exp == "%"){ 
+        return 2;
+    }
+	if (exp == "^") {
+        return 3;
+    }
+    return 0;
+}
+
+void creatrePostfix(exmpUnits & _units, exmpUnits & _sortUnits){
+    std::stack<unit> oprStack;
+    for(int count = 0; count < _units.size(); count++){
+        switch (_units[count].type){
+        case _special:
+        case _num:
+            _sortUnits.push_back(_units[count]);
+            break;
+        case _brt:  
+            if(_units[count].exp == "(" || _units[count].exp == "["){
+                oprStack.push(_units[count]);
+            }
+            if(_units[count].exp == "]" || _units[count].exp == ")"){
+                int stopPos = findCloseBrt(_units,count);
+                while(oprStack.top().exp != "("){
+                    _sortUnits.push_back(oprStack.top());
+                    oprStack.pop();
+                }
+                oprStack.pop();
+            }           
+            break;
+        case _opr:
+            if(oprStack.size() != 0){
+                while(oprStack.size() != 0 && (oprStack.top().type == _opr && _units[count].prior <= oprStack.top().type)){
+                    _sortUnits.push_back(oprStack.top());
+                    oprStack.pop();
+                }
+            }
+            oprStack.push(_units[count]);
+            break;
+        case _func:
+            while (oprStack.size() && oprStack.top().type == _func){
+                _sortUnits.push_back(oprStack.top());
+                oprStack.pop();
+            }
+            oprStack.push(_units[count]);
+        break;
+        default:
+            break;
+        }
+    }
+    while(oprStack.size()){
+        _sortUnits.push_back(oprStack.top());
+        oprStack.pop();
+    }
 }
 
 void unknown(char c){
