@@ -10,11 +10,12 @@
 #define NPOS std::string::npos
 
 enum exmpElements{
-    _num,    // numbers -> 0-9  
-    _brt,    // brackets -> () [] 
-    _opr,    // operations -> +-*/^%
-    _func,   // functions -> abs sin cos tg ctg 
-    _special // special chars -> e pi 
+    _num,     // numbers -> 0-9  
+    _brt,     // brackets -> () [] 
+    _opr,     // operations -> +-*/^%
+    _func,    // functions -> abs sin cos tg ctg 
+    _special, // special chars -> e pi 
+    _uncn
 };
 
 struct unit{

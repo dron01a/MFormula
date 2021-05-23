@@ -1,12 +1,11 @@
 #include <iostream>
 
 #include "parce.h"
+#include "calc.h"
 
-std::string example = "2+(2*2)";///"sin((15+(30/2))*pi/180)"; // for example 
+std::string example = "16^(1/2)";//"sin(30.0*(3.14159265/180))";///"sin((15+(30/2))*pi/180)"; // for example 
 
 double eval(exmpUnits units);
-
-double calcUnits(std::stack<double> &args, std::string exp);
 
 int main(){
     exmpChars test = parceExmpl(example);
@@ -33,38 +32,3 @@ double eval(exmpUnits units){
     return nums.top();
 }
 
-double calcUnits(std::stack<double> &args, std::string exp){
-    if(exp == "+"){
-        double a,b;
-        a = args.top();
-        args.pop();
-        b = args.top();
-        args.pop();
-        return a+b;
-    }
-    if(exp == "-"){
-        double a,b;
-        a = args.top();
-        args.pop();
-        b = args.top();
-        args.pop();
-        return a-b;
-    }
-    if(exp == "/"){
-        double a,b;
-        a = args.top();
-        args.pop();
-        b = args.top();
-        args.pop();
-        return a/b;
-    }
-    if(exp == "*"){
-        double a,b;
-        a = args.top();
-        args.pop();
-        b = args.top();
-        args.pop();
-        return a*b;
-    }
-    
-}

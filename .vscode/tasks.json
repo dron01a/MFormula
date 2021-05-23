@@ -8,6 +8,7 @@
                 "-g",
                 "src/main.cpp",
                 "src/parce.cpp",
+                "src/calc.cpp",
                 "-o",
                 "main"
             ],

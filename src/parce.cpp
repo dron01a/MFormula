@@ -3,7 +3,7 @@
 exmpElements getCharType(std::string source, size_t position){
     std::string brackets = "[]()";
     std::string operators = "+-*/^%";
-    std::string special = "!~Ee";         
+    std::string special = "e";         
     std::string numbers = "0123456789.";
     if(brackets.find(source[position]) != NPOS){
         return _brt;
@@ -191,7 +191,7 @@ void creatrePostfix(exmpUnits & _units, exmpUnits & _sortUnits){
             break;
         case _opr:
             if(oprStack.size() != 0){
-                while(oprStack.size() != 0 && (oprStack.top().type == _opr && _units[count].prior <= oprStack.top().type)){
+                while(oprStack.size() != 0 && (oprStack.top().type == _opr && _units[count].prior <= oprStack.top().prior)){
                     _sortUnits.push_back(oprStack.top());
                     oprStack.pop();
                 }
