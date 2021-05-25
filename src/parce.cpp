@@ -38,10 +38,10 @@ exmpElements getCharType(std::string source, size_t position){
             return _func;
             break;
         case 'c':
-            if(source.find("cos", position) != position || source.find("ctg", position) != position){
-                unknown(source[position]);
+            if(source.find("cos", position) == position || source.find("ctg", position) == position){
+                return _func;
             }
-            return _func;
+            unknown(source[position]);
             break;
         case 't':
             if(source.find("tg", position) != position){
@@ -66,24 +66,29 @@ exmpChars parceExmpl(std::string source){
                 result.push_back(std::make_pair(type,source[i+1]));
                 result.push_back(std::make_pair(type,source[i+2]));
                 i+=2;
+                continue;
             }
             if(source[i]=='s'){
                 result.push_back(std::make_pair(type,source[i+1]));
                 result.push_back(std::make_pair(type,source[i+2]));
                 i+=2;
+                continue;
             }
             if(source[i]=='c'){
                 result.push_back(std::make_pair(type,source[i+1]));
                 result.push_back(std::make_pair(type,source[i+2]));
                 i+=2;
+                continue;
             }
             if(source[i]=='t'){
                 result.push_back(std::make_pair(type,source[i+1]));
                 i++;
+                continue;
             }
             if(source[i]=='p'){
                 result.push_back(std::make_pair(type,source[i+1]));
                 i++;
+                continue;
             }
         }  
     }
@@ -180,8 +185,7 @@ void creatrePostfix(exmpUnits & _units, exmpUnits & _sortUnits){
             if(_units[count].exp == "(" || _units[count].exp == "["){
                 oprStack.push(_units[count]);
             }
-            if(_units[count].exp == "]" || _units[count].exp == ")"){
-                int stopPos = findCloseBrt(_units,count);
+            if(_units[count].exp == ")"){
                 while(oprStack.top().exp != "("){
                     _sortUnits.push_back(oprStack.top());
                     oprStack.pop();
@@ -191,7 +195,7 @@ void creatrePostfix(exmpUnits & _units, exmpUnits & _sortUnits){
             break;
         case _opr:
             if(oprStack.size() != 0){
-                while(oprStack.size() != 0 && (oprStack.top().type == _opr && _units[count].prior <= oprStack.top().prior)){
+                while(oprStack.size() != 0 && ((oprStack.top().type == _opr && _units[count].prior <= oprStack.top().prior) || oprStack.top().type == _func)){
                     _sortUnits.push_back(oprStack.top());
                     oprStack.pop();
                 }

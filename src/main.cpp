@@ -3,11 +3,10 @@
 #include "parce.h"
 #include "calc.h"
 
-std::string example = "16^(1/2)";//"sin(30.0*(3.14159265/180))";///"sin((15+(30/2))*pi/180)"; // for example 
-
 double eval(exmpUnits units);
 
-int main(){
+int main(int argc, char **argv){
+    std::string example(argv[1]);
     exmpChars test = parceExmpl(example);
     exmpUnits t = parceChars(test);
     exmpUnits result;
