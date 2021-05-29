@@ -5,6 +5,7 @@ exmpElements getCharType(std::string source, size_t position){
     std::string operators = "+-*/^%";
     std::string special = "e";         
     std::string numbers = "0123456789.";
+    std::string functions = "sincosabsctg";
     if(brackets.find(source[position]) != NPOS){
         return _brt;
     } 
@@ -54,6 +55,7 @@ exmpElements getCharType(std::string source, size_t position){
             break;
         }
     }
+    return _uncn;
 }
 
 exmpChars parceExmpl(std::string source){
@@ -123,7 +125,7 @@ exmpUnits parceChars(exmpChars & _chars){
 }
 
 void distChars(exmpUnits & _units,exmpElements elem, exmpElements curElem, char curChar, int & position){
-    if ((elem != curElem) || (elem == _brt && curElem == _brt)){
+    if ((elem != curElem) || (elem == _brt && curElem == _brt) || (elem == _opr && curElem == _opr)){
         position++;
         _units.push_back(unit(curElem,""));
     }

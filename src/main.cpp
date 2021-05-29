@@ -6,7 +6,7 @@
 double eval(exmpUnits units);
 
 int main(int argc, char **argv){
-    std::string example(argv[1]);
+    std::string example("sin(30)--+sin(30)+1");
     exmpChars test = parceExmpl(example);
     exmpUnits t = parceChars(test);
     exmpUnits result;
@@ -24,7 +24,7 @@ double eval(exmpUnits units){
             break;
         case _func:
         case _opr:
-            nums.push(calcUnits(nums,units[count].exp));
+            nums.push(calcUnits(nums,units[count].exp, units[count].prior));
         break;
         }
     }
