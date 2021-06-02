@@ -18,6 +18,9 @@ exmpElements getCharType(std::string source, size_t position){
     else if(numbers.find(source[position]) != NPOS){
         return _num;
     }
+    else if(functions.find(source[position]) != NPOS){
+        return _func;
+    }
     else{
         switch (source[position]){
         case 'p' :
@@ -27,25 +30,25 @@ exmpElements getCharType(std::string source, size_t position){
             return _special;
             break;
         case 'a':
-            if(source.find("abs", position) != position){
-                unknown(source[position]);
+            if(findExp("abs",source,position)||findExp("arc",source,position)){
+                return _func;
             }
-            return _func;
+            unknown(source[position]);
             break;
         case 's':
-            if(source.find("sin", position) != position){
+            if(!findExp("sin",source,position)){
                 unknown(source[position]);
             }
             return _func;
             break;
         case 'c':
-            if(source.find("cos", position) == position || source.find("ctg", position) == position){
+            if(findExp("cos",source,position) || findExp("ctg",source,position)){
                 return _func;
             }
             unknown(source[position]);
             break;
         case 't':
-            if(source.find("tg", position) != position){
+            if(!findExp("tg",source,position)){
                 unknown(source[position]);
             }
             return _func;
@@ -55,7 +58,10 @@ exmpElements getCharType(std::string source, size_t position){
             break;
         }
     }
-    return _uncn;
+}
+
+bool findExp(std::string exp, std::string source, int position){
+    return (source.find(exp, position) == position);
 }
 
 exmpChars parceExmpl(std::string source){
@@ -175,30 +181,30 @@ int getPriority(std::string exp){
     return 0;
 }
 
-void creatrePostfix(exmpUnits & _units, exmpUnits & _sortUnits){
+exmpUnits creatrePostfix(exmpUnits & _units){
+    exmpUnits result;
     std::stack<unit> oprStack;
     for(int count = 0; count < _units.size(); count++){
         switch (_units[count].type){
         case _special:
         case _num:
-            _sortUnits.push_back(_units[count]);
+            result.push_back(_units[count]);
             break;
         case _brt:  
             if(_units[count].exp == "(" || _units[count].exp == "["){
                 oprStack.push(_units[count]);
             }
             if(_units[count].exp == ")"){
-                while(oprStack.top().exp != "("){
-                    _sortUnits.push_back(oprStack.top());
-                    oprStack.pop();
-                }
-                oprStack.pop();
-            }           
+                getUnitsIn("(",result,oprStack);
+            }
+            if(_units[count].exp == "]"){
+                getUnitsIn("[",result,oprStack);
+            }               
             break;
         case _opr:
             if(oprStack.size() != 0){
                 while(oprStack.size() != 0 && ((oprStack.top().type == _opr && _units[count].prior <= oprStack.top().prior) || oprStack.top().type == _func)){
-                    _sortUnits.push_back(oprStack.top());
+                    result.push_back(oprStack.top());
                     oprStack.pop();
                 }
             }
@@ -206,7 +212,7 @@ void creatrePostfix(exmpUnits & _units, exmpUnits & _sortUnits){
             break;
         case _func:
             while (oprStack.size() && oprStack.top().type == _func){
-                _sortUnits.push_back(oprStack.top());
+                result.push_back(oprStack.top());
                 oprStack.pop();
             }
             oprStack.push(_units[count]);
@@ -216,9 +222,18 @@ void creatrePostfix(exmpUnits & _units, exmpUnits & _sortUnits){
         }
     }
     while(oprStack.size()){
-        _sortUnits.push_back(oprStack.top());
+        result.push_back(oprStack.top());
         oprStack.pop();
     }
+    return result;
+}
+
+void getUnitsIn(std::string obj,exmpUnits & _units, std::stack<unit> & oprStack){
+    while(oprStack.top().exp != obj){
+        _units.push_back(oprStack.top());
+        oprStack.pop();
+    }       
+    oprStack.pop();
 }
 
 void unknown(char c){

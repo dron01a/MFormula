@@ -6,11 +6,10 @@
 double eval(exmpUnits units);
 
 int main(int argc, char **argv){
-    std::string example("sin(30)--+sin(30)+1");
+    std::string example("arcsin(sin(30))");    ///argv[1]);
     exmpChars test = parceExmpl(example);
     exmpUnits t = parceChars(test);
-    exmpUnits result;
-    creatrePostfix(t,result);
+    exmpUnits result = creatrePostfix(t);
     std::cout << eval(result)<< std::endl;
     return 0;
 }

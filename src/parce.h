@@ -34,6 +34,8 @@ typedef std::vector<unit> exmpUnits;
 // return type of character 
 exmpElements getCharType(std::string source, size_t position);
 
+bool findExp(std::string exp, std::string source, int position);
+
 // parce example
 exmpChars parceExmpl(std::string source);
 
@@ -47,7 +49,10 @@ int findCloseBrt(exmpUnits & units, int position);
 // distribute char depending on the type of char
 void distChars(exmpUnits & _units,exmpElements elem, exmpElements curElem, char curChar, int & position); 
 
-void creatrePostfix(exmpUnits & _units, exmpUnits & _oprs);
+// make 
+exmpUnits creatrePostfix(exmpUnits & _units);
+
+void getUnitsIn(std::string obj ,exmpUnits & _units, std::stack<unit> & oprStack);
 
 // throw unknown char
 void unknown(char c);
