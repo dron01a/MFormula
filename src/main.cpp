@@ -3,27 +3,32 @@
 #include "parce.h"
 #include "calc.h"
 
-double eval(exmpUnits units);
+double eval(std::string example);
 
 int main(int argc, char **argv){
-    std::string example("arcsin(sin(30))");    ///argv[1]);
-    exmpChars test = parceExmpl(example);
-    exmpUnits t = parceChars(test);
-    exmpUnits result = creatrePostfix(t);
-    std::cout << eval(result)<< std::endl;
+    std::string example(argv[1]);
+    try{
+        std::cout << eval(example)<< std::endl;
+    }
+    catch(std::string _errMes){
+        std::cout << _errMes <<std::endl;
+    }
     return 0;
 }
 
-double eval(exmpUnits units){
+double eval(std::string example){
+    exmpChars _chars = parceExmpl(example);
+    exmpUnits _units = parceChars(_chars);
+    _units = creatrePostfix(_units);
     std::stack<double> nums;
-    for(int count = 0; count < units.size(); count++){
-        switch (units[count].type){
+    for(int count = 0; count < _units.size(); count++){
+        switch (_units[count].type){
         case _num:
-            nums.push(std::strtod(units[count].exp.c_str(),nullptr));
+            nums.push(std::strtod(_units[count].exp.c_str(),nullptr));
             break;
         case _func:
         case _opr:
-            nums.push(calcUnits(nums,units[count].exp, units[count].prior));
+            nums.push(calcUnits(nums, _units[count].exp, _units[count].prior));
         break;
         }
     }

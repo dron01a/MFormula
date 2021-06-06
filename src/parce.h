@@ -32,7 +32,7 @@ typedef std::vector<std::pair<exmpElements, char>> exmpChars;
 typedef std::vector<unit> exmpUnits;
 
 // return type of character 
-exmpElements getCharType(std::string source, size_t position);
+exmpElements getCharType(std::string source, size_t & position);
 
 bool findExp(std::string exp, std::string source, int position);
 
@@ -52,6 +52,7 @@ void distChars(exmpUnits & _units,exmpElements elem, exmpElements curElem, char 
 // make 
 exmpUnits creatrePostfix(exmpUnits & _units);
 
+// set data in stack for brt
 void getUnitsIn(std::string obj ,exmpUnits & _units, std::stack<unit> & oprStack);
 
 // throw unknown char

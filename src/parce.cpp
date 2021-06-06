@@ -1,11 +1,13 @@
 #include "parce.h"
 
-exmpElements getCharType(std::string source, size_t position){
+exmpElements getCharType(std::string source, size_t & position){
     std::string brackets = "[]()";
     std::string operators = "+-*/^%";
     std::string special = "e";         
     std::string numbers = "0123456789.";
-    std::string functions = "sincosabsctg";
+    while(std::isspace(source[position])){
+        position++;
+    }
     if(brackets.find(source[position]) != NPOS){
         return _brt;
     } 
@@ -18,46 +20,41 @@ exmpElements getCharType(std::string source, size_t position){
     else if(numbers.find(source[position]) != NPOS){
         return _num;
     }
-    else if(functions.find(source[position]) != NPOS){
-        return _func;
-    }
     else{
         switch (source[position]){
         case 'p' :
-            if(source.find("pi", position) != position){
-                unknown(source[position]);
+            if(source.find("pi", position) == position){
+                return _special;
             }
-            return _special;
             break;
         case 'a':
             if(findExp("abs",source,position)||findExp("arc",source,position)){
                 return _func;
             }
-            unknown(source[position]);
             break;
         case 's':
-            if(!findExp("sin",source,position)){
-                unknown(source[position]);
+            if(findExp("sin",source,position) || findExp("sqrt",source,position)){
+                return _func;
             }
-            return _func;
             break;
         case 'c':
             if(findExp("cos",source,position) || findExp("ctg",source,position)){
                 return _func;
             }
-            unknown(source[position]);
             break;
         case 't':
-            if(!findExp("tg",source,position)){
-                unknown(source[position]);
+            if(findExp("tg",source,position)){
+                return _func;
             }
-            return _func;
             break;
-        default:
-            unknown(source[position]);
+        case 'l':
+            if(findExp("ln",source,position)){
+                return _func;
+            }
             break;
         }
     }
+    unknown(source[position]);
 }
 
 bool findExp(std::string exp, std::string source, int position){
@@ -70,33 +67,23 @@ exmpChars parceExmpl(std::string source){
         exmpElements type = getCharType(source, i);
         result.push_back(std::make_pair(type,source[i]));
         if(type == _func || type == _special){
-            if(source[i]=='a'){
+            switch (source[i]){
+            case 's':
+                if(source[i+1] == 'q'){
+                    result.push_back(std::make_pair(type,source[i+1]));
+                    i++;
+                }
+            case 'a':
+            case 'c':
                 result.push_back(std::make_pair(type,source[i+1]));
                 result.push_back(std::make_pair(type,source[i+2]));
                 i+=2;
-                continue;
-            }
-            if(source[i]=='s'){
-                result.push_back(std::make_pair(type,source[i+1]));
-                result.push_back(std::make_pair(type,source[i+2]));
-                i+=2;
-                continue;
-            }
-            if(source[i]=='c'){
-                result.push_back(std::make_pair(type,source[i+1]));
-                result.push_back(std::make_pair(type,source[i+2]));
-                i+=2;
-                continue;
-            }
-            if(source[i]=='t'){
+                break;
+            case 't':
+            case 'p':
+            case 'l':
                 result.push_back(std::make_pair(type,source[i+1]));
                 i++;
-                continue;
-            }
-            if(source[i]=='p'){
-                result.push_back(std::make_pair(type,source[i+1]));
-                i++;
-                continue;
             }
         }  
     }
@@ -157,13 +144,16 @@ int findCloseBrt(exmpUnits & units, int position){
             break;
         }
     }
-    for(result = position;;result++){
+    for(result = position;result < units.size();result++){
         if(units[result].exp == brtType){
             openChars--;
         }
         if(openChars == 0){
             break;
         }
+    }
+    if(openChars != 0){
+        throw std::string("not found closing character \"" + brtType + "\"");
     }
     return result;
 }
@@ -177,6 +167,9 @@ int getPriority(std::string exp){
     }
 	if (exp == "^") {
         return 3;
+    }
+    if (exp == "!"){
+        return 4;
     }
     return 0;
 }
@@ -192,6 +185,7 @@ exmpUnits creatrePostfix(exmpUnits & _units){
             break;
         case _brt:  
             if(_units[count].exp == "(" || _units[count].exp == "["){
+                findCloseBrt(_units,count);
                 oprStack.push(_units[count]);
             }
             if(_units[count].exp == ")"){
@@ -202,22 +196,18 @@ exmpUnits creatrePostfix(exmpUnits & _units){
             }               
             break;
         case _opr:
-            if(oprStack.size() != 0){
-                while(oprStack.size() != 0 && ((oprStack.top().type == _opr && _units[count].prior <= oprStack.top().prior) || oprStack.top().type == _func)){
+            if(oprStack.size()){
+                while(oprStack.size() && ((oprStack.top().type == _opr && _units[count].prior <= oprStack.top().prior) || oprStack.top().type == _func)){
                     result.push_back(oprStack.top());
                     oprStack.pop();
                 }
             }
-            oprStack.push(_units[count]);
-            break;
         case _func:
             while (oprStack.size() && oprStack.top().type == _func){
                 result.push_back(oprStack.top());
                 oprStack.pop();
             }
             oprStack.push(_units[count]);
-        break;
-        default:
             break;
         }
     }
