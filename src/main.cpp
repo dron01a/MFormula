@@ -8,7 +8,7 @@ double eval(std::string example);
 int main(int argc, char **argv){
     std::string example(argv[1]);
     try{
-        std::cout << eval(example)<< std::endl;
+        std::cout << eval(example) << std::endl;
     }
     catch(std::string _errMes){
         std::cout << _errMes <<std::endl;

@@ -13,6 +13,9 @@ void setVars(std::stack<double> &args, double &a){
 }
 
 double simpleFunc(std::string operation, double a){
+    if(operation == "!"){
+        return factorial(a);
+    }
     if(operation == "sin"){
         return sin(a);
     }
@@ -70,7 +73,7 @@ double calcUnits(std::stack<double> &args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
-    if(prior > 0){
+    if(prior > 0 && exp != "!"){
         double a,b;
         if(args.size() == 1){
             setVars(args,a);
@@ -87,4 +90,11 @@ double calcUnits(std::stack<double> &args, std::string exp, int prior){
         setVars(args,a);
         return simpleFunc(exp,a);
     }
+}
+
+double factorial(double n){
+    if(n==0){
+        return 1;
+    }
+    return n*factorial(n-1);
 }

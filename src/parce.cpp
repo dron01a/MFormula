@@ -22,6 +22,9 @@ exmpElements getCharType(std::string source, size_t & position){
     }
     else{
         switch (source[position]){
+        case '!' :
+            return _func;
+            break;
         case 'p' :
             if(source.find("pi", position) == position){
                 return _special;

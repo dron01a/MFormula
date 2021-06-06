@@ -8,6 +8,8 @@
 
 double calcUnits(std::stack<double> &args, std::string exp, int prior);
 
+double factorial(double n); 
+
 static double simpleFunc(std::string operation, double a);
 
 static double binaryFunc(std::string operation, double a, double b);
