@@ -23,6 +23,14 @@ double eval(std::string example){
     std::stack<double> nums;
     for(int count = 0; count < _units.size(); count++){
         switch (_units[count].type){
+        case _special:
+            if(_units[count].exp == "pi"){
+                nums.push(3.1415926535);
+            }
+            if(_units[count].exp == "e"){
+                nums.push(2.7182818284);
+            }
+            break;
         case _num:
             nums.push(std::strtod(_units[count].exp.c_str(),nullptr));
             break;

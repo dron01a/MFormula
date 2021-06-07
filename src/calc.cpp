@@ -16,28 +16,31 @@ double simpleFunc(std::string operation, double a){
     if(operation == "!"){
         return factorial(a);
     }
-    if(operation == "sin"){
+    else if(operation == "log"){
+        return log(a);
+    }
+    else if(operation == "sin"){
         return sin(a);
     }
-    if(operation == "arcsin"){
+    else if(operation == "arcsin"){
         return asin(a);
     }
     else if(operation == "cos"){
         return cos(a);
     }
-    if(operation == "arccos"){
+    else if(operation == "arccos"){
         return acos(a);
     }
     else if(operation == "tg"){
         return tan(a);
     }
-    if(operation == "arctg"){
+    else if(operation == "arctg"){
         return atan(a);
     }
     else if(operation == "ctg"){
         return (1/tan(a));
     }
-    if(operation == "arcctg"){
+    else if(operation == "arcctg"){
         return (1/atan(a));
     }
     else if(operation == "abs"){
