@@ -34,8 +34,6 @@ typedef std::vector<unit> exmpUnits;
 // return type of character 
 exmpElements getCharType(std::string source, size_t & position);
 
-bool findExp(std::string exp, std::string source, int position);
-
 // parce example
 exmpChars parceExmpl(std::string source);
 

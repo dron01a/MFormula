@@ -16,7 +16,7 @@ double simpleFunc(std::string operation, double a){
     if(operation == "!"){
         return factorial(a);
     }
-    else if(operation == "log"){
+    else if(operation == "ln"){
         return log(a);
     }
     else if(operation == "sin"){
@@ -52,6 +52,9 @@ double simpleFunc(std::string operation, double a){
 }
 
 double binaryFunc(std::string operation, double a, double b){
+    if(operation == "log"){
+        return (log(b)/log(a));
+    }
     if(operation == "+"){
         return a+b;
     }
@@ -76,7 +79,7 @@ double calcUnits(std::stack<double> &args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
-    if(prior > 0 && exp != "!"){
+    if((prior > 0 && exp != "!") || exp == "log"){
         double a,b;
         if(args.size() == 1){
             setVars(args,a);

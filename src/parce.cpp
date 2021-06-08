@@ -3,8 +3,11 @@
 exmpElements getCharType(std::string source, size_t & position){
     std::string brackets = "[]()";
     std::string operators = "+-*/^%";
-    std::string special = "e";         
+    std::string special = "e,";         
     std::string numbers = "0123456789.";
+    std::string functions[10]{ 
+        "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt", "!", "log"
+    };
     while(std::isspace(source[position])){
         position++;
     }
@@ -21,47 +24,16 @@ exmpElements getCharType(std::string source, size_t & position){
         return _num;
     }
     else{
-        switch (source[position]){
-        case '!' :
-            return _func;
-            break;
-        case 'p' :
-            if(source.find("pi", position) == position){
-                return _special;
-            }
-            break;
-        case 'a':
-            if(findExp("abs",source,position)||findExp("arc",source,position)){
+        if(source.find("pi", position) == position){
+            return _special;
+        }
+        for(int count = 0; count < 10; count++ ){
+            if(source.find(functions[count], position) == position){
                 return _func;
             }
-            break;
-        case 's':
-            if(findExp("sin",source,position) || findExp("sqrt",source,position)){
-                return _func;
-            }
-            break;
-        case 'c':
-            if(findExp("cos",source,position) || findExp("ctg",source,position)){
-                return _func;
-            }
-            break;
-        case 't':
-            if(findExp("tg",source,position)){
-                return _func;
-            }
-            break;
-        case 'l':
-            if(findExp("ln",source,position)){
-                return _func;
-            }
-            break;
         }
     }
     unknown(source[position]);
-}
-
-bool findExp(std::string exp, std::string source, int position){
-    return (source.find(exp, position) == position);
 }
 
 exmpChars parceExmpl(std::string source){
@@ -85,6 +57,10 @@ exmpChars parceExmpl(std::string source){
             case 't':
             case 'p':
             case 'l':
+                if(source[i+1] == 'o'){
+                    result.push_back(std::make_pair(type,source[i+1]));
+                    i++;
+                }
                 result.push_back(std::make_pair(type,source[i+1]));
                 i++;
             }
