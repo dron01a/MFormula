@@ -31,29 +31,29 @@ typedef std::vector<std::pair<exmpElements, char>> exmpChars;
 
 typedef std::vector<unit> exmpUnits;
 
-// return type of character 
-exmpElements getCharType(std::string source, size_t & position);
+// EXPEREMENTAL
 
-// parce example
-exmpChars parceExmpl(std::string source);
+// parce expression
+exmpUnits parce(std::string exmple);
 
-// collect chars
-exmpUnits parceChars(exmpChars & _chars);
+// return type of expression term
+exmpElements getType(std::string exp);
 
+// throw error message 
+void unknown(std::string c);
+
+// END
+
+// get priority of operation 
 int getPriority(std::string exp);
 
+// finds closing brackets
 int findCloseBrt(exmpUnits & units, int position);
-
-// distribute char depending on the type of char
-void distChars(exmpUnits & _units,exmpElements elem, exmpElements curElem, char curChar, int & position); 
 
 // make 
 exmpUnits creatrePostfix(exmpUnits & _units);
 
 // set data in stack for brt
-void getUnitsIn(std::string obj ,exmpUnits & _units, std::stack<unit> & oprStack);
-
-// throw unknown char
-void unknown(char c);
+void getUnitsIn(std::string obj ,exmpUnits & _units, std::stack<unit> & oprStack); 
 
 #endif

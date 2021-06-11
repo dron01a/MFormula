@@ -6,7 +6,7 @@
 double eval(std::string example);
 
 int main(int argc, char **argv){
-    std::string example(argv[1]);
+    std::string example("sin(30*pi/180)+log(2,2)");            ///argv[1]);
     try{
         std::cout << eval(example) << std::endl;
     }
@@ -17,8 +17,9 @@ int main(int argc, char **argv){
 }
 
 double eval(std::string example){
-    exmpChars _chars = parceExmpl(example);
-    exmpUnits _units = parceChars(_chars);
+   /// exmpChars _chars = parceExmpl(example);
+    //exmpUnits _units = parceChars(_chars);
+    exmpUnits _units = parce(example);
     _units = creatrePostfix(_units);
     std::stack<double> nums;
     for(int count = 0; count < _units.size(); count++){
