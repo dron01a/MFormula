@@ -6,7 +6,7 @@
 double eval(std::string example);
 
 int main(int argc, char **argv){
-    std::string example("sin(30*pi/180)+log(2,2)");            ///argv[1]);
+    std::string example(argv[1]);
     try{
         std::cout << eval(example) << std::endl;
     }
