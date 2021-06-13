@@ -14,6 +14,9 @@ exmpUnits parce(std::string source){
         }
         else{
             while(std::count(delim.begin(),delim.end(),source[count]) == 0){
+                if(source[count] == '\0'){
+                    break;
+                }
                 token+=source[count];
                 count++;
             }
@@ -110,36 +113,35 @@ exmpUnits creatrePostfix(exmpUnits & _units){
     exmpUnits result;
     std::stack<unit> oprStack;
     for(int count = 0; count < _units.size(); count++){
-        switch (_units[count].type){
+        unit current = _units[count];
+        switch (current.type){
         case _special:
         case _num:
-            result.push_back(_units[count]);
+            result.push_back(current);
             break;
         case _brt:  
-            if(_units[count].exp == "(" || _units[count].exp == "["){
+            if(current.exp == "(" || current.exp == "["){
                 findCloseBrt(_units,count);
-                oprStack.push(_units[count]);
+                oprStack.push(current);
             }
-            if(_units[count].exp == ")"){
+            if(current.exp == ")"){
                 getUnitsIn("(",result,oprStack);
             }
-            if(_units[count].exp == "]"){
+            if(current.exp == "]"){
                 getUnitsIn("[",result,oprStack);
             }               
             break;
         case _opr:
-            if(oprStack.size()){
-                while(oprStack.size() && ((oprStack.top().type == _opr && _units[count].prior <= oprStack.top().prior) || oprStack.top().type == _func)){
-                    result.push_back(oprStack.top());
-                    oprStack.pop();
-                }
-            }
+            getUnitsIn(result, oprStack,current,[](unit _unit, std::stack<unit> & oprStack){
+                return oprStack.size() &&  ((oprStack.top().type == _opr && _unit.prior <= oprStack.top().prior) || oprStack.top().type == _func);
+            });
+            oprStack.push(current);
+            break;
         case _func:
-            while (oprStack.size() && oprStack.top().type == _func){
-                result.push_back(oprStack.top());
-                oprStack.pop();
-            }
-            oprStack.push(_units[count]);
+            getUnitsIn(result, oprStack,current, [](unit _unit, std::stack<unit> & oprStack){
+                return oprStack.size() && oprStack.top().type == _func;
+            });
+            oprStack.push(current);
             break;
         }
     }
@@ -156,4 +158,15 @@ void getUnitsIn(std::string obj,exmpUnits & _units, std::stack<unit> & oprStack)
         oprStack.pop();
     }       
     oprStack.pop();
+}
+
+void getUnitsIn(exmpUnits & _units, std::stack<unit> & oprStack, unit curUnit, condFunc func){
+    if(oprStack.size()){
+        bool condition = func(curUnit, oprStack);
+        while(condition){
+            _units.push_back(oprStack.top());
+            oprStack.pop();
+            condition = func(curUnit, oprStack);
+        }
+    }
 }

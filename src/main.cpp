@@ -17,8 +17,6 @@ int main(int argc, char **argv){
 }
 
 double eval(std::string example){
-   /// exmpChars _chars = parceExmpl(example);
-    //exmpUnits _units = parceChars(_chars);
     exmpUnits _units = parce(example);
     _units = creatrePostfix(_units);
     std::stack<double> nums;

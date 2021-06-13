@@ -27,11 +27,7 @@ struct unit{
     unit(){};
 };
 
-typedef std::vector<std::pair<exmpElements, char>> exmpChars;
-
 typedef std::vector<unit> exmpUnits;
-
-// EXPEREMENTAL
 
 // parce expression
 exmpUnits parce(std::string exmple);
@@ -42,18 +38,23 @@ exmpElements getType(std::string exp);
 // throw error message 
 void unknown(std::string c);
 
-// END
-
 // get priority of operation 
 int getPriority(std::string exp);
 
 // finds closing brackets
 int findCloseBrt(exmpUnits & units, int position);
 
-// make 
+// make postfix queue
 exmpUnits creatrePostfix(exmpUnits & _units);
 
 // set data in stack for brt
 void getUnitsIn(std::string obj ,exmpUnits & _units, std::stack<unit> & oprStack); 
+
+
+// EXPERemental 
+
+typedef bool(*condFunc)(unit _unit, std::stack<unit> & oprStack);
+
+void getUnitsIn(exmpUnits & _units, std::stack<unit> & oprStack, unit curUnit, condFunc func);
 
 #endif
