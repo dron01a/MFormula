@@ -32,8 +32,8 @@ exmpElements getType(std::string exp){
     std::string operators = "+-*/^%";
     std::string special = "e,";         
     std::string numbers = "0123456789.";
-    std::string functions[10]{ 
-        "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt", "!", "log"
+    std::string functions[11]{ 
+        "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt", "!", "log", "deg"
     };
     if(brackets.find(exp) != NPOS){
         return _brt;
@@ -48,7 +48,7 @@ exmpElements getType(std::string exp){
         return _num;
     }
     else{
-        for(int count = 0; count < 10; count++ ){
+        for(int count = 0; count < 11; count++ ){
             if(exp == functions[count]){
                 return _func;
             }
@@ -111,9 +111,10 @@ int getPriority(std::string exp){
 
 exmpUnits creatrePostfix(exmpUnits & _units){
     exmpUnits result;
+    unit current;
     std::stack<unit> oprStack;
     for(int count = 0; count < _units.size(); count++){
-        unit current = _units[count];
+        current = _units[count];
         switch (current.type){
         case _special:
         case _num:
@@ -135,8 +136,6 @@ exmpUnits creatrePostfix(exmpUnits & _units){
             getUnitsIn(result, oprStack,current,[](unit _unit, std::stack<unit> & oprStack){
                 return oprStack.size() &&  ((oprStack.top().type == _opr && _unit.prior <= oprStack.top().prior) || oprStack.top().type == _func);
             });
-            oprStack.push(current);
-            break;
         case _func:
             getUnitsIn(result, oprStack,current, [](unit _unit, std::stack<unit> & oprStack){
                 return oprStack.size() && oprStack.top().type == _func;
@@ -145,10 +144,7 @@ exmpUnits creatrePostfix(exmpUnits & _units){
             break;
         }
     }
-    while(oprStack.size()){
-        result.push_back(oprStack.top());
-        oprStack.pop();
-    }
+    getUnitsIn(result,oprStack,current,[](unit _unit, std::stack<unit> & oprStack){ return oprStack.size() != 0; });
     return result;
 }
 

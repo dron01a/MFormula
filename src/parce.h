@@ -15,7 +15,6 @@ enum exmpElements{
     _opr,     // operations -> +-*/^%
     _func,    // functions -> abs sin cos tg ctg 
     _special, // special chars -> e pi 
-    _uncn
 };
 
 struct unit{
@@ -48,12 +47,9 @@ int findCloseBrt(exmpUnits & units, int position);
 exmpUnits creatrePostfix(exmpUnits & _units);
 
 // set data in stack for brt
-void getUnitsIn(std::string obj ,exmpUnits & _units, std::stack<unit> & oprStack); 
+void getUnitsIn(std::string obj ,exmpUnits & _units, std::stack<unit> & oprStack);
 
-
-// EXPERemental 
-
-typedef bool(*condFunc)(unit _unit, std::stack<unit> & oprStack);
+typedef bool(*condFunc)(unit, std::stack<unit>&);
 
 void getUnitsIn(exmpUnits & _units, std::stack<unit> & oprStack, unit curUnit, condFunc func);
 
