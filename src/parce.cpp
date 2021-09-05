@@ -28,13 +28,6 @@ exmpUnits parce(std::string source){
 }
 
 exmpElements getType(std::string exp){
-    std::string brackets = "[]()";
-    std::string operators = "+-*/^%";
-    std::string special = "e,";         
-    std::string numbers = "0123456789.";
-    std::string functions[11]{ 
-        "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt", "!", "log", "deg"
-    };
     if(brackets.find(exp) != NPOS){
         return _brt;
     } 
@@ -61,15 +54,12 @@ void unknown(std::string c){
     throw std::string("unknown: ") += c; 
 }
 
-int findCloseBrt(exmpUnits & units, int position){
+bool checkCloseBrt(exmpUnits & units, int position){
     std::string brtType;
     int openChars = 0; 
-    int result = 0;
-    if(units[position].exp == "("){
-        brtType = ")";
-    }
-    if(units[position].exp == "["){
-        brtType = "]";
+    switch(units[position].exp[0]){
+        case '(':brtType = ")";break;
+        case '[':brtType = "]";break;
     }
     for(int count = position;; count++){
         if(units[count].exp == units[position].exp){
@@ -79,18 +69,15 @@ int findCloseBrt(exmpUnits & units, int position){
             break;
         }
     }
-    for(result = position;result < units.size();result++){
-        if(units[result].exp == brtType){
+    for(int count = position; (openChars != 0) && (count < units.size()) ;count++){
+        if(units[count].exp == brtType){
             openChars--;
-        }
-        if(openChars == 0){
-            break;
         }
     }
     if(openChars != 0){
         throw std::string("not found closing character \"" + brtType + "\"");
     }
-    return result;
+    return true;
 }
 
 int getPriority(std::string exp){
@@ -122,7 +109,7 @@ exmpUnits creatrePostfix(exmpUnits & _units){
             break;
         case _brt:  
             if(current.exp == "(" || current.exp == "["){
-                findCloseBrt(_units,count);
+                checkCloseBrt(_units,count);
                 oprStack.push(current);
             }
             if(current.exp == ")"){
@@ -134,7 +121,7 @@ exmpUnits creatrePostfix(exmpUnits & _units){
             break;
         case _opr:
             getUnitsIn(result, oprStack,current,[](unit _unit, std::stack<unit> & oprStack){
-                return oprStack.size() &&  ((oprStack.top().type == _opr && _unit.prior <= oprStack.top().prior) || oprStack.top().type == _func);
+                return oprStack.size() && ((oprStack.top().type == _opr && _unit.prior <= oprStack.top().prior) || oprStack.top().type == _func);
             });
         case _func:
             getUnitsIn(result, oprStack,current, [](unit _unit, std::stack<unit> & oprStack){

@@ -9,6 +9,14 @@
 
 #define NPOS std::string::npos
 
+static std::string brackets = "[]()";
+static std::string operators = "+-*/^%";
+static std::string special = "e,";         
+static std::string numbers = "0123456789.";
+static std::string functions[11]{ 
+    "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt", "!", "log", "deg"
+};
+
 enum exmpElements{
     _num,     // numbers -> 0-9  
     _brt,     // brackets -> () [] 
@@ -41,7 +49,7 @@ void unknown(std::string c);
 int getPriority(std::string exp);
 
 // finds closing brackets
-int findCloseBrt(exmpUnits & units, int position);
+bool checkCloseBrt(exmpUnits & units, int position);
 
 // make postfix queue
 exmpUnits creatrePostfix(exmpUnits & _units);
