@@ -1,0 +1,8 @@
+func myfunc(_a, _b) { return sin(_a + _b) * sin(_a - _b) };
+
+var a = myfunc(30,60);
+
+var mass = { 1, 2.3 , 4}
+
+print("результат:");
+print(a);
