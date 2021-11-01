@@ -39,7 +39,7 @@ Parcer::Parcer(_units & units, environment & env){
             getUnitsIn(oprStack,units[count],[](unit _unit, std::stack<unit> & oprStack){
                 return oprStack.top().name == "(";
             });
-            if(oprStack.top().type == _type::_opr){
+            if(oprStack.top().type == _type::_opr || oprStack.top().type == _type::_func || oprStack.top().type == _type::_coreFunc){
                 _tokens.push_back(oprStack.top());
                 oprStack.pop();
             }
