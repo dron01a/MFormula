@@ -16,6 +16,14 @@ environment::environment(){
     _defined[0]._childs.push_back(unit(_type::_num,"2.7182818284"));
 }
 
+environment::environment(environment &env){
+    this->_defined = env.defined(); 
+}
+
+_units environment::defined(){
+    return _defined;
+}
+
 void environment::add(unit & _unit){
     _defined.push_back(_unit);
 }

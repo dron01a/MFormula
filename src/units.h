@@ -22,6 +22,7 @@ enum class _type{
     _special,   // special chars -> e pi 
     _text,      // string text in "some text" 
     _semicolon, // ;
+    _newLine,
     _var,
     _list,
     _func,
@@ -44,7 +45,9 @@ struct unit{
 class environment {
 public:
     environment();
+    environment(environment & env);
     unit get(std::string _name);
+    _units defined();
     bool have(std::string _name);
     void add(unit & _unit);
 private:

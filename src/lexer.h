@@ -6,7 +6,7 @@
 typedef bool(*compareFunc)(std::string, char);
 
 static std::string brackets = "[](){}";
-static std::string operators = "+-*/^%,<>=";
+static std::string operators = "+-*/^%<>=";
 static std::string special = ",";         
 static std::string numbers = "0123456789.";
 static std::string functions[]{ 
@@ -20,10 +20,12 @@ public:
     _units getUnits();
 private:
     std::string _source;
-    std::string _delim = "{}[]()+-*/^%,;<>=";
+    std::string _delim = "{}[]()+-*/^%,;<>=\n";
     _units units;
     _type getType(std::string exp); // return type of expression 
     void addToToken(std::string & _token, int & _count, compareFunc _func);
+    int getPriority(std::string _s);
+
 };
 
 

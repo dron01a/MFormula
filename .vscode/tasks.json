@@ -6,7 +6,7 @@
             "command": "g++",
             "args": [
                 "-g",
-                "lexerTests/*.cpp",
+                "src/*.cpp",
                 "-o",
                 "main"
             ],
