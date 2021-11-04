@@ -1,8 +1,12 @@
-func myfunc(_a, _b) { return sin(_a + _b) * sin(_a - _b) };
+func myfunc(_a, _b) { 
+    var _c = 0.5*_a;
+    var _v = 0.5*_b;
+    return sin(_v + _c) * sin(_a - _b); 
+}
 
-var a = myfunc(30,60);
+var mass = { 1, 1};
 
-var mass = { 1, 2.3 , 4}
+var a = myfunc(30 + mass[0],60 + mass[1]);
 
 print("результат:");
 print(a);

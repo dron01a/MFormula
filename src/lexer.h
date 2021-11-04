@@ -5,7 +5,8 @@
 
 typedef bool(*compareFunc)(std::string, char);
 
-static std::string brackets = "[](){}";
+static std::string openBrt = "[{(";
+static std::string closeBrt = ")}]";
 static std::string operators = "+-*/^%<>=";
 static std::string special = ",";         
 static std::string numbers = "0123456789.";

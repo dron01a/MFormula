@@ -15,13 +15,14 @@ class environment;
 typedef std::vector<unit> _units;
 
 enum class _type{
-    _num,       // numbers -> 0-9  
-    _brt,       // brackets -> () [] 
-    _opr,       // operations -> +-*/^%
-    _coreFunc,  // functions -> abs sin cos tg ctg 
-    _special,   // special chars -> e pi 
-    _text,      // string text in "some text" 
-    _semicolon, // ;
+    _num, 
+    _openBrt,      
+    _closeBrt,      
+    _opr,       
+    _coreFunc,  
+    _special,   
+    _text,      
+    _semicolon, 
     _newLine,
     _var,
     _list,

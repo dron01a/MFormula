@@ -36,8 +36,11 @@ _units Lexer::getUnits(){
 }
 
 _type Lexer::getType(std::string exp){
-    if(brackets.find(exp) != NPOS){
-        return _type::_brt;
+    if(openBrt.find(exp) != NPOS){
+        return _type::_openBrt;
+    } 
+    if(closeBrt.find(exp) != NPOS){
+        return _type::_closeBrt;
     } 
     else if(operators.find(exp) != NPOS || exp == "==" || exp == ">=" || exp == "<="){
         return _type::_opr;
@@ -78,7 +81,7 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
         } 
         _token+=_source[_count];
         _count++;
-        if(getType(_token) == _type::_brt){
+        if(getType(std::string(1,_source[_count])) == _type::_openBrt || getType(std::string(1,_source[_count])) == _type::_closeBrt){
             break;
         } 
     }
