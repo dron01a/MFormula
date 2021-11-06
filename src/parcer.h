@@ -6,7 +6,7 @@
 typedef bool(*condFunc)(unit, std::stack<unit>&);
 
 // test name 
-//_units getUnits(_units & units, );
+_units getUnitsInBrt(_units & units,unit _start,int count);
 
 class Parcer{
 public:
@@ -17,6 +17,8 @@ private:
     void parceCloseBrt(std::stack<unit> & oprStack, unit curUnit, char _type);
     bool checkCloseBrt(_units & units, int position);
     _units _tokens; 
+
+    void parceVarInit(_units & units,environment & env, int & count);
 };
 
 #endif

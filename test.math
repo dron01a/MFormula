@@ -1,12 +1,8 @@
-func myfunc(_a, _b) { 
-    var _c = 0.5*_a;
-    var _v = 0.5*_b;
-    return sin(_v + _c) * sin(_a - _b); 
-}
 
-var mass = { 1, 1};
+var a = 30;
+var b = sin(30);
 
-var a = myfunc(30 + mass[0],60 + mass[1]);
-
-print("результат:");
 print(a);
+print(sin(30));
+print(sin(deg(a)));
+

@@ -4,6 +4,11 @@ Parcer::Parcer(_units & units, environment & env){
     std::stack<unit> oprStack;
     for(int count = 0; count < units.size(); count++){
         switch (units[count].type){
+        case _type::_varInit:
+            units[count]._childs.push_back(units[count+1]);
+            _tokens.push_back(units[count]);
+            parceVarInit(units,env,count);
+            break;
         case _type::_text:
         case _type::_var:
         case _type::_num:
@@ -32,6 +37,11 @@ Parcer::Parcer(_units & units, environment & env){
             });
             oprStack.push(units[count]);
             break;
+        case _type::_semicolon:
+            getUnitsIn(oprStack,units.back(),[](unit _unit, std::stack<unit> & oprStack){ 
+                return oprStack.size() != 0; 
+            });
+            break;
         }
     }
     getUnitsIn(oprStack,units.back(),[](unit _unit, std::stack<unit> & oprStack){ 
@@ -41,6 +51,30 @@ Parcer::Parcer(_units & units, environment & env){
 
 _units Parcer::getTokens() { 
     return _tokens; 
+}
+
+void Parcer::parceVarInit(_units & units,environment & env, int & count){
+    if(env.have(units[count+1].name)){
+        throw "var \"" + units[count+1].name + "\" already defined";
+    }    
+    unit newVar(_type::_var,units[count+1].name);
+    for(int i = count + 1; i < units.size(); i++){
+        if(units[i].name == newVar.name){
+            units[i].type = newVar.type;
+        }
+    }
+    if(units[count+2].name == "="){
+        //if(units[count+3].name == "{"){
+        //    newVar.type == _type::_list;
+        //    count++;
+        //}
+        count+=3;
+        while(units[count].type != _type::_semicolon){
+            newVar._childs.push_back(units[count]);
+            units.erase(units.begin()+count);
+        }
+    }
+    env.add(newVar);
 }
 
 void Parcer::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func){

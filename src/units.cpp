@@ -20,7 +20,7 @@ environment::environment(environment &env){
     this->_defined = env.defined(); 
 }
 
-_units environment::defined(){
+_units & environment::defined(){
     return _defined;
 }
 
@@ -28,14 +28,13 @@ void environment::add(unit & _unit){
     _defined.push_back(_unit);
 }
 
-unit environment::get(std::string _name){
-    unit result;
-    for (unit iter : _defined){
-        if(iter.name == _name){
-            result = iter;
+unit & environment::get(std::string _name){
+    for(int count = 0; count < _defined.size(); count++){
+        if(_defined[count].name == _name){
+            return _defined[count];
         }
     }
-    return result;
+    throw "undef element";
 }
 
 bool environment::have(std::string _name){

@@ -47,8 +47,8 @@ class environment {
 public:
     environment();
     environment(environment & env);
-    unit get(std::string _name);
-    _units defined();
+    unit & get(std::string _name);
+    _units & defined();
     bool have(std::string _name);
     void add(unit & _unit);
 private:

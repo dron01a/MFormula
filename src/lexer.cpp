@@ -6,7 +6,7 @@ Lexer::Lexer(std::string source, environment & env){
     for(int count = 0; count < source.size(); count++){
         token.clear();   
         if(source[count] == '\"'){
-            token = source.substr(count + 1,source.find("\"",count+1) - count -1);
+            token = source.substr(count + 1,(source.find("\"",count+1) - count) -1);
             count = source.find("\"",count+1);
         }
         if(std::isspace(source[count])){
@@ -81,7 +81,10 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
         } 
         _token+=_source[_count];
         _count++;
-        if(getType(std::string(1,_source[_count])) == _type::_openBrt || getType(std::string(1,_source[_count])) == _type::_closeBrt){
+        if( getType(std::string(1,_source[_count])) == _type::_openBrt 
+            || getType(std::string(1,_source[_count])) == _type::_closeBrt
+            || getType(_token) == _type::_openBrt
+            || getType(_token) == _type::_closeBrt ){
             break;
         } 
     }
