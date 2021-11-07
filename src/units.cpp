@@ -13,7 +13,7 @@ unit::unit(_type t,std::string s, int pr){
 
 environment::environment(){
     _defined[0]._childs.push_back(unit(_type::_num,"3.1415926535"));
-    _defined[0]._childs.push_back(unit(_type::_num,"2.7182818284"));
+    _defined[1]._childs.push_back(unit(_type::_num,"2.7182818284"));
 }
 
 environment::environment(environment &env){
