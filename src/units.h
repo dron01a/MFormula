@@ -33,10 +33,19 @@ enum class _type{
     _indentf 
 };
 
-struct unit{ 
+struct unit{
     unit(_type t,std::string s);
     unit(_type t,std::string s, int pr);
+    unit(double _num) ;
     unit(){};
+    void assign(unit unit);
+    void print();
+    unit operator+(unit & _unit) const;
+    unit operator-(unit & _unit) const;
+    unit operator*(unit & _unit) const;
+    unit operator/(unit & _unit) const;
+    unit operator%(unit & _unit) const;
+    operator double() const;
     _units _childs;
     std::string name;
     _type type;

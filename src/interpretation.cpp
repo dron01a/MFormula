@@ -30,13 +30,20 @@ void eval(_units & tokens,environment &env){
             params.push(tokens[count]);
             break;
         case _type::_var:
-            params.push(env.get(tokens[count].name)._childs[0]);
+            params.push(env.get(tokens[count].name));
             break;
         case _type::_opr:
+           if(tokens[count].name == "="){
+               unit _a,_b;
+               setVars(params,_a,_b);
+               _a.assign(_b);
+               env.get(_a.name) = _a;
+               continue;
+           }
         case _type::_coreFunc:
             if(tokens[count].name == "print"){
-                printf("%s\n",params.top().name.c_str());
-                params.pop();
+                params.top().print();
+                params.pop(); 
                 continue;
             }
             params.push(unit(_type::_num,std::to_string(calcUnits(params,tokens[count].name,tokens[count].prior))));
@@ -49,15 +56,13 @@ void eval(_units & tokens,environment &env){
     }
 }
 
-void setVars(std::stack<unit> &args, double &a,  double &b){
-    b = std::strtod(args.top().name.c_str(),nullptr);
-    args.pop();
-    a = std::strtod(args.top().name.c_str(),nullptr);
-    args.pop();
+void setVars(std::stack<unit> &args, unit &a, unit &b){
+    setVars(args,b);
+    setVars(args,a);
 }
 
-void setVars(std::stack<unit> &args, double &a){
-    a = std::strtod(args.top().name.c_str(),nullptr);
+void setVars(std::stack<unit> &args, unit &a){
+    a = args.top();
     args.pop();
 }
 
@@ -66,11 +71,11 @@ double calcUnits(std::stack<unit> &args, std::string exp, int prior){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
     if((prior > 0 && exp != "!") || exp == "log"){
-        double a,b;
+        unit a,b;
         if(args.size() == 1){
             setVars(args,a);
             b=a;
-            a=0;
+            a.name = "0";
         }
         else{
             setVars(args,a,b);
@@ -78,7 +83,7 @@ double calcUnits(std::stack<unit> &args, std::string exp, int prior){
         return binaryFuncs[exp](a,b);
     }
     else{
-        double a;
+        unit a;
         setVars(args,a);
         return simpleFuncs[exp](a);//simpleFunc(exp,a);
     }
