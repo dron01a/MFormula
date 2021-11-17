@@ -1,44 +1,28 @@
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 
-#include "parce.h"
-#include "calc.h"
+#include "interpretation.h"
 
-double eval(std::string example);
-
-int main(int argc, char **argv){
-    std::string example(argv[1]);
-    try{
-        std::cout << eval(example) << std::endl;
+int main(int argc, char *argv[]){
+    if(argc <= 1 ){
+        std::cout << "not valid args";
     }
-    catch(std::string _errMes){
-        std::cout << _errMes <<std::endl;
+    if(strcmp(argv[1],"-s") == 0){
+        run("print("+std::string(argv[2]) +")");
     }
-    return 0;
-}
-
-double eval(std::string example){
-    exmpUnits _units = parce(example);
-    _units = creatrePostfix(_units);
-    std::stack<double> nums;
-    for(int count = 0; count < _units.size(); count++){
-        switch (_units[count].type){
-        case _special:
-            if(_units[count].exp == "pi"){
-                nums.push(3.1415926535);
-            }
-            if(_units[count].exp == "e"){
-                nums.push(2.7182818284);
-            }
-            break;
-        case _num:
-            nums.push(std::strtod(_units[count].exp.c_str(),nullptr));
-            break;
-        case _func:
-        case _opr:
-            nums.push(calcUnits(nums, _units[count].exp, _units[count].prior));
-        break;
+    else if(strcmp(argv[1],"-f") == 0){
+        std::ifstream in( argv[2],std::ios::binary);
+        if(!in.good()){
+            std::cout << "not found file " << argv[2] << std::endl;
         }
+        int size = in.seekg(0,std::ios::end).tellg();
+        in.seekg(0);
+        char * buf = new char[size+1];
+        in.read(buf,size);
+        buf[size] = 0;
+        run(std::string(buf));
     }
-    return nums.top();
+    return 0; 
 }
 

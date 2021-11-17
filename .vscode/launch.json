@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
-            "args": ["sin(deg(30))+sin(30*pi/180)+(1945-1944)+sin(30*pi/180)+sin(30*pi/180)-1"],
+            "args": [ "-f", "test.math"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
