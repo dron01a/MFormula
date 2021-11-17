@@ -5,9 +5,16 @@ Lexer::Lexer(std::string source, environment & env){
     std::string token;
     for(int count = 0; count < source.size(); count++){
         token.clear();   
+        if(source[count] == '/' && source[count+1] == '/'){
+            count = source.find("\n",count+1);
+        }
         if(source[count] == '\"'){
-            token = source.substr(count + 1,(source.find("\"",count+1) - count) -1);
+            int _curPos = count + 1;
             count = source.find("\"",count+1);
+            token = source.substr(_curPos,count - _curPos);
+            units.push_back(unit(_type::_text, token, 0));
+            count++;
+            continue;
         }
         if(std::isspace(source[count])){
             continue;

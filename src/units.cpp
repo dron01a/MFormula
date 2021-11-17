@@ -101,15 +101,16 @@ unit unit::operator+(unit & _unit) const{
     }
 }
 
-unit unit::operator*(unit & _unit) const{
+unit unit::operator-(unit & _unit) const{
     switch (type){
     case _type::_num:
-        return(double(*this) * double(_unit));
+        return(double(*this) - double(_unit));
+        break;
     case _type::_text:
         throw "error type";
         break;
     case _type::_var:
-        return unit(_childs[0] * _unit);
+        return unit(_childs[0] - _unit);
         break;
     case _type::_list: 
         break;
@@ -119,16 +120,15 @@ unit unit::operator*(unit & _unit) const{
     }
 }
 
-unit unit::operator-(unit & _unit) const{
+unit unit::operator*(unit & _unit) const{
     switch (type){
     case _type::_num:
         return(double(*this) * double(_unit));
-        break;
     case _type::_text:
         throw "error type";
         break;
     case _type::_var:
-        return unit(_childs[0] - _unit);
+        return unit(_childs[0] * _unit);
         break;
     case _type::_list: 
         break;

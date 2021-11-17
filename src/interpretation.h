@@ -38,13 +38,12 @@ static std::map<std::string, simpleF> simpleFuncs{
     {"arcctg",[](unit a){return unit((atan(-a)+M_PI_2));}},
     {"abs",[](unit a){return unit(abs(a));}},
     {"ln",[](unit a){return unit(log(a));}},
-   // {"deg",[](unit a){return unit((a*M_PI/180));}},
+    {"deg",[](unit a){return unit((a*M_PI/180));}},
     {"sqrt",[](unit a){return unit(pow(a,(1/2)));}},
     {"!",[](unit a){return unit(factorial(a));}}
 };
 
 static std::map<std::string, binaryF> binaryFuncs{
-    //{"=",[](unit a,unit b){return a=b;}},
     {"+",[](unit a,unit b){return a+b;}},
     {"-",[](unit a,unit b){return a-b;}},
     {"/",[](unit a,unit b){return a/b;}},

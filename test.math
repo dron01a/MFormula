@@ -4,7 +4,8 @@ var b = 315;
 
 a = 0;
 
-print(a+398);
+print("USSR");
+print(a+398-1*sin(deg(90)));
 print(b);
 print(b+a);
 
