@@ -16,6 +16,7 @@ typedef std::vector<unit> _units;
 
 enum class _type{
     _num, 
+    _bool,
     _openBrt,      
     _closeBrt,      
     _opr,       
@@ -36,7 +37,8 @@ enum class _type{
 struct unit{
     unit(_type t,std::string s);
     unit(_type t,std::string s, int pr);
-    unit(double _num) ;
+    unit(double _num);
+    unit(bool _val);
     unit(){};
     void assign(unit unit);
     void print();
@@ -45,7 +47,19 @@ struct unit{
     unit operator*(unit & _unit) const;
     unit operator/(unit & _unit) const;
     unit operator%(unit & _unit) const;
+
+    bool operator==(unit & _unit) const;
+    bool operator!=(unit & _unit) const;
+
+    bool operator>=(unit & _unit) const;
+    bool operator<=(unit & _unit) const;
+    bool operator>(unit & _unit) const;
+    bool operator<(unit & _unit) const;
+
     operator double() const;
+
+    std::string to_string() const;
+
     _units _childs;
     std::string name;
     _type type;

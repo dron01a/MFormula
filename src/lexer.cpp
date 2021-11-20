@@ -43,6 +43,9 @@ _units Lexer::getUnits(){
 }
 
 _type Lexer::getType(std::string exp){
+    if(exp == "true" || exp == "false"){
+        return _type::_bool;
+    }
     if(openBrt.find(exp) != NPOS){
         return _type::_openBrt;
     } 

@@ -46,7 +46,7 @@ void eval(_units & tokens,environment &env){
                 params.pop(); 
                 continue;
             }
-            params.push(unit(_type::_num,std::to_string(calcUnits(params,tokens[count].name,tokens[count].prior))));
+            params.push(unit(calcUnits(params,tokens[count].name,tokens[count].prior)));
             break;
         }
     }
