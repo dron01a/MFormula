@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
-            "args": [ "-f", "test.math"],
+            "args": [ "-f", "list.math"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

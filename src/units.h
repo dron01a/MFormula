@@ -34,7 +34,8 @@ enum class _type{
     _indentf 
 };
 
-struct unit{
+class unit{
+    public:
     unit(_type t,std::string s);
     unit(_type t,std::string s, int pr);
     unit(double _num);
@@ -48,7 +49,7 @@ struct unit{
     unit operator/(unit & _unit) const;
     unit operator%(unit & _unit) const;
 
-    bool operator==(unit & _unit) const;
+  //  bool operator==(unit & _unit) const;
     bool operator!=(unit & _unit) const;
 
     bool operator>=(unit & _unit) const;
@@ -57,6 +58,7 @@ struct unit{
     bool operator<(unit & _unit) const;
 
     operator double() const;
+    operator int() const;
 
     std::string to_string() const;
 

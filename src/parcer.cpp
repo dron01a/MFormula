@@ -23,6 +23,7 @@ Parcer::Parcer(_units & units, environment & env){
             checkCloseBrt(units,count);
         case _type::_coreFunc:
         case _type::_func:
+        case _type::_list:
             oprStack.push(units[count]);
             break;
         case _type::_closeBrt:
@@ -33,6 +34,7 @@ Parcer::Parcer(_units & units, environment & env){
                 return  ((oprStack.top().type == _type::_opr && _unit.prior <= oprStack.top().prior) 
                     || oprStack.top().type == _type::_func 
                     || oprStack.top().type == _type::_coreFunc 
+                    || oprStack.top().type == _type::_list
                 );
             });
             oprStack.push(units[count]);

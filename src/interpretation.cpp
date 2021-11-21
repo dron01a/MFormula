@@ -11,11 +11,22 @@ void run(std::string _script){
 }
 
 void varInit(unit & node, environment & env){
-    _units childs = env.get(node._childs[0].name)._childs;   
-    Parcer childsParcer(childs,env);
-    childs = childsParcer.getTokens();
-    eval(childs, env);
-    env.get(node._childs[0].name)._childs = childs;
+    _units childs = env.get(node._childs[0].name)._childs;  
+    if(env.get(node._childs[0].name).type == _type::_list){
+        for(int count = 0; count < childs.size(); count++){
+            Parcer childsParcer(childs[count]._childs,env);
+            childs[count]._childs = childsParcer.getTokens();
+        } 
+        for(int count = 0; count < childs.size(); count++){
+            eval(childs[count]._childs, env);
+            env.get(node._childs[0].name)._childs[count] = childs[count]._childs[0];
+        }
+    }
+    else{
+        Parcer childsParcer(childs,env);
+        eval(childs, env); 
+        env.get(node._childs[0].name)._childs = childs;
+    }
 }
 
 void eval(_units & tokens,environment &env){
@@ -32,6 +43,9 @@ void eval(_units & tokens,environment &env){
         case _type::_var:
             params.push(env.get(tokens[count].name));
             break;
+        case _type::_list:
+            params.push(env.get(tokens[count].name)._childs[(int)params.top()]);
+            break;
         case _type::_opr:
            if(tokens[count].name == "="){
                unit _a,_b;
@@ -46,7 +60,7 @@ void eval(_units & tokens,environment &env){
                 params.pop(); 
                 continue;
             }
-            params.push(unit(calcUnits(params,tokens[count].name,tokens[count].prior)));
+            params.push(calcUnits(params,tokens[count].name,tokens[count].prior));
             break;
         }
     }
@@ -66,7 +80,7 @@ void setVars(std::stack<unit> &args, unit &a){
     args.pop();
 }
 
-double calcUnits(std::stack<unit> &args, std::string exp, int prior){
+unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
