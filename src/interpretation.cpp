@@ -24,6 +24,7 @@ void varInit(unit & node, environment & env){
     }
     else{
         Parcer childsParcer(childs,env);
+        childs = childsParcer.getTokens();
         eval(childs, env); 
         env.get(node._childs[0].name)._childs = childs;
     }
@@ -43,21 +44,38 @@ void eval(_units & tokens,environment &env){
         case _type::_var:
             params.push(env.get(tokens[count].name));
             break;
-        case _type::_list:
-            params.push(env.get(tokens[count].name)._childs[(int)params.top()]);
+        case _type::_list:{
+                unit listVal(_type::_var,"listVar");
+                if(params.top().type == _type::_num || params.top().type == _type::_var){
+                    listVal._childs.push_back(env.get(tokens[count].name)._childs[(int)params.top()]);
+                    listVal._childs.push_back(tokens[count]);
+                    listVal._childs.push_back(params.top());
+                }
+                else{
+                }
+                params.pop();
+                params.push(listVal);
+            }            
             break;
         case _type::_opr:
            if(tokens[count].name == "="){
                unit _a,_b;
-               setVars(params,_a,_b);
-               _a.assign(_b);
-               env.get(_a.name) = _a;
-               continue;
+                setVars(params,_a,_b);
+                if(_a.name == "listVar"){
+                    env.get(_a._childs[1].name)._childs[(int)_a._childs[2]] = _b;
+                }
+                else{
+                    _a.assign(_b);
+                    env.get(_a.name) = _a;
+                }
+                continue;
            }
         case _type::_coreFunc:
             if(tokens[count].name == "print"){
-                params.top().print();
-                params.pop(); 
+                for(int count = 0; count != params.size(); count++){
+                    params.top().print();
+                    params.pop(); 
+                }
                 continue;
             }
             params.push(calcUnits(params,tokens[count].name,tokens[count].prior));
