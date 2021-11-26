@@ -81,6 +81,21 @@ double unit::to_double() const{
     }
 }
 
+std::string unit::to_string() const{
+    switch (type){
+    case _type::_num:
+    case _type::_text:
+    case _type::_bool:
+        return name;
+        break;
+    case _type::_var:
+        return _childs[0].name;
+        break;
+    default:
+        break;
+    }
+}
+
 void unit::print(){
     switch (type){
     case _type::_num:
@@ -254,19 +269,39 @@ bool unit::operator!=(const unit & _unit) const {
     return !(*this == _unit);
 }
 
-std::string unit::to_string() const{
-    switch (type){
-    case _type::_num:
-    case _type::_text:
-    case _type::_bool:
-        return name;
-        break;
-    case _type::_var:
-        return _childs[0].name;
-        break;
-    default:
-        break;
+
+bool unit::operator>(unit & _unit) const {
+    if(_unit.type != _type::_num && _unit.type != _type::_var){
+        throw "type error";
     }
+    switch (type){
+    case _type::_var:
+    case _type::_num:
+        return this->to_double() > _unit.to_double();
+    default:
+        throw "type error";
+    }
+}
+
+bool unit::operator<(unit & _unit) const {
+    if(_unit.type != _type::_num && _unit.type != _type::_var){
+        throw "type error";
+    }
+    switch (type){
+    case _type::_var:
+    case _type::_num:
+        return this->to_double() > _unit.to_double();
+    default:
+        throw "type error";
+    }
+}
+
+bool unit::operator>=(unit & _unit) const {
+    return !(*this < _unit);
+}
+
+bool unit::operator<=(unit & _unit) const {
+    return !(*this < _unit);
 }
 
 environment::environment(){

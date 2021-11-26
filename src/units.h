@@ -52,10 +52,11 @@ public:
     bool operator==(const unit & _unit) const;
     bool operator!=(const unit & _unit) const;
 
-    bool operator>=(unit & _unit);
-    bool operator<=(unit & _unit);
-    bool operator>(unit & _unit);
-    bool operator<(unit & _unit);
+    bool operator>(unit & _unit) const;
+    bool operator<(unit & _unit) const;
+
+    bool operator>=(unit & _unit) const;
+    bool operator<=(unit & _unit) const;
 
     bool to_bool() const;
     double to_double() const;
