@@ -4,4 +4,9 @@ var sum = l[0] + l[1] + l[2];
 
 l[0] = 5 + l[0] - 1500;
 
+
+var bl = sum == 10;
+
+sum = 10;
+
 print(sum);

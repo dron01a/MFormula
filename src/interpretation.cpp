@@ -45,16 +45,17 @@ void eval(_units & tokens,environment &env){
             params.push(env.get(tokens[count].name));
             break;
         case _type::_list:{
-                unit listVal(_type::_var,"listVar");
                 if(params.top().type == _type::_num || params.top().type == _type::_var){
-                    listVal._childs.push_back(env.get(tokens[count].name)._childs[(int)params.top()]);
+                    unit listVal(_type::_var,"listVar");
+                    listVal._childs.push_back(env.get(tokens[count].name)._childs[params.top().to_int()]);
                     listVal._childs.push_back(tokens[count]);
                     listVal._childs.push_back(params.top());
+                    params.pop();
+                    params.push(listVal);
                 }
                 else{
+                   
                 }
-                params.pop();
-                params.push(listVal);
             }            
             break;
         case _type::_opr:
@@ -62,7 +63,7 @@ void eval(_units & tokens,environment &env){
                unit _a,_b;
                 setVars(params,_a,_b);
                 if(_a.name == "listVar"){
-                    env.get(_a._childs[1].name)._childs[(int)_a._childs[2]] = _b;
+                    env.get(_a._childs[1].name)._childs[_a._childs[2].to_int()] = _b;
                 }
                 else{
                     _a.assign(_b);
@@ -72,10 +73,8 @@ void eval(_units & tokens,environment &env){
            }
         case _type::_coreFunc:
             if(tokens[count].name == "print"){
-                for(int count = 0; count != params.size(); count++){
                     params.top().print();
                     params.pop(); 
-                }
                 continue;
             }
             params.push(calcUnits(params,tokens[count].name,tokens[count].prior));

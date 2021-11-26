@@ -3,13 +3,12 @@
 
 #include <string>
 #include <string.h>
-#include <algorithm>
 #include <vector>
 #include <stack>
 
 #define NPOS std::string::npos
 
-struct unit;
+class unit;
 class environment;
 
 typedef std::vector<unit> _units;
@@ -35,12 +34,13 @@ enum class _type{
 };
 
 class unit{
-    public:
+public:
     unit(_type t,std::string s);
     unit(_type t,std::string s, int pr);
     unit(double _num);
     unit(bool _val);
     unit(){};
+    ~unit(){};
     void assign(unit unit);
     void print();
     unit operator+(unit & _unit) const;
@@ -49,18 +49,19 @@ class unit{
     unit operator/(unit & _unit) const;
     unit operator%(unit & _unit) const;
 
-  //  bool operator==(unit & _unit) const;
-    bool operator!=(unit & _unit) const;
+    bool operator==(const unit & _unit) const;
+    bool operator!=(const unit & _unit) const;
 
-    bool operator>=(unit & _unit) const;
-    bool operator<=(unit & _unit) const;
-    bool operator>(unit & _unit) const;
-    bool operator<(unit & _unit) const;
+    bool operator>=(unit & _unit);
+    bool operator<=(unit & _unit);
+    bool operator>(unit & _unit);
+    bool operator<(unit & _unit);
 
-    operator double() const;
-    operator int() const;
-
+    bool to_bool() const;
+    double to_double() const;
+    int to_int() const;
     std::string to_string() const;
+
 
     _units _childs;
     std::string name;

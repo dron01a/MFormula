@@ -103,7 +103,7 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
 
 
 int Lexer::getPriority(std::string exp){
-    if (exp == "="){
+    if (exp == "=="){
         return 1;
     }
     if (exp == "+" || exp == "-" ) {

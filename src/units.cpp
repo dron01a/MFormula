@@ -13,10 +13,10 @@ unit::unit(_type t,std::string s, int pr){
 
 unit::unit(bool _val){
     if(_val == true){
-        name = true;
+        name = "true";
     }
     else{
-        name = false;
+        name = "false";
     }
     type = _type::_bool;
     prior = 0;
@@ -28,20 +28,39 @@ unit::unit(double _num){
     prior = 0;
 }
 
-unit::operator int() const{
+int unit::to_int() const{
     switch (type){
     case _type::_num:
         return std::atoi(name.c_str());
         break;
     case _type::_var:
-        return _childs[0];
+        return _childs[0].to_int();
     default:
         throw "error type";
         break;
     }
 }
 
-unit::operator double() const{
+bool unit::to_bool() const{
+    switch (type){
+    case _type::_bool:
+        if(name == "true"){
+            return true;
+        }
+        if(name == "false"){
+            return false;
+        }
+        throw "error type";
+        break;
+    case _type::_var:
+        return _childs[0].to_bool();
+    default:
+        throw "error type";
+        break;
+    }
+}
+
+double unit::to_double() const{
     switch (type){
     case _type::_num:
         if (name.find('.',0) != NPOS){
@@ -54,7 +73,7 @@ unit::operator double() const{
         return std::strtod(name.c_str(),nullptr);
         break;
     case _type::_var:
-        return _childs[0];
+        return _childs[0].to_int();
         break;
     default:
         throw "error type";
@@ -108,7 +127,7 @@ void unit::assign(unit _unit){
 unit unit::operator+(unit & _unit) const{
     switch (type){
     case _type::_num:
-        return(double(*this) + double(_unit));
+        return this->to_double() + _unit.to_double();
         break;
     case _type::_text:
         if(_unit.type == _type::_var){
@@ -135,7 +154,7 @@ unit unit::operator+(unit & _unit) const{
 unit unit::operator-(unit & _unit) const{
     switch (type){
     case _type::_num:
-        return(double(*this) - double(_unit));
+        return this->to_double() - _unit.to_double();
         break;
     case _type::_text:
         throw "error type";
@@ -154,7 +173,7 @@ unit unit::operator-(unit & _unit) const{
 unit unit::operator*(unit & _unit) const{
     switch (type){
     case _type::_num:
-        return double(*this) * double(_unit);
+        return this->to_double() * _unit.to_double();
     case _type::_text:
         throw "error type";
         break;
@@ -172,7 +191,7 @@ unit unit::operator*(unit & _unit) const{
 unit unit::operator/(unit & _unit) const{
     switch (type){
     case _type::_num:
-        return(double(*this) / double(_unit));
+        return this->to_double() / _unit.to_double();
         break;
     case _type::_text:
         throw "error type";
@@ -191,7 +210,7 @@ unit unit::operator/(unit & _unit) const{
 unit unit::operator%(unit & _unit) const{
     switch (type){
     case _type::_num:
-        return double((int)*this % (int)_unit);
+        return double(this->to_int() % _unit.to_int());
         break;
     case _type::_text:
         throw "error type";
@@ -207,33 +226,33 @@ unit unit::operator%(unit & _unit) const{
     }
 }
 
-//bool unit::operator==(unit & _unit) const {
-//    switch (type){
-//    case _type::_num:
-//        return double(*this) == double(_unit);
-//        break;
-//    case _type::_bool:
-//    case _type::_text:
-//        return this->to_string() == _unit.to_string();
-//        break;
-//    case _type::_var:
-////        return *this == _unit;
-//        break;
-//    case _type::_list: 
-//        if(_unit.type != _type::_list){
-//            throw "error of type";
-//        }
-//        return _childs == _unit._childs;
-//        break;
-//    default:
-//        throw "error of type";
-//        break;
-//    }
-//}
+bool unit::operator==(const unit & _unit) const{
+    switch (type){
+    case _type::_num:
+        return this->to_double() == _unit.to_double();
+        break;
+    case _type::_bool:
+    case _type::_text:
+        return this->to_string() == _unit.to_string();
+        break;
+    case _type::_var:
+//        return *this == _unit;
+        break;
+    case _type::_list: 
+        if(_unit.type != _type::_list){
+            throw "error of type";
+        }
+        return this->_childs == _unit._childs;
+        break;
+    default:
+        throw "error of type";
+        break;
+    }
+}
 
-//bool unit::operator!=(unit & _unit) const {
-//    return !(*this == _unit);
-//}
+bool unit::operator!=(const unit & _unit) const {
+    return !(*this == _unit);
+}
 
 std::string unit::to_string() const{
     switch (type){
