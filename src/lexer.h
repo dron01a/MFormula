@@ -21,7 +21,7 @@ public:
     _units getUnits();
 private:
     std::string _source;
-    std::string _delim = "{}[]()+-*/^%,;<>=\n";
+    std::string _delim = "!{}[]()+-*/^%,;<>=\n";
     _units units;
     _type getType(std::string exp); // return type of expression 
     void addToToken(std::string & _token, int & _count, compareFunc _func);

@@ -30,6 +30,8 @@ enum class _type{
     _comment,
     _varInit,
     _functionInit,
+    _if,
+    _else,
     _indentf 
 };
 
@@ -78,6 +80,7 @@ public:
     _units & defined();
     bool have(std::string _name);
     void add(unit & _unit);
+    void saveChange(environment & env);
 private:
     _units _defined {
         unit(_type::_var,"pi"),

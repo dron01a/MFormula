@@ -9,6 +9,10 @@ Parcer::Parcer(_units & units, environment & env){
             _tokens.push_back(units[count]);
             parceVarInit(units,env,count);
             break;
+        case _type::_if:
+             
+            _tokens.push_back(parceIF(units,env,count));
+            break;
         case _type::_text:
         case _type::_var:
         case _type::_num:
@@ -111,6 +115,40 @@ void Parcer::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func
         _tokens.push_back(oprStack.top());
         oprStack.pop();
     }
+}
+
+unit Parcer::parceIF(_units & units,environment & env, int & count){
+    int curPos = count;
+    int stopBrt = checkCloseBrt(units,count + 1);
+    units[curPos]._childs.push_back(unit());
+    units[curPos]._childs.push_back(unit());
+    count++;
+    while(count != stopBrt + 1){
+        units[curPos]._childs[0]._childs.push_back(units[count]);
+        units.erase(units.begin()+count);
+        stopBrt--;
+    }
+    stopBrt = checkCloseBrt(units,count);
+    count++;
+    while(count != stopBrt){
+        units[curPos]._childs[1]._childs.push_back(units[count]);
+        units.erase(units.begin()+count);
+        stopBrt--;
+    }
+    count++;
+    if(units[count].type == _type::_else){
+        units[curPos]._childs.push_back(unit());
+        stopBrt = checkCloseBrt(units,count+1);
+        count+=2;
+        while(count != stopBrt -1){
+            units[curPos]._childs[2]._childs.push_back(units[count]);
+            units.erase(units.begin()+count);
+            stopBrt--;
+        }
+        units.erase(units.begin()+count);
+        count-=2;
+    }
+    return units[curPos];
 }
 
 int Parcer::checkCloseBrt(_units & units, int position){

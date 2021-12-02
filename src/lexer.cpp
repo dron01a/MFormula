@@ -13,7 +13,7 @@ Lexer::Lexer(std::string source, environment & env){
             count = source.find("\"",count+1);
             token = source.substr(_curPos,count - _curPos);
             units.push_back(unit(_type::_text, token, 0));
-            count++;
+            //count++;
             continue;
         }
         if(std::isspace(source[count])){
@@ -46,13 +46,19 @@ _type Lexer::getType(std::string exp){
     if(exp == "true" || exp == "false"){
         return _type::_bool;
     }
+    if(exp == "if"){
+        return _type::_if;
+    }
+    if(exp == "else"){
+        return _type::_else;
+    }
     if(openBrt.find(exp) != NPOS){
         return _type::_openBrt;
     } 
     if(closeBrt.find(exp) != NPOS){
         return _type::_closeBrt;
     } 
-    else if(operators.find(exp) != NPOS || exp == "==" || exp == ">=" || exp == "<="){
+    else if(operators.find(exp) != NPOS || exp == "==" || exp == "!=" ||exp == ">=" || exp == "<="){
         return _type::_opr;
     }
     else if(exp == ","){
@@ -103,7 +109,7 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
 
 
 int Lexer::getPriority(std::string exp){
-    if (exp == "=="){
+    if (exp == "==" || exp == "!=" ||exp == ">=" || exp == "<="){
         return 1;
     }
     if (exp == "+" || exp == "-" ) {

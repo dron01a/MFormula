@@ -9,6 +9,7 @@
 #include "parcer.h"
 
 void varInit(unit & node, environment & env);
+void if_iterpr(unit & node, environment & env);
 
 void eval(_units & tokens, environment &env);
 
@@ -45,6 +46,7 @@ static std::map<std::string, simpleF> simpleFuncs{
 
 static std::map<std::string, binaryF> binaryFuncs{
     {"==",[](unit a,unit b){return unit(a==b);}},
+    {"!=",[](unit a,unit b){return unit(a!=b);}},
     {"+",[](unit a,unit b){return a+b;}},
     {"-",[](unit a,unit b){return a-b;}},
     {"/",[](unit a,unit b){return a/b;}},

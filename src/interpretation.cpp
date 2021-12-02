@@ -37,6 +37,9 @@ void eval(_units & tokens,environment &env){
         case _type::_varInit:
             varInit(tokens[count],env);
             break;  
+        case _type::_if:
+            if_iterpr(tokens[count],env);
+            break;
         case _type::_num:
         case _type::_text:
             params.push(tokens[count]);
@@ -60,7 +63,7 @@ void eval(_units & tokens,environment &env){
             break;
         case _type::_opr:
            if(tokens[count].name == "="){
-               unit _a,_b;
+                unit _a,_b;
                 setVars(params,_a,_b);
                 if(_a.name == "listVar"){
                     env.get(_a._childs[1].name)._childs[_a._childs[2].to_int()] = _b;
@@ -127,3 +130,23 @@ double factorial(double n){
     return n*factorial(n-1);
 }
 
+void if_iterpr(unit & node, environment & env){
+    environment _local(env);
+    _units cond = node._childs[0]._childs;
+    Parcer _condParce(cond,env);
+    cond = _condParce.getTokens();
+    eval(cond,env);
+    if(cond[0].to_bool() == true){
+        _units expr = node._childs[1]._childs;
+        Parcer _exprParce(expr,_local);
+        expr = _exprParce.getTokens();
+        eval(expr,_local);
+    }
+    else if(node._childs.size() == 3){
+        _units expr = node._childs[2]._childs;
+        Parcer _exprParce(expr,_local);
+        expr = _exprParce.getTokens();
+        eval(expr,_local);
+    }
+    env.saveChange(_local);
+}

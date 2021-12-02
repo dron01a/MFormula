@@ -251,7 +251,7 @@ bool unit::operator==(const unit & _unit) const{
         return this->to_string() == _unit.to_string();
         break;
     case _type::_var:
-//        return *this == _unit;
+        return this->_childs[0] == _unit;
         break;
     case _type::_list: 
         if(_unit.type != _type::_list){
@@ -337,4 +337,12 @@ bool environment::have(std::string _name){
         }
     }
     return false;
+}
+
+void environment::saveChange(environment & env){
+    for(int i = 0; i < env.defined().size(); i++){
+        if(have(env.defined()[i].name)){
+            get(env.defined()[i].name) = env.defined()[i];
+        }
+    }
 }

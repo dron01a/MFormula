@@ -1,9 +1,16 @@
 var a = 0;
 var b = 1;
 
-if(a == b){
-    print("error!!!!!!!");
+if(a + 1 == b){
+    print("no error");
+    if( a == 0){
+        a = a + 1;
+    }
 }
 else{
-    print("not error");
+    print("error");
+}
+
+if(a == 1){
+    print(a);
 }

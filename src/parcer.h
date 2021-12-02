@@ -20,6 +20,7 @@ private:
 
     void parceVarInit(_units & units,environment & env, int & count);
     void parceListInit(unit & newUnit, _units & units,environment & env, int & count);
+    unit parceIF(_units & units,environment & env, int & count);
 };
 
 #endif
