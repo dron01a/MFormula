@@ -44,7 +44,7 @@ int unit::to_int() const{
 bool unit::to_bool() const{
     switch (type){
     case _type::_bool:
-        if(name == "true"){
+        if( name == "true"){
             return true;
         }
         if(name == "false"){

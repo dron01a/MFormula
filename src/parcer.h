@@ -6,7 +6,7 @@
 typedef bool(*condFunc)(unit, std::stack<unit>&);
 
 // test name 
-_units getUnitsInBrt(_units & units,unit _start,int count);
+_units getUnits(_units & units,int _begin, int _end);
 
 class Parcer{
 public:

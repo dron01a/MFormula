@@ -10,7 +10,6 @@ Parcer::Parcer(_units & units, environment & env){
             parceVarInit(units,env,count);
             break;
         case _type::_if:
-             
             _tokens.push_back(parceIF(units,env,count));
             break;
         case _type::_text:
@@ -123,55 +122,40 @@ unit Parcer::parceIF(_units & units,environment & env, int & count){
     units[curPos]._childs.push_back(unit());
     units[curPos]._childs.push_back(unit());
     count++;
-    while(count != stopBrt + 1){
-        units[curPos]._childs[0]._childs.push_back(units[count]);
-        units.erase(units.begin()+count);
-        stopBrt--;
-    }
+    units[curPos]._childs[0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt+1;
     stopBrt = checkCloseBrt(units,count);
-    count++;
-    while(count != stopBrt){
-        units[curPos]._childs[1]._childs.push_back(units[count]);
-        units.erase(units.begin()+count);
-        stopBrt--;
-    }
-    count++;
+    units[curPos]._childs[1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt+1;
     if(units[count].type == _type::_else){
         units[curPos]._childs.push_back(unit());
-        stopBrt = checkCloseBrt(units,count+1);
-        count+=2;
-        while(count != stopBrt -1){
-            units[curPos]._childs[2]._childs.push_back(units[count]);
-            units.erase(units.begin()+count);
-            stopBrt--;
-        }
-        units.erase(units.begin()+count);
-        count-=2;
+        stopBrt = checkCloseBrt(units,count + 1);
+        units[curPos]._childs[2]._childs = {units.begin() + count + 2, units.end() - (units.size() - stopBrt)};
+        count = stopBrt+1;
     }
+    count--;
     return units[curPos];
 }
 
 int Parcer::checkCloseBrt(_units & units, int position){
     int result;
     std::string brtType;
-    int openChars = 0; 
+    int openChars = 1; 
     switch(units[position].name[0]){
         case '(':brtType = ")";break;
         case '[':brtType = "]";break;
         case '{':brtType = "}";break;
     }
-    for(int count = position;; count++){
+    for(int count = position + 1;; count++){
         if(units[count].name == units[position].name){
             openChars++;
         }
         if(units[count].name == brtType){
-            break;
-        }
-    }
-    for(int count = position; (openChars != 0) && (count < units.size()) ;count++){
-        if(units[count].name == brtType){
             openChars--;
+        }
+        if(openChars == 0){
             result = count;
+            break;
         }
     }
     if(openChars != 0){
