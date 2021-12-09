@@ -33,6 +33,9 @@ Lexer::Lexer(std::string source, environment & env){
             units.push_back(unit(env.get(token).type, token));
         }
         else{
+            if(token == "-" && units.back().type == _type::_openBrt){
+                token = "nvar";
+            }
             units.push_back(unit(getType(token), token, getPriority(token)));
         }
     }
@@ -52,6 +55,9 @@ _type Lexer::getType(std::string exp){
     if(exp == "else"){
         return _type::_else;
     }
+    if(exp.find_first_not_of(".0123456789") == NPOS){
+        return _type::_num;
+    }
     if(openBrt.find(exp) != NPOS){
         return _type::_openBrt;
     } 
@@ -63,9 +69,6 @@ _type Lexer::getType(std::string exp){
     }
     else if(exp == ","){
         return _type::_special;
-    }
-    else if(exp.find_first_not_of("0123456789.") == NPOS){
-        return _type::_num;
     }
     else if (exp == "var"){
         return _type::_varInit;
@@ -80,7 +83,7 @@ _type Lexer::getType(std::string exp){
         return _type::_text;
     }
     else{
-        for(int count = 0; count < 12; count++ ){
+        for(int count = 0; count < 13; count++ ){
             if(exp == functions[count]){
                 return _type::_coreFunc;
             }

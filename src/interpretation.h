@@ -28,6 +28,7 @@ _units setVars(std::stack<unit> &args, int _count);
 void run(std::string _script);
 
 static std::map<std::string, simpleF> simpleFuncs{
+    {"nvar",[](unit a){return unit(-a.to_double());}},
     {"sin",[](unit a){return unit(sin(a.to_double()));}},
     {"cos",[](unit a){return unit(cos(a.to_double()));}},
     {"tg",[](unit a){return unit(tan(a.to_double()));}},

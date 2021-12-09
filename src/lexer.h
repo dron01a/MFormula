@@ -9,10 +9,10 @@ static std::string openBrt = "[{(";
 static std::string closeBrt = ")}]";
 static std::string operators = "+-*/^%<>=";
 static std::string special = ",";         
-static std::string numbers = "0123456789.";
+static std::string numbers = "-0123456789.";
 static std::string functions[]{ 
     "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt",
-    "!", "log", "deg", "print"
+    "!", "log", "deg", "print", "nvar"
 };
 
 class Lexer{

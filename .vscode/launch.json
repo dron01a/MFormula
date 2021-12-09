@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
-            "args": [ "-f", "./scripts/if_else.math"],
+            "args": [ "-f", "./scripts/minusVars.math"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

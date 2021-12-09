@@ -109,7 +109,14 @@ unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
     if((prior > 0 && exp != "!") || exp == "log"){
-        _units _params = setVars(args,2);
+        _units _params;
+        if(args.size() == 1){
+            _params = setVars(args,1);
+            return simpleFuncs[exp](_params[0]);
+        }
+        else{
+            _params = setVars(args,2);
+        }
         return binaryFuncs[exp](_params[0],_params[1]);
     }
     else{
