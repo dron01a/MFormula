@@ -68,14 +68,13 @@ void eval(_units & tokens,environment &env){
             break;
         case _type::_opr:
            if(tokens[count].name == "="){
-                unit _a,_b;
-                setVars(params,_a,_b);
-                if(_a.name == "listVar"){
-                    env.get(_a._childs[1].name)._childs[_a._childs[2].to_int()] = _b;
+                _units _params = setVars(params,2);
+                if(_params[0].name == "listVar"){
+                    env.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
                 }
                 else{
-                    _a.assign(_b);
-                    env.get(_a.name) = _a;
+                    _params[0].assign(_params[1]);
+                    env.get(_params[0].name) = _params[0];
                 }
                 continue;
            }
@@ -95,14 +94,14 @@ void eval(_units & tokens,environment &env){
     }
 }
 
-void setVars(std::stack<unit> &args, unit &a, unit &b){
-    setVars(args,b);
-    setVars(args,a);
-}
-
-void setVars(std::stack<unit> &args, unit &a){
-    a = args.top();
-    args.pop();
+_units setVars(std::stack<unit> &args, int _count){
+    _units result;
+    result.resize(_count);
+    for(int i = _count; i != 0; i--  ){
+        result[i-1] = args.top();
+        args.pop();
+    }
+    return result;
 }
 
 unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
@@ -110,21 +109,12 @@ unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
     if((prior > 0 && exp != "!") || exp == "log"){
-        unit a,b;
-        if(args.size() == 1){
-            setVars(args,a);
-            b=a;
-            a.name = "0";
-        }
-        else{
-            setVars(args,a,b);
-        }
-        return binaryFuncs[exp](a,b);
+        _units _params = setVars(args,2);
+        return binaryFuncs[exp](_params[0],_params[1]);
     }
     else{
-        unit a;
-        setVars(args,a);
-        return simpleFuncs[exp](a);//simpleFunc(exp,a);
+        _units _params = setVars(args,1);
+        return simpleFuncs[exp](_params[0]);//simpleFunc(exp,a);
     }
 }
 

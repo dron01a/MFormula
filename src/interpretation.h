@@ -23,8 +23,7 @@ unit calcUnits(std::stack<unit> &args, std::string exp, int prior);
 double factorial(double n); 
 
 // set values to vars 
-void setVars(std::stack<unit> &args, unit &a, unit &b);
-void setVars(std::stack<unit> &args, unit &a);
+_units setVars(std::stack<unit> &args, int _count); 
 
 void run(std::string _script);
 
