@@ -4,9 +4,9 @@ var sum = l[0] + l[1] + l[2];
 
 l[0] = 5 + l[0] - 1500;
 
+print(l[0]);
 
-var bl = sum == 10;
-
-sum = 10;
-
-print(sum);
+var list1 = {4,4};
+var list2 = {2,2};
+list1 = list2;
+print(list1[0]);

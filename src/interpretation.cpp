@@ -48,16 +48,21 @@ void eval(_units & tokens,environment &env){
             params.push(env.get(tokens[count].name));
             break;
         case _type::_list:{
-                if(params.top().type == _type::_num || params.top().type == _type::_var){
-                    unit listVal(_type::_var,"listVar");
-                    listVal._childs.push_back(env.get(tokens[count].name)._childs[params.top().to_int()]);
-                    listVal._childs.push_back(tokens[count]);
-                    listVal._childs.push_back(params.top());
-                    params.pop();
-                    params.push(listVal);
+                if(params.size() != 0){
+                    if(params.top().type == _type::_num || params.top().type == _type::_var){
+                        unit listVal(_type::_var,"listVar");
+                        listVal._childs.push_back(env.get(tokens[count].name)._childs[params.top().to_int()]);
+                        listVal._childs.push_back(tokens[count]);
+                        listVal._childs.push_back(params.top());
+                        params.pop();
+                        params.push(listVal);
+                    }
+                    else{
+                        params.push(env.get(tokens[count].name));
+                    }
                 }
                 else{
-                   
+                    params.push(env.get(tokens[count].name));
                 }
             }            
             break;
@@ -133,17 +138,17 @@ double factorial(double n){
 void if_iterpr(unit & node, environment & env){
     environment _local(env);
     _units cond = node._childs[0]._childs;
+    _units expr;
     Parcer _condParce(cond,env);
     cond = _condParce.getTokens();
     eval(cond,env);
     if(cond[0].to_bool() == true){
-        _units expr = node._childs[1]._childs;
-        Parcer _exprParce(expr,_local);
-        expr = _exprParce.getTokens();
-        eval(expr,_local);
+        expr = node._childs[1]._childs;
     }
     else if(node._childs.size() == 3){
-        _units expr = node._childs[2]._childs;
+        expr = node._childs[2]._childs;
+    }
+    if(expr.size() != 0){
         Parcer _exprParce(expr,_local);
         expr = _exprParce.getTokens();
         eval(expr,_local);

@@ -47,6 +47,10 @@ static std::map<std::string, simpleF> simpleFuncs{
 static std::map<std::string, binaryF> binaryFuncs{
     {"==",[](unit a,unit b){return unit(a==b);}},
     {"!=",[](unit a,unit b){return unit(a!=b);}},
+    {">",[](unit a,unit b){return unit(a>b);}},
+    {"<",[](unit a,unit b){return unit(a<b);}},
+    {">=",[](unit a,unit b){return unit(a>=b);}},
+    {"<=",[](unit a,unit b){return unit(a<=b);}},
     {"+",[](unit a,unit b){return a+b;}},
     {"-",[](unit a,unit b){return a-b;}},
     {"/",[](unit a,unit b){return a/b;}},
