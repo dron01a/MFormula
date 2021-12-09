@@ -37,8 +37,7 @@ enum class _type{
 
 class unit{
 public:
-    unit(_type t,std::string s);
-    unit(_type t,std::string s, int pr);
+    unit(_type t,std::string s, int pr = 0);
     unit(double _num);
     unit(bool _val);
     unit(){};
@@ -64,7 +63,6 @@ public:
     double to_double() const;
     int to_int() const;
     std::string to_string() const;
-
 
     _units _childs;
     std::string name;

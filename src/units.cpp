@@ -1,14 +1,24 @@
 #include "units.h"
 
-unit::unit(_type t,std::string s){
-    type = t;
-    name = s;
-}
-
 unit::unit(_type t,std::string s, int pr){
     type = t;
     name = s;
     prior = pr;
+    if(type == _type::_num){
+        if (name.find(".",0) != NPOS){
+            for(int _i = name.size() -1; _i != name.find(".") - 1; _i--){
+                if(name[_i] == '0'){
+                    name.pop_back();
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        if(name[name.size() -1 ] == '.'){
+            name.pop_back();    
+        }
+    }
 }
 
 unit::unit(bool _val){
@@ -25,6 +35,19 @@ unit::unit(bool _val){
 unit::unit(double _num){
     type = _type::_num;
     name = std::to_string(_num);
+    if (name.find(".",0) != NPOS){
+        for(int _i = name.size() -1; _i != name.find(".") - 1; _i--){
+            if(name[_i] == '0'){
+                name.pop_back();
+            }
+            else{
+                break;
+            }
+        }
+    }
+    if(name[name.size() -1 ] == '.'){
+        name.pop_back();    
+    }
     prior = 0;
 }
 
@@ -63,17 +86,10 @@ bool unit::to_bool() const{
 double unit::to_double() const{
     switch (type){
     case _type::_num:
-        if (name.find('.',0) != NPOS){
-            for(int _i = name.size() -1; _i != name.find("."); _i--){
-                if(name[_i] != '0'){
-                    return std::strtod(name.substr(0,_i + 1).c_str(),nullptr);
-                }
-            }
-        }
-        return std::strtod(name.c_str(),nullptr);
+        return std::stof(name);
         break;
     case _type::_var:
-        return _childs[0].to_int();
+        return _childs[0].to_double();
         break;
     default:
         throw "error type";
