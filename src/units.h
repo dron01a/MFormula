@@ -32,6 +32,7 @@ enum class _type{
     _functionInit,
     _if,
     _else,
+    _while,
     _indentf 
 };
 
@@ -44,20 +45,24 @@ public:
     ~unit(){};
     void assign(unit unit);
     void print();
+
+    // math operators
     unit operator+(unit & _unit) const;
     unit operator-(unit & _unit) const;
     unit operator*(unit & _unit) const;
     unit operator/(unit & _unit) const;
     unit operator%(unit & _unit) const;
 
+    // compare operators
     bool operator==(const unit & _unit) const;
     bool operator!=(const unit & _unit) const;
-
     bool operator>(unit & _unit) const;
     bool operator<(unit & _unit) const;
-
     bool operator>=(unit & _unit) const;
     bool operator<=(unit & _unit) const;
+
+    bool operator&&(unit & _unit) const;
+    bool operator||(unit & _unit) const;
 
     bool to_bool() const;
     double to_double() const;

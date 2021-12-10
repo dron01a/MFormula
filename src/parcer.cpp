@@ -12,6 +12,9 @@ Parcer::Parcer(_units & units, environment & env){
         case _type::_if:
             _tokens.push_back(parceIF(units,env,count));
             break;
+        case _type::_while:
+            _tokens.push_back(parceWhile(units,env,count));
+            break;
         case _type::_text:
         case _type::_var:
         case _type::_num:
@@ -134,6 +137,20 @@ unit Parcer::parceIF(_units & units,environment & env, int & count){
         count = stopBrt+1;
     }
     count--;
+    return units[curPos];
+}
+
+unit Parcer::parceWhile(_units & units,environment & env, int & count){
+    int curPos = count;
+    int stopBrt = checkCloseBrt(units,count + 1);
+    units[curPos]._childs.push_back(unit());
+    units[curPos]._childs.push_back(unit());
+    count++;
+    units[curPos]._childs[0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt+1;
+    stopBrt = checkCloseBrt(units,count);
+    units[curPos]._childs[1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt;
     return units[curPos];
 }
 

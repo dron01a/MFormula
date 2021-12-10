@@ -281,7 +281,7 @@ bool unit::operator==(const unit & _unit) const{
     }
 }
 
-bool unit::operator!=(const unit & _unit) const {
+bool unit::operator!=(const unit & _unit) const{
     return !(*this == _unit);
 }
 
@@ -318,6 +318,18 @@ bool unit::operator>=(unit & _unit) const {
 
 bool unit::operator<=(unit & _unit) const {
     return !(*this < _unit);
+}
+
+bool unit::operator&&(unit & _unit) const {
+    if(type == _type::_bool){
+        return this->to_bool() && _unit.to_bool();    
+    }
+}
+
+bool unit::operator||(unit & _unit) const {
+    if(type == _type::_bool){
+        return this->to_bool() || _unit.to_bool();    
+    }
 }
 
 environment::environment(){

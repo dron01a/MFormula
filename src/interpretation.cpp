@@ -40,6 +40,9 @@ void eval(_units & tokens,environment &env){
         case _type::_if:
             if_iterpr(tokens[count],env);
             break;
+        case _type::_while:
+            whileInterpt(tokens[count],env);
+            break;
         case _type::_num:
         case _type::_text:
             params.push(tokens[count]);
@@ -108,7 +111,7 @@ unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
-    if((prior > 0 && exp != "!") || exp == "log"){
+    if((prior > 0 && exp != "!" && exp != "nvar") || exp == "log" || exp == "&&" || exp == "||"){
         _units _params;
         if(args.size() == 1){
             _params = setVars(args,1);
@@ -133,9 +136,9 @@ double factorial(double n){
 }
 
 void if_iterpr(unit & node, environment & env){
-    environment _local(env);
     _units cond = node._childs[0]._childs;
     _units expr;
+    environment _local(env);
     Parcer _condParce(cond,env);
     cond = _condParce.getTokens();
     eval(cond,env);
@@ -149,6 +152,25 @@ void if_iterpr(unit & node, environment & env){
         Parcer _exprParce(expr,_local);
         expr = _exprParce.getTokens();
         eval(expr,_local);
+    }
+    env.saveChange(_local);
+}
+
+
+void whileInterpt(unit & node, environment & env){
+    _units cond = node._childs[0]._childs;
+    _units expr = node._childs[1]._childs;
+    environment _local(env);
+    Parcer _condParce(cond,env);
+    cond = _condParce.getTokens();
+    eval(cond,env);
+    while(cond[0].to_bool() == true){
+        Parcer _exprParce(expr,_local);
+        expr = _exprParce.getTokens();
+        eval(expr,_local);
+        expr = node._childs[1]._childs;
+        cond = _condParce.getTokens();
+        eval(cond,_local);
     }
     env.saveChange(_local);
 }

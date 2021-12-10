@@ -55,6 +55,9 @@ _type Lexer::getType(std::string exp){
     if(exp == "else"){
         return _type::_else;
     }
+    if(exp == "while"){
+        return _type::_while;
+    }
     if(exp.find_first_not_of(".0123456789") == NPOS){
         return _type::_num;
     }
@@ -64,7 +67,8 @@ _type Lexer::getType(std::string exp){
     if(closeBrt.find(exp) != NPOS){
         return _type::_closeBrt;
     } 
-    else if(operators.find(exp) != NPOS || exp == "==" || exp == "!=" ||exp == ">=" || exp == "<="){
+    else if(operators.find(exp) != NPOS || exp == "==" || exp == "!=" 
+        ||exp == ">=" || exp == "<=" || exp == "&&" || exp == "||"){
         return _type::_opr;
     }
     else if(exp == ","){
@@ -115,7 +119,10 @@ int Lexer::getPriority(std::string exp){
     if (exp == "==" || exp == "!=" ||exp == ">=" || exp == "<="){
         return 1;
     }
-    if (exp == "+" || exp == "-" ) {
+    if (exp == "&&" || exp == "||"){
+        return 0;
+    }
+    if (exp == "+" || exp == "-" || exp == "nvar") {
         return 2;
     }
 	if (exp == "*" || exp == "/" || exp == "%"){ 
