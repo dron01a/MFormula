@@ -33,6 +33,8 @@ enum class _type{
     _if,
     _else,
     _while,
+    _continue,
+    _break,
     _indentf 
 };
 

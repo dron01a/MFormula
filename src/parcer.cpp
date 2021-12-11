@@ -15,6 +15,9 @@ Parcer::Parcer(_units & units, environment & env){
         case _type::_while:
             _tokens.push_back(parceWhile(units,env,count));
             break;
+        case _type::_break:
+        case _type::_continue:
+        case _type::_bool:
         case _type::_text:
         case _type::_var:
         case _type::_num:

@@ -58,6 +58,12 @@ _type Lexer::getType(std::string exp){
     if(exp == "while"){
         return _type::_while;
     }
+    if(exp == "break"){
+        return _type::_break;
+    }
+    if(exp == "continue"){
+        return _type::_continue;
+    }
     if(exp.find_first_not_of(".0123456789") == NPOS){
         return _type::_num;
     }
