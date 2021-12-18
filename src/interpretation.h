@@ -6,11 +6,15 @@
 
 #include "units.h"
 #include "lexer.h"
-#include "parcer.h"
+#include "parser.h"
 
 void varInit(unit & node, environment & env);
+
 void if_iterpr(unit & node, environment & env);
+
 void whileInterpt(unit & node, environment & env);
+
+void forInterpt(unit & node, environment & env);
 
 void eval(_units & tokens, environment &env);
 
@@ -29,6 +33,8 @@ _units setVars(std::stack<unit> &args, int _count);
 void run(std::string _script);
 
 static std::map<std::string, simpleF> simpleFuncs{
+    {"++",[](unit a){return unit(a.increment());}},
+    {"--",[](unit a){return unit(a.decrement());}},
     {"nvar",[](unit a){return unit(-a.to_double());}},
     {"sin",[](unit a){return unit(sin(a.to_double()));}},
     {"cos",[](unit a){return unit(cos(a.to_double()));}},
@@ -59,8 +65,8 @@ static std::map<std::string, binaryF> binaryFuncs{
     {"/",[](unit a,unit b){return a/b;}},
     {"*",[](unit a,unit b){return a*b;}},
     {"%",[](unit a,unit b){return a%b;}},
-    {"^",[](unit a,unit b){return unit(pow(a.to_double(),a.to_double()));}},
-    {"log",[](unit a,unit b){return unit((log(a.to_double())/log(a.to_double())));}}
+    {"^",[](unit a,unit b){return unit(pow(a.to_double(),b.to_double()));}},
+    {"log",[](unit a,unit b){return unit((log(a.to_double())/log(b.to_double())));}}
 };
 
 #endif

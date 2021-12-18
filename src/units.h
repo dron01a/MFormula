@@ -3,6 +3,7 @@
 
 #include <string>
 #include <string.h>
+#include <algorithm>
 #include <vector>
 #include <stack>
 
@@ -33,6 +34,7 @@ enum class _type{
     _if,
     _else,
     _while,
+    _for,
     _continue,
     _break,
     _indentf 
@@ -54,7 +56,9 @@ public:
     unit operator*(unit & _unit) const;
     unit operator/(unit & _unit) const;
     unit operator%(unit & _unit) const;
-
+    unit increment();
+    unit decrement();
+    
     // compare operators
     bool operator==(const unit & _unit) const;
     bool operator!=(const unit & _unit) const;

@@ -1,19 +1,22 @@
-#include "parcer.h"
+#include "parser.h"
 
-Parcer::Parcer(_units & units, environment & env){
+Parser::Parser(_units & units, environment & env){
     std::stack<unit> oprStack;
     for(int count = 0; count < units.size(); count++){
         switch (units[count].type){
         case _type::_varInit:
             units[count]._childs.push_back(units[count+1]);
             _tokens.push_back(units[count]);
-            parceVarInit(units,env,count);
+            parseVarInit(units,env,count);
             break;
         case _type::_if:
-            _tokens.push_back(parceIF(units,env,count));
+            _tokens.push_back(parseIF(units,env,count));
             break;
         case _type::_while:
-            _tokens.push_back(parceWhile(units,env,count));
+            _tokens.push_back(parseWhile(units,env,count));
+            break;
+        case _type::_for:
+            _tokens.push_back(parseFor(units,env,count));
             break;
         case _type::_break:
         case _type::_continue:
@@ -36,7 +39,7 @@ Parcer::Parcer(_units & units, environment & env){
             oprStack.push(units[count]);
             break;
         case _type::_closeBrt:
-            parceCloseBrt(oprStack,units[count],units[count].name[0]);
+            parseCloseBrt(oprStack,units[count],units[count].name[0]);
             break; 
         case _type::_opr:
             getUnitsIn(oprStack,units[count],[](unit _unit, std::stack<unit> & oprStack){
@@ -53,6 +56,12 @@ Parcer::Parcer(_units & units, environment & env){
                 return oprStack.size() != 0; 
             });
             break;
+        case _type::_indentf:
+            if(env.have(units[count].name)){
+                units[count].type = env.get(units[count].name).type;
+                count--;
+            }
+            break;
         }
     }
     getUnitsIn(oprStack,units.back(),[](unit _unit, std::stack<unit> & oprStack){ 
@@ -60,11 +69,11 @@ Parcer::Parcer(_units & units, environment & env){
     });
 }
 
-_units Parcer::getTokens() { 
+_units Parser::getTokens() { 
     return _tokens; 
 }
 
-void Parcer::parceVarInit(_units & units,environment & env, int & count){
+void Parser::parseVarInit(_units & units,environment & env, int & count){
     if(env.have(units[count+1].name)){
         throw "var \"" + units[count+1].name + "\" already defined";
     }    
@@ -80,7 +89,7 @@ void Parcer::parceVarInit(_units & units,environment & env, int & count){
             }
         }
         if(newVar.type == _type::_list){
-            parceListInit(newVar,units,env,count);
+            parseListInit(newVar,units,env,count);
         }
         else{
             count+=3;
@@ -93,7 +102,7 @@ void Parcer::parceVarInit(_units & units,environment & env, int & count){
     env.add(newVar);
 }
 
-void Parcer::parceListInit(unit & newUnit, _units & units,environment & env, int & count){
+void Parser::parseListInit(unit & newUnit, _units & units,environment & env, int & count){
     int stopBrt = checkCloseBrt(units,count + 3);
     count+=4;
     while(count != stopBrt + 1){
@@ -115,14 +124,14 @@ void Parcer::parceListInit(unit & newUnit, _units & units,environment & env, int
     }
 }
 
-void Parcer::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func){
+void Parser::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func){
     while(oprStack.size() && func(curUnit, oprStack)){
         _tokens.push_back(oprStack.top());
         oprStack.pop();
     }
 }
 
-unit Parcer::parceIF(_units & units,environment & env, int & count){
+unit Parser::parseIF(_units & units,environment & env, int & count){
     int curPos = count;
     int stopBrt = checkCloseBrt(units,count + 1);
     units[curPos]._childs.push_back(unit());
@@ -143,7 +152,7 @@ unit Parcer::parceIF(_units & units,environment & env, int & count){
     return units[curPos];
 }
 
-unit Parcer::parceWhile(_units & units,environment & env, int & count){
+unit Parser::parseWhile(_units & units,environment & env, int & count){
     int curPos = count;
     int stopBrt = checkCloseBrt(units,count + 1);
     units[curPos]._childs.push_back(unit());
@@ -157,7 +166,28 @@ unit Parcer::parceWhile(_units & units,environment & env, int & count){
     return units[curPos];
 }
 
-int Parcer::checkCloseBrt(_units & units, int position){
+unit Parser::parseFor(_units & units,environment & env, int & count){
+    int curPos = count;
+    int stopBrt = checkCloseBrt(units,count + 1);
+    _units condition = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    auto _del1 = std::find_if(condition.begin(), condition.end(), [](unit _a){ return _a.name == ";"; });
+    auto _del2 = std::find_if(_del1+1, condition.end(), [](unit _a){ return _a.name == ";"; });
+    units[curPos]._childs.push_back(unit());
+    units[curPos]._childs.push_back(unit());
+    units[curPos]._childs.push_back(unit());
+    units[curPos]._childs.push_back(unit());
+    units[curPos]._childs[0]._childs = {condition.begin() + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del1)) + 1};
+    units[curPos]._childs[1]._childs = {_del1 + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del2)) + 1};
+    units[curPos]._childs[2]._childs = {_del2 + 1, condition.end()};
+    count = stopBrt+1;
+    stopBrt = checkCloseBrt(units,count);
+    units[curPos]._childs[3]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt;
+    return units[curPos];
+}
+
+
+int Parser::checkCloseBrt(_units & units, int position){
     int result;
     std::string brtType;
     int openChars = 1; 
@@ -184,7 +214,7 @@ int Parcer::checkCloseBrt(_units & units, int position){
     return result;
 }
 
-void Parcer::parceCloseBrt(std::stack<unit> & oprStack, unit curUnit, char _type){
+void Parser::parseCloseBrt(std::stack<unit> & oprStack, unit curUnit, char _type){
     switch(_type){
         case ')':
             getUnitsIn(oprStack,curUnit,[](unit _unit, std::stack<unit> & oprStack){

@@ -6,7 +6,7 @@ if(a == 0 && b == 1 ){
     b = 2;
 }
 print("---------------------------------------------");
-while(b == 2){
+while(b != 150){
     a = a + 1;
     if(a % 2 == 0){
         print(a);
@@ -15,10 +15,12 @@ while(b == 2){
         continue;
     }
     print("test");
-    if(a == 10){
-        break;
-    }
+    b = b + 1;
 }
 print("---------------------------------------------");
 print(a);
 print(b);
+
+var _test = 4^2;
+
+print(_test);

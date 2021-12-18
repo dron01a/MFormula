@@ -5,7 +5,7 @@ void run(std::string _script){
     environment env;
     Lexer lex(_script, env);
     u = lex.getUnits();
-    Parcer par(u,env);
+    Parser par(u,env);
     u = par.getTokens();
     eval(u,env);
 }
@@ -14,7 +14,7 @@ void varInit(unit & node, environment & env){
     _units childs = env.get(node._childs[0].name)._childs;  
     if(env.get(node._childs[0].name).type == _type::_list){
         for(int count = 0; count < childs.size(); count++){
-            Parcer childsParcer(childs[count]._childs,env);
+            Parser childsParcer(childs[count]._childs,env);
             childs[count]._childs = childsParcer.getTokens();
         } 
         for(int count = 0; count < childs.size(); count++){
@@ -23,7 +23,7 @@ void varInit(unit & node, environment & env){
         }
     }
     else{
-        Parcer childsParcer(childs,env);
+        Parser childsParcer(childs,env);
         childs = childsParcer.getTokens();
         eval(childs, env); 
         env.get(node._childs[0].name)._childs = childs;
@@ -39,6 +39,9 @@ void eval(_units & tokens,environment &env){
             break;  
         case _type::_if:
             if_iterpr(tokens[count],env);
+            break;
+        case _type::_for:
+            forInterpt(tokens[count],env);
             break;
         case _type::_while:
             whileInterpt(tokens[count],env);
@@ -70,7 +73,12 @@ void eval(_units & tokens,environment &env){
             }            
             break;
         case _type::_opr:
-           if(tokens[count].name == "="){
+            if(tokens[count].name == "--" || tokens[count].name == "++"){
+                env.get(params.top().name)._childs[0] = simpleFuncs[tokens[count].name](params.top());
+                params.pop(); 
+                continue;
+            }
+            if(tokens[count].name == "="){
                 _units _params = setVars(params,2);
                 if(_params[0].name == "listVar"){
                     env.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
@@ -80,7 +88,7 @@ void eval(_units & tokens,environment &env){
                     env.get(_params[0].name) = _params[0];
                 }
                 continue;
-           }
+            }
         case _type::_coreFunc:
             if(tokens[count].name == "print"){
                 params.top().print();
@@ -119,7 +127,7 @@ unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
-    if((prior > 0 && exp != "!" && exp != "nvar") || exp == "log" || exp == "&&" || exp == "||"){
+    if((prior > 0 && exp != "++" && exp != "--" && exp != "!" && exp != "nvar") || exp == "log" || exp == "&&" || exp == "||"){
         _units _params;
         if(args.size() == 1){
             _params = setVars(args,1);
@@ -147,7 +155,7 @@ void if_iterpr(unit & node, environment & env){
     _units cond = node._childs[0]._childs;
     _units expr;
     environment _local(env);
-    Parcer _condParce(cond,env);
+    Parser _condParce(cond,env);
     cond = _condParce.getTokens();
     eval(cond,env);
     if(cond[0].to_bool() == true){
@@ -157,7 +165,7 @@ void if_iterpr(unit & node, environment & env){
         expr = node._childs[2]._childs;
     }
     if(expr.size() != 0){
-        Parcer _exprParce(expr,_local);
+        Parser _exprParce(expr,_local);
         expr = _exprParce.getTokens();
         eval(expr,_local);
     }
@@ -169,11 +177,11 @@ void whileInterpt(unit & node, environment & env){
     _units cond = node._childs[0]._childs;
     _units expr = node._childs[1]._childs;
     environment _local(env);
-    Parcer _condParce(cond,env);
+    Parser _condParce(cond,env);
     cond = _condParce.getTokens();
     eval(cond,env);
     while(cond[0].to_bool() == true){
-        Parcer _exprParce(expr,_local);
+        Parser _exprParce(expr,_local);
         expr = _exprParce.getTokens();
         try{
             eval(expr,_local);
@@ -193,6 +201,49 @@ void whileInterpt(unit & node, environment & env){
         expr = node._childs[1]._childs;
         cond = _condParce.getTokens();
         eval(cond,_local);
+    }
+    env.saveChange(_local);
+}
+
+void forInterpt(unit & node, environment & env){
+    environment _local(env);
+    _units init = node._childs[0]._childs; 
+    _units cond = node._childs[1]._childs;
+    _units step = node._childs[2]._childs;
+    _units expr = node._childs[3]._childs;
+    Parser _initParce(init,_local);
+    Parser _condParce(cond,_local);
+    Parser _stepParce(step,_local);
+    init = _initParce.getTokens();
+    cond = _condParce.getTokens();
+    step = _stepParce.getTokens();
+    eval(init,_local);
+    while(true){
+        cond = _condParce.getTokens();
+        eval(cond,_local);
+        if(cond[0].to_bool() == false){
+            break;
+        }
+        Parser _exprParce(expr,_local);
+        expr = _exprParce.getTokens();
+        try{
+            eval(expr,_local);
+        }
+        catch(_type _T){
+            if(_T == _type::_continue){
+                expr = node._childs[3]._childs;
+                cond = _condParce.getTokens();
+                eval(cond,_local);
+                continue;
+            }  
+            if(_T == _type::_break){
+                cond[0].name = "false";
+                break;
+            }
+        }
+        expr = node._childs[3]._childs;   
+        step = _stepParce.getTokens();
+        eval(step,_local);
     }
     env.saveChange(_local);
 }

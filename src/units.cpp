@@ -306,7 +306,7 @@ bool unit::operator<(unit & _unit) const {
     switch (type){
     case _type::_var:
     case _type::_num:
-        return this->to_double() > _unit.to_double();
+        return this->to_double() < _unit.to_double();
     default:
         throw "type error";
     }
@@ -317,7 +317,7 @@ bool unit::operator>=(unit & _unit) const {
 }
 
 bool unit::operator<=(unit & _unit) const {
-    return !(*this < _unit);
+    return !(*this > _unit);
 }
 
 bool unit::operator&&(unit & _unit) const {
@@ -331,6 +331,21 @@ bool unit::operator||(unit & _unit) const {
         return this->to_bool() || _unit.to_bool();    
     }
 }
+
+unit unit::increment(){
+    if(type == _type::_var ){
+        return unit((double)to_int()+1);
+    }
+    throw "type error";
+}
+
+unit unit::decrement(){
+    if(type==_type::_var){
+        return unit((double)to_int()-1);
+    }
+    throw "type error";
+}
+
 
 environment::environment(){
     _defined[0]._childs.push_back(unit(_type::_num,"3.1415926535"));

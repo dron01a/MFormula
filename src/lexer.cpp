@@ -55,6 +55,9 @@ _type Lexer::getType(std::string exp){
     if(exp == "else"){
         return _type::_else;
     }
+    if(exp == "for"){
+        return _type::_for;
+    }
     if(exp == "while"){
         return _type::_while;
     }
@@ -74,7 +77,8 @@ _type Lexer::getType(std::string exp){
         return _type::_closeBrt;
     } 
     else if(operators.find(exp) != NPOS || exp == "==" || exp == "!=" 
-        ||exp == ">=" || exp == "<=" || exp == "&&" || exp == "||"){
+        ||exp == ">=" || exp == "<=" || exp == "&&" || exp == "||"
+        || exp == "++" || exp == "--"){
         return _type::_opr;
     }
     else if(exp == ","){
@@ -122,13 +126,13 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
 
 
 int Lexer::getPriority(std::string exp){
-    if (exp == "==" || exp == "!=" ||exp == ">=" || exp == "<="){
+    if (exp == "==" || exp == "!=" ||exp == ">=" || exp == "<=" || exp == ">"|| exp == "<"){
         return 1;
     }
     if (exp == "&&" || exp == "||"){
         return 0;
     }
-    if (exp == "+" || exp == "-" || exp == "nvar") {
+    if (exp == "+" || exp == "-" || exp == "nvar" || exp == "++" || exp == "--" ) {
         return 2;
     }
 	if (exp == "*" || exp == "/" || exp == "%"){ 
