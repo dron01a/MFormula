@@ -97,7 +97,7 @@ void Parser::parseVarInit(_units & units,environment & env, int & count){
         }
         else{
             count+=3;
-            while(units[count].type != _type::_semicolon && units[count].type != _type::_special){
+            while(units[count].type != _type::_semicolon){
                 newVar._childs.push_back(units[count]);
                 units.erase(units.begin()+count);
             }
