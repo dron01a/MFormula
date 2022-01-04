@@ -20,6 +20,7 @@ private:
 
     void parseVarInit(_units & units,environment & env, int & count);
     void parseListInit(unit & newUnit, _units & units,environment & env, int & count);
+    unit parseFuncInit(_units & units,environment & env, int & count);
     unit parseIF(_units & units,environment & env, int & count);
     unit parseWhile(_units & units,environment & env, int & count);
     unit parseFor(_units & units,environment & env, int & count);

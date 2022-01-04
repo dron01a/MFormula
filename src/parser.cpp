@@ -9,6 +9,9 @@ Parser::Parser(_units & units, environment & env){
             _tokens.push_back(units[count]);
             parseVarInit(units,env,count);
             break;
+        case _type::_functionInit:
+            _tokens.push_back(parseFuncInit(units,env,count));
+            break;
         case _type::_if:
             _tokens.push_back(parseIF(units,env,count));
             break;
@@ -41,6 +44,7 @@ Parser::Parser(_units & units, environment & env){
         case _type::_closeBrt:
             parseCloseBrt(oprStack,units[count],units[count].name[0]);
             break; 
+        case _type::_return:
         case _type::_opr:
             getUnitsIn(oprStack,units[count],[](unit _unit, std::stack<unit> & oprStack){
                 return  ((oprStack.top().type == _type::_opr && _unit.prior <= oprStack.top().prior) 
@@ -93,10 +97,18 @@ void Parser::parseVarInit(_units & units,environment & env, int & count){
         }
         else{
             count+=3;
-            while(units[count].type != _type::_semicolon){
+            while(units[count].type != _type::_semicolon && units[count].type != _type::_special){
                 newVar._childs.push_back(units[count]);
                 units.erase(units.begin()+count);
             }
+        }
+    }
+    else{
+        if(units[count + 2].type == _type::_semicolon ){
+            count+=2;
+        }
+        if(units[count + 2].type == _type::_special ){
+            count+=3;
         }
     }
     env.add(newVar);
@@ -186,6 +198,28 @@ unit Parser::parseFor(_units & units,environment & env, int & count){
     return units[curPos];
 }
 
+unit Parser::parseFuncInit(_units & units,environment & env, int & count){
+    int curPos = count;
+    count+=2;
+    units[curPos + 1].type = _type::_func;
+    for(int i = count; i < units.size(); i++){
+        if(units[i].name == units[curPos + 1].name){
+            units[i].type = units[curPos + 1].type;
+        }
+    }
+    int stopBrt = checkCloseBrt(units,count);
+    units[curPos + 1]._childs.push_back(unit()); // vars  
+    units[curPos + 1]._childs.push_back(unit()); // commands 
+    units[curPos + 1]._childs[0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    units[curPos + 1]._childs[0]._childs.push_back(unit(_type::_special, ";"));
+    count = stopBrt + 1;
+    stopBrt = checkCloseBrt(units,count);
+    units[curPos + 1]._childs[1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt;
+    units[curPos]._childs.push_back(units[curPos + 1]);
+    env.add(units[curPos + 1]);
+    return units[curPos];
+}
 
 int Parser::checkCloseBrt(_units & units, int position){
     int result;

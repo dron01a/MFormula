@@ -10,11 +10,15 @@
 
 void varInit(unit & node, environment & env);
 
+void funcInit(unit & node, environment & env);
+
 void if_iterpr(unit & node, environment & env);
 
 void whileInterpt(unit & node, environment & env);
 
 void forInterpt(unit & node, environment & env);
+
+void callFunc(unit & node, std::stack<unit> & _params,  environment & env);
 
 void eval(_units & tokens, environment &env);
 

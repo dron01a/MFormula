@@ -8,5 +8,6 @@ print(l[0]);
 
 var list1 = {4,4};
 var list2 = {2,2};
+
 list1 = list2;
 print(list1[0]);

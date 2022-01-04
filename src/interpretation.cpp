@@ -23,11 +23,22 @@ void varInit(unit & node, environment & env){
         }
     }
     else{
-        Parser childsParcer(childs,env);
-        childs = childsParcer.getTokens();
-        eval(childs, env); 
+        if(childs.size() != 0){
+            Parser childsParcer(childs,env);
+            childs = childsParcer.getTokens();
+            eval(childs, env); 
+        }
         env.get(node._childs[0].name)._childs = childs;
     }
+}
+
+void funcInit(unit & node, environment & env){
+    //environment _local(env);
+    //_units _params = node._childs[0]._childs[0]._childs;
+    //_units _expr = node._childs[0]._childs[1]._childs;
+    //Parser _parsParm(_params, _local);
+    //Parser _parsExpr(_expr, _local);
+    
 }
 
 void eval(_units & tokens,environment &env){
@@ -37,6 +48,9 @@ void eval(_units & tokens,environment &env){
         case _type::_varInit:
             varInit(tokens[count],env);
             break;  
+        case _type::_functionInit:
+            funcInit(tokens[count],env);
+            break;
         case _type::_if:
             if_iterpr(tokens[count],env);
             break;
@@ -96,6 +110,9 @@ void eval(_units & tokens,environment &env){
                 continue;
             }
             params.push(calcUnits(params,tokens[count].name,tokens[count].prior));
+            break;
+        case _type::_func:
+            callFunc(tokens[count],params,env);
             break;
         case _type::_break:
             throw  _type::_break;        
@@ -246,4 +263,24 @@ void forInterpt(unit & node, environment & env){
         eval(step,_local);
     }
     env.saveChange(_local);
+}
+
+void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
+    environment _local; 
+    unit _func = env.get(node.name);
+    _units _params = _func._childs[0]._childs;
+    _units _expr = _func._childs[1]._childs;
+    Parser _parsParm(_params, _local);
+    _params = _parsParm.getTokens();
+    _units _functionPar = setVars(_prms, _params.size());
+    _local.comb(env);
+    for(int _parC = 0; _parC < _params.size(); _parC++){
+        _local.defined()[_parC+2].assign(_functionPar[_parC]);
+    }
+    Parser _parsExpr(_expr, _local);
+    _expr = _parsExpr.getTokens();
+    eval(_expr, _local);
+    if(_expr.size() != 0){
+        _prms.push(_expr[0]);
+    }
 }

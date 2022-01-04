@@ -112,6 +112,13 @@ std::string unit::to_string() const{
     }
 }
 
+//void unit::push_back(unit unit){
+//    if(type == _type::_list){
+//        _childs.push_back(unit);
+//    }
+//    throw "error type";
+//}
+
 void unit::print(){
     switch (type){
     case _type::_num:
@@ -276,6 +283,9 @@ bool unit::operator==(const unit & _unit) const{
         return this->_childs == _unit._childs;
         break;
     default:
+        if(name == _unit.name){
+            return true;
+        }  
         throw "error of type";
         break;
     }
@@ -387,5 +397,11 @@ void environment::saveChange(environment & env){
         if(have(env.defined()[i].name)){
             get(env.defined()[i].name) = env.defined()[i];
         }
+    }
+}
+
+void environment::comb(environment & env){
+    for(int i = 2; i < env.defined().size(); i++){
+        _defined.push_back(env.defined()[i]);
     }
 }

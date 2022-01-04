@@ -37,6 +37,7 @@ enum class _type{
     _for,
     _continue,
     _break,
+    _return,
     _indentf 
 };
 
@@ -49,6 +50,7 @@ public:
     ~unit(){};
     void assign(unit unit);
     void print();
+//    void push_back(unit unit);
 
     // math operators
     unit operator+(unit & _unit) const;
@@ -89,6 +91,7 @@ public:
     _units & defined();
     bool have(std::string _name);
     void add(unit & _unit);
+    void comb(environment & env);
     void saveChange(environment & env);
 private:
     _units _defined {
