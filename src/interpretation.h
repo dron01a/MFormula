@@ -73,4 +73,14 @@ static std::map<std::string, binaryF> binaryFuncs{
     {"log",[](unit a,unit b){return unit((log(a.to_double())/log(b.to_double())));}}
 };
 
+struct _ctrlConst{
+    _ctrlConst(environment _env, _type _t){
+        env = _env;
+        type = _t;
+    } 
+    ~_ctrlConst(){};
+    environment env;
+    _type type;
+};
+
 #endif

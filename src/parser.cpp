@@ -98,6 +98,9 @@ void Parser::parseVarInit(_units & units,environment & env, int & count){
         else{
             count+=3;
             while(units[count].type != _type::_semicolon){
+                //if(units[count].type == _type::_special && units[count+1].type != _type::_varInit){
+                //    break;
+                //}
                 newVar._childs.push_back(units[count]);
                 units.erase(units.begin()+count);
             }
@@ -132,7 +135,7 @@ void Parser::parseListInit(unit & newUnit, _units & units,environment & env, int
             stopBrt--;
            // count++;
         }
-        count++;
+        count++; 
     }
 }
 

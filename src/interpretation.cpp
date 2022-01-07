@@ -33,73 +33,72 @@ void varInit(unit & node, environment & env){
 }
 
 void funcInit(unit & node, environment & env){
-    //environment _local(env);
-    //_units _params = node._childs[0]._childs[0]._childs;
-    //_units _expr = node._childs[0]._childs[1]._childs;
-    //Parser _parsParm(_params, _local);
-    //Parser _parsExpr(_expr, _local);
+    /*
+        comming son
+    */
     
 }
 
 void eval(_units & tokens,environment &env){
+    environment _local(env);
     std::stack<unit> params; 
     for(int count = 0; count < tokens.size(); count++){
         switch (tokens[count].type){
         case _type::_varInit:
-            varInit(tokens[count],env);
+            varInit(tokens[count],_local);
             break;  
         case _type::_functionInit:
-            funcInit(tokens[count],env);
+            funcInit(tokens[count],_local);
             break;
         case _type::_if:
-            if_iterpr(tokens[count],env);
+            if_iterpr(tokens[count],_local);
             break;
         case _type::_for:
-            forInterpt(tokens[count],env);
+            forInterpt(tokens[count],_local);
             break;
         case _type::_while:
-            whileInterpt(tokens[count],env);
+            whileInterpt(tokens[count],_local);
             break;
         case _type::_num:
         case _type::_text:
             params.push(tokens[count]);
             break;
         case _type::_var:
-            params.push(env.get(tokens[count].name));
+            params.push(_local.get(tokens[count].name));
             break;
         case _type::_list:{
                 if(params.size() != 0){
                     if(params.top().type == _type::_num || params.top().type == _type::_var){
                         unit listVal(_type::_var,"listVar");
-                        listVal._childs.push_back(env.get(tokens[count].name)._childs[params.top().to_int()]);
+                        listVal._childs.push_back(_local.get(tokens[count].name)._childs[params.top().to_int()]);
                         listVal._childs.push_back(tokens[count]);
                         listVal._childs.push_back(params.top());
                         params.pop();
                         params.push(listVal);
                     }
                     else{
-                        params.push(env.get(tokens[count].name));
+                        params.push(_local.get(tokens[count].name));
                     }
                 }
                 else{
-                    params.push(env.get(tokens[count].name));
+                    params.push(_local.get(tokens[count].name));
                 }
             }            
             break;
         case _type::_opr:
             if(tokens[count].name == "--" || tokens[count].name == "++"){
-                env.get(params.top().name)._childs[0] = simpleFuncs[tokens[count].name](params.top());
+                _local.get(params.top().name)._childs[0] = simpleFuncs[tokens[count].name](params.top());
                 params.pop(); 
                 continue;
             }
             if(tokens[count].name == "="){
                 _units _params = setVars(params,2);
                 if(_params[0].name == "listVar"){
-                    env.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
+                    _local.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
                 }
                 else{
                     _params[0].assign(_params[1]);
-                    env.get(_params[0].name) = _params[0];
+                    _local.get(_params[0].name) = _params[0];
                 }
                 continue;
             }
@@ -112,18 +111,24 @@ void eval(_units & tokens,environment &env){
             params.push(calcUnits(params,tokens[count].name,tokens[count].prior));
             break;
         case _type::_func:
-            callFunc(tokens[count],params,env);
+            callFunc(tokens[count],params,_local);
             break;
-        case _type::_break:
-            throw  _type::_break;        
-        }
-        if(tokens[count].type == _type::_break){
-            throw  _type::_break;
-        }
-        if(tokens[count].type == _type::_continue){
-            throw  _type::_continue;
+        case _type::_break:  
+            {
+                _ctrlConst _thr(_local,_type::_break); 
+                throw _thr;
+            }
+        case _type::_continue:
+            {
+                _ctrlConst _thr(_local,_type::_continue); 
+                throw _thr;
+            }
+        case _type::_return:
+            count = tokens.size();
+            break;
         }
     }
+    env.saveChange(_local);
     tokens.clear();
     if(params.size() != 0){
         tokens.push_back(params.top());
@@ -203,14 +208,16 @@ void whileInterpt(unit & node, environment & env){
         try{
             eval(expr,_local);
         }
-        catch(_type _T){
-            if(_T == _type::_continue){
+        catch(_ctrlConst _T){
+            _local.saveChange(_T.env);
+            env.saveChange(_local);
+            if(_T.type == _type::_continue){
                 expr = node._childs[1]._childs;
                 cond = _condParce.getTokens();
                 eval(cond,_local);
                 continue;
             }  
-            if(_T == _type::_break){
+            if(_T.type == _type::_break){
                 cond[0].name = "false";
                 break;
             }
@@ -246,14 +253,18 @@ void forInterpt(unit & node, environment & env){
         try{
             eval(expr,_local);
         }
-        catch(_type _T){
-            if(_T == _type::_continue){
+        catch(_ctrlConst _T){
+            _local.saveChange(_T.env);
+            env.saveChange(_local);
+            if(_T.type == _type::_continue){
                 expr = node._childs[3]._childs;
                 cond = _condParce.getTokens();
-                eval(cond,_local);
+                eval(cond,_local); 
+                step = _stepParce.getTokens();
+                eval(step,_local);
                 continue;
             }  
-            if(_T == _type::_break){
+            if(_T.type == _type::_break){
                 cond[0].name = "false";
                 break;
             }
@@ -279,7 +290,7 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
     }
     Parser _parsExpr(_expr, _local);
     _expr = _parsExpr.getTokens();
-    eval(_expr, _local);
+    eval(_expr, _local);  
     if(_expr.size() != 0){
         _prms.push(_expr[0]);
     }

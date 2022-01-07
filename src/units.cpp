@@ -402,6 +402,8 @@ void environment::saveChange(environment & env){
 
 void environment::comb(environment & env){
     for(int i = 2; i < env.defined().size(); i++){
-        _defined.push_back(env.defined()[i]);
+        if(!have(env.defined()[i].name)){
+            _defined.push_back(env.defined()[i]);
+        }
     }
 }

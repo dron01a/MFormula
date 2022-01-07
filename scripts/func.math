@@ -6,17 +6,23 @@ func error(var a; var b; var c){
 
 func sumator(var a; var b){
     var c = (a+b)*10;
-    print(c);
     error(a,b,c);
     for(var i = 1; i != 5; i++){
         a = a*i;
+        if(a < 10){
+            a = a + 5;
+            continue;
+        }
+        else{
+            break;
+        }
     }
-    print(a);
-    c-(a+b);
+    return c-(a+b);
 }
 
 var tonk = sumator(10,10);
 
+print(" tonk ");
 print(tonk);
 
 var b = 10;
