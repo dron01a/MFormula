@@ -12,7 +12,7 @@ Lexer::Lexer(std::string source, environment & env){
             int _curPos = count + 1;
             count = source.find("\"",count+1);
             token = source.substr(_curPos,count - _curPos);
-            units.push_back(unit(_type::_text, token, 0));
+            units.push_back(unit(_type::_string, token, 0));
             //count++;
             continue;
         }
@@ -100,7 +100,7 @@ _type Lexer::getType(std::string exp){
         return _type::_semicolon;
     }
     else if (exp.find("\"") != NPOS){
-        return _type::_text;
+        return _type::_string;
     }
     else{
         for(int count = 0; count < 14; count++ ){

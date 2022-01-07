@@ -24,7 +24,7 @@ Parser::Parser(_units & units, environment & env){
         case _type::_break:
         case _type::_continue:
         case _type::_bool:
-        case _type::_text:
+        case _type::_string:
         case _type::_var:
         case _type::_num:
             _tokens.push_back(units[count]);

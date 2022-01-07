@@ -20,6 +20,8 @@ void forInterpt(unit & node, environment & env);
 
 void callFunc(unit & node, std::stack<unit> & _params,  environment & env);
 
+void assign(std::stack<unit> & _params, environment & env);
+
 void eval(_units & tokens, environment &env);
 
 typedef unit(*simpleF)(unit);

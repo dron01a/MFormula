@@ -22,7 +22,7 @@ enum class _type{
     _opr,       
     _coreFunc,  
     _special,   
-    _text,      
+    _string,      
     _semicolon, 
     _newLine,
     _var,

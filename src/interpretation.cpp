@@ -60,7 +60,7 @@ void eval(_units & tokens,environment &env){
             whileInterpt(tokens[count],_local);
             break;
         case _type::_num:
-        case _type::_text:
+        case _type::_string:
             params.push(tokens[count]);
             break;
         case _type::_var:
@@ -92,20 +92,15 @@ void eval(_units & tokens,environment &env){
                 continue;
             }
             if(tokens[count].name == "="){
-                _units _params = setVars(params,2);
-                if(_params[0].name == "listVar"){
-                    _local.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
-                }
-                else{
-                    _params[0].assign(_params[1]);
-                    _local.get(_params[0].name) = _params[0];
-                }
+                assign(params,env);
                 continue;
             }
         case _type::_coreFunc:
             if(tokens[count].name == "print"){
-                params.top().print();
-                params.pop(); 
+                _units _params = setVars(params,params.size());
+                for(size_t _par = 0; _par < _params.size(); _par++){
+                    _params[_par].print();
+                }
                 continue;
             }
             params.push(calcUnits(params,tokens[count].name,tokens[count].prior));
@@ -295,3 +290,15 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
         _prms.push(_expr[0]);
     }
 }
+
+void assign(std::stack<unit> & params, environment & env){
+    _units _params = setVars(params,2);
+    if(_params[0].name == "listVar"){
+        env.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
+    }
+    else{
+        _params[0].assign(_params[1]);
+        env.get(_params[0].name) = _params[0];
+    }
+}
+

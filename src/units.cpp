@@ -100,7 +100,7 @@ double unit::to_double() const{
 std::string unit::to_string() const{
     switch (type){
     case _type::_num:
-    case _type::_text:
+    case _type::_string:
     case _type::_bool:
         return name;
         break;
@@ -122,8 +122,8 @@ std::string unit::to_string() const{
 void unit::print(){
     switch (type){
     case _type::_num:
-    case _type::_text:
-        printf("%s\n",name.c_str());
+    case _type::_string:
+        printf("%s",name.c_str());
         break;
     case _type::_var:
         _childs[0].print();
@@ -144,7 +144,7 @@ void unit::print(){
 void unit::assign(unit _unit){
     switch (_unit.type){
     case _type::_num:
-    case _type::_text:
+    case _type::_string:
         if(_childs.size() != 0 ){
             _childs[0] = _unit;
         }
@@ -167,13 +167,13 @@ unit unit::operator+(unit & _unit) const{
     case _type::_num:
         return this->to_double() + _unit.to_double();
         break;
-    case _type::_text:
+    case _type::_string:
         if(_unit.type == _type::_var){
-            if(_unit._childs[0].type == _type::_text){
+            if(_unit._childs[0].type == _type::_string){
                 return unit(this->type,name + _unit._childs[0].name);
             }
         }
-        if(_unit.type == _type::_text){
+        if(_unit.type == _type::_string){
             return unit(this->type,name + _unit.name);
         }
         throw "error type";
@@ -194,7 +194,7 @@ unit unit::operator-(unit & _unit) const{
     case _type::_num:
         return this->to_double() - _unit.to_double();
         break;
-    case _type::_text:
+    case _type::_string:
         throw "error type";
         break;
     case _type::_var:
@@ -212,7 +212,7 @@ unit unit::operator*(unit & _unit) const{
     switch (type){
     case _type::_num:
         return this->to_double() * _unit.to_double();
-    case _type::_text:
+    case _type::_string:
         throw "error type";
         break;
     case _type::_var:
@@ -231,7 +231,7 @@ unit unit::operator/(unit & _unit) const{
     case _type::_num:
         return this->to_double() / _unit.to_double();
         break;
-    case _type::_text:
+    case _type::_string:
         throw "error type";
         break;
     case _type::_var:
@@ -250,7 +250,7 @@ unit unit::operator%(unit & _unit) const{
     case _type::_num:
         return double(this->to_int() % _unit.to_int());
         break;
-    case _type::_text:
+    case _type::_string:
         throw "error type";
         break;
     case _type::_var:
@@ -270,7 +270,7 @@ bool unit::operator==(const unit & _unit) const{
         return this->to_double() == _unit.to_double();
         break;
     case _type::_bool:
-    case _type::_text:
+    case _type::_string:
         return this->to_string() == _unit.to_string();
         break;
     case _type::_var:

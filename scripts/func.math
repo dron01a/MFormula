@@ -20,12 +20,13 @@ func sumator(var a; var b){
     return c-(a+b);
 }
 
+print(1,2,3);
+
 var tonk = sumator(10,10);
 
-print(" tonk ");
-print(tonk);
+print(" tonk ", tonk , "");
 
 var b = 10;
 var t = 1;
 
-print(sumator(t,b));
+print(sumator(t,b), "");
