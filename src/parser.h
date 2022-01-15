@@ -18,8 +18,11 @@ private:
     int checkCloseBrt(_units & units, int position);
     _units _tokens; 
 
+
+
     void parseVarInit(_units & units,environment & env, int & count);
     void parseListInit(unit & newUnit, _units & units,environment & env, int & count);
+    void parseCondition(_units & units,environment & env, int & count);
     unit parseFuncInit(_units & units,environment & env, int & count);
     unit parseIF(_units & units,environment & env, int & count);
     unit parseWhile(_units & units,environment & env, int & count);

@@ -162,6 +162,10 @@ void unit::assign(unit _unit){
     }
 }
 
+unit & unit::operator[](int position){
+    return _childs[position];
+}
+
 unit unit::operator+(unit & _unit) const{
     switch (type){
     case _type::_num:

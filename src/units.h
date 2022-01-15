@@ -72,6 +72,8 @@ public:
     bool operator&&(unit & _unit) const;
     bool operator||(unit & _unit) const;
 
+    unit & operator[](int position);
+
     bool to_bool() const;
     double to_double() const;
     int to_int() const;

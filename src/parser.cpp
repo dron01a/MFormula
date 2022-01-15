@@ -146,21 +146,28 @@ void Parser::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func
     }
 }
 
-unit Parser::parseIF(_units & units,environment & env, int & count){
+void Parser::parseCondition(_units & units,environment & env, int & count){
     int curPos = count;
     int stopBrt = checkCloseBrt(units,count + 1);
     units[curPos]._childs.push_back(unit());
     units[curPos]._childs.push_back(unit());
     count++;
-    units[curPos]._childs[0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    units[curPos][0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
     count = stopBrt+1;
     stopBrt = checkCloseBrt(units,count);
-    units[curPos]._childs[1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    count = stopBrt+1;
+    units[curPos][1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt;
+}
+
+
+unit Parser::parseIF(_units & units,environment & env, int & count){
+    int curPos = count;
+    parseCondition(units,env,count);
+    count++;
     if(units[count].type == _type::_else){
+        int stopBrt = checkCloseBrt(units,count + 1);
         units[curPos]._childs.push_back(unit());
-        stopBrt = checkCloseBrt(units,count + 1);
-        units[curPos]._childs[2]._childs = {units.begin() + count + 2, units.end() - (units.size() - stopBrt)};
+        units[curPos][2]._childs = {units.begin() + count + 2, units.end() - (units.size() - stopBrt)};
         count = stopBrt+1;
     }
     count--;
@@ -169,15 +176,7 @@ unit Parser::parseIF(_units & units,environment & env, int & count){
 
 unit Parser::parseWhile(_units & units,environment & env, int & count){
     int curPos = count;
-    int stopBrt = checkCloseBrt(units,count + 1);
-    units[curPos]._childs.push_back(unit());
-    units[curPos]._childs.push_back(unit());
-    count++;
-    units[curPos]._childs[0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    count = stopBrt+1;
-    stopBrt = checkCloseBrt(units,count);
-    units[curPos]._childs[1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    count = stopBrt;
+    parseCondition(units,env,count);
     return units[curPos];
 }
 
@@ -191,12 +190,12 @@ unit Parser::parseFor(_units & units,environment & env, int & count){
     units[curPos]._childs.push_back(unit());
     units[curPos]._childs.push_back(unit());
     units[curPos]._childs.push_back(unit());
-    units[curPos]._childs[0]._childs = {condition.begin() + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del1)) + 1};
-    units[curPos]._childs[1]._childs = {_del1 + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del2)) + 1};
-    units[curPos]._childs[2]._childs = {_del2 + 1, condition.end()};
+    units[curPos][0]._childs = {condition.begin() + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del1)) + 1};
+    units[curPos][1]._childs = {_del1 + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del2)) + 1};
+    units[curPos][2]._childs = {_del2 + 1, condition.end()};
     count = stopBrt+1;
     stopBrt = checkCloseBrt(units,count);
-    units[curPos]._childs[3]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    units[curPos][3]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
     count = stopBrt;
     return units[curPos];
 }
@@ -210,15 +209,9 @@ unit Parser::parseFuncInit(_units & units,environment & env, int & count){
             units[i].type = units[curPos + 1].type;
         }
     }
-    int stopBrt = checkCloseBrt(units,count);
-    units[curPos + 1]._childs.push_back(unit()); // vars  
-    units[curPos + 1]._childs.push_back(unit()); // commands 
-    units[curPos + 1]._childs[0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    units[curPos + 1]._childs[0]._childs.push_back(unit(_type::_special, ";"));
-    count = stopBrt + 1;
-    stopBrt = checkCloseBrt(units,count);
-    units[curPos + 1]._childs[1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    count = stopBrt;
+    count--;
+    parseCondition(units,env,count);
+    units[curPos + 1][0]._childs.push_back(unit(_type::_special, ";")); 
     units[curPos]._childs.push_back(units[curPos + 1]);
     env.add(units[curPos + 1]);
     return units[curPos];
