@@ -24,7 +24,7 @@ print(1,2,3);
 
 var tonk = sumator(10,10);
 
-print(" tonk ", tonk , "");
+print(" tonk = %tonk% ");
 
 var b = 10;
 var t = 1;

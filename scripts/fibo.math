@@ -1,0 +1,19 @@
+var num1 = 0;   // первое число 
+var num2 = 1;   // второе число
+var temp;       // временное хранение
+var next;       // слудующее число
+var n = 188;    // нужная позиция
+
+if (n >= 1){
+    print("1 --> 0");
+}
+if (n >= 2){
+    print("2 --> 1");
+}
+for(var _count = 0; _count < n - 2; _count++){
+    next = num1 + num2;
+    temp = _count+3;
+    print("%temp% --> %next%");
+    num1 = num2;
+    num2 = next;
+}

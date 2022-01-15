@@ -13,7 +13,6 @@ Lexer::Lexer(std::string source, environment & env){
             count = source.find("\"",count+1);
             token = source.substr(_curPos,count - _curPos);
             units.push_back(unit(_type::_string, token, 0));
-            //count++;
             continue;
         }
         if(std::isspace(source[count])){

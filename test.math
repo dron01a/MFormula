@@ -1,3 +1,0 @@
-var L = {1, 2};
-
-L.push_back(1);

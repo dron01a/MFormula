@@ -129,7 +129,7 @@ void unit::print(){
         _childs[0].print();
         break;
     case _type::_list:
-        printf("%s %s \n","{",_childs[0].name.c_str());
+        printf("%s %s","{",_childs[0].name.c_str());
         for(int step = 1; step < _childs.size(); step++){
             printf(", %s\n",_childs[step]);
         }

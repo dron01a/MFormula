@@ -22,7 +22,11 @@ void callFunc(unit & node, std::stack<unit> & _params,  environment & env);
 
 void assign(std::stack<unit> & _params, environment & env);
 
+void evalStrung(unit & node, environment & env);
+
 void eval(_units & tokens, environment &env);
+
+_units eval( Parser & _par, environment & env);
 
 typedef unit(*simpleF)(unit);
 typedef unit(*binaryF)(unit, unit);
@@ -37,6 +41,9 @@ double factorial(double n);
 _units setVars(std::stack<unit> &args, int _count); 
 
 void run(std::string _script);
+
+// return units from script
+_units parseScript(std::string _script, environment & env);
 
 static std::map<std::string, simpleF> simpleFuncs{
     {"++",[](unit a){return unit(a.increment());}},

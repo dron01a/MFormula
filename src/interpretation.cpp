@@ -1,13 +1,18 @@
 #include "interpretation.h"
 
 void run(std::string _script){
-    _units u;
     environment env;
+    _units codeTokens = parseScript(_script, env);
+    eval(codeTokens,env);
+}
+
+_units parseScript(std::string _script, environment & env){
+    _units result; 
     Lexer lex(_script, env);
-    u = lex.getUnits();
-    Parser par(u,env);
-    u = par.getTokens();
-    eval(u,env);
+    result = lex.getUnits();
+    Parser par(result,env);
+    result = par.getTokens();
+    return result;
 }
 
 void varInit(unit & node, environment & env){
@@ -25,8 +30,7 @@ void varInit(unit & node, environment & env){
     else{
         if(childs.size() != 0){
             Parser childsParcer(childs,env);
-            childs = childsParcer.getTokens();
-            eval(childs, env); 
+            childs = eval(childsParcer, env); 
         }
         env.get(node._childs[0].name)._childs = childs;
     }
@@ -35,8 +39,7 @@ void varInit(unit & node, environment & env){
 void funcInit(unit & node, environment & env){
     /*
         comming son
-    */
-    
+    */   
 }
 
 void eval(_units & tokens,environment &env){
@@ -59,8 +62,9 @@ void eval(_units & tokens,environment &env){
         case _type::_while:
             whileInterpt(tokens[count],_local);
             break;
-        case _type::_num:
         case _type::_string:
+               evalStrung(tokens[count],_local);
+        case _type::_num:
             params.push(tokens[count]);
             break;
         case _type::_var:
@@ -92,7 +96,7 @@ void eval(_units & tokens,environment &env){
                 continue;
             }
             if(tokens[count].name == "="){
-                assign(params,env);
+                assign(params,_local);
                 continue;
             }
         case _type::_coreFunc:
@@ -101,6 +105,7 @@ void eval(_units & tokens,environment &env){
                 for(size_t _par = 0; _par < _params.size(); _par++){
                     _params[_par].print();
                 }
+                printf("\n");
                 continue;
             }
             params.push(calcUnits(params,tokens[count].name,tokens[count].prior));
@@ -128,6 +133,12 @@ void eval(_units & tokens,environment &env){
     if(params.size() != 0){
         tokens.push_back(params.top());
     }
+}
+
+_units eval(Parser & _par, environment & env){
+    _units _tokens = _par.getTokens();
+    eval(_tokens,env);
+    return _tokens;
 }
 
 _units setVars(std::stack<unit> &args, int _count){
@@ -169,12 +180,10 @@ double factorial(double n){
 }
 
 void if_iterpr(unit & node, environment & env){
-    _units cond = node._childs[0]._childs;
-    _units expr;
     environment _local(env);
-    Parser _condParce(cond,env);
-    cond = _condParce.getTokens();
-    eval(cond,env);
+    Parser _condParce(node._childs[0]._childs,env);
+    _units cond= eval(_condParce,env);
+    _units expr;
     if(cond[0].to_bool() == true){
         expr = node._childs[1]._childs;
     }
@@ -182,23 +191,20 @@ void if_iterpr(unit & node, environment & env){
         expr = node._childs[2]._childs;
     }
     if(expr.size() != 0){
-        Parser _exprParce(expr,_local);
-        expr = _exprParce.getTokens();
-        eval(expr,_local);
+        Parser _exprParse(expr,_local);
+        eval(_exprParse,_local);
     }
     env.saveChange(_local);
 }
 
 
 void whileInterpt(unit & node, environment & env){
-    _units cond = node._childs[0]._childs;
-    _units expr = node._childs[1]._childs;
     environment _local(env);
-    Parser _condParce(cond,env);
-    cond = _condParce.getTokens();
-    eval(cond,env);
+    Parser _condParce(node._childs[0]._childs,env);
+    Parser _exprParce(node._childs[1]._childs,_local);
+    _units cond = eval(_condParce,env);
+    _units expr;
     while(cond[0].to_bool() == true){
-        Parser _exprParce(expr,_local);
         expr = _exprParce.getTokens();
         try{
             eval(expr,_local);
@@ -207,9 +213,7 @@ void whileInterpt(unit & node, environment & env){
             _local.saveChange(_T.env);
             env.saveChange(_local);
             if(_T.type == _type::_continue){
-                expr = node._childs[1]._childs;
-                cond = _condParce.getTokens();
-                eval(cond,_local);
+                cond = eval(_condParce,_local);
                 continue;
             }  
             if(_T.type == _type::_break){
@@ -217,33 +221,22 @@ void whileInterpt(unit & node, environment & env){
                 break;
             }
         }
-        expr = node._childs[1]._childs;
-        cond = _condParce.getTokens();
-        eval(cond,_local);
+        cond = eval(_condParce,_local);
     }
     env.saveChange(_local);
 }
 
 void forInterpt(unit & node, environment & env){
     environment _local(env);
-    _units init = node._childs[0]._childs; 
-    _units cond = node._childs[1]._childs;
-    _units step = node._childs[2]._childs;
-    _units expr = node._childs[3]._childs;
-    Parser _initParce(init,_local);
-    Parser _condParce(cond,_local);
-    Parser _stepParce(step,_local);
-    init = _initParce.getTokens();
-    cond = _condParce.getTokens();
-    step = _stepParce.getTokens();
-    eval(init,_local);
-    while(true){
-        cond = _condParce.getTokens();
-        eval(cond,_local);
-        if(cond[0].to_bool() == false){
-            break;
-        }
-        Parser _exprParce(expr,_local);
+    Parser _initParce(node._childs[0]._childs,_local);
+    Parser _condParce(node._childs[1]._childs,_local);
+    Parser _stepParce(node._childs[2]._childs,_local);
+    Parser _exprParce(node._childs[3]._childs,_local);
+    _units init = eval(_initParce,_local);
+    _units cond = eval(_condParce,_local);
+    _units step;
+    _units expr;
+    while(cond[0].to_bool() == true){
         expr = _exprParce.getTokens();
         try{
             eval(expr,_local);
@@ -252,11 +245,8 @@ void forInterpt(unit & node, environment & env){
             _local.saveChange(_T.env);
             env.saveChange(_local);
             if(_T.type == _type::_continue){
-                expr = node._childs[3]._childs;
-                cond = _condParce.getTokens();
-                eval(cond,_local); 
-                step = _stepParce.getTokens();
-                eval(step,_local);
+                step = eval(_stepParce,_local);
+                cond = eval(_condParce,_local);
                 continue;
             }  
             if(_T.type == _type::_break){
@@ -264,9 +254,8 @@ void forInterpt(unit & node, environment & env){
                 break;
             }
         }
-        expr = node._childs[3]._childs;   
-        step = _stepParce.getTokens();
-        eval(step,_local);
+        step = eval(_stepParce,_local);
+        cond = eval(_condParce,_local);
     }
     env.saveChange(_local);
 }
@@ -284,8 +273,7 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
         _local.defined()[_parC+2].assign(_functionPar[_parC]);
     }
     Parser _parsExpr(_expr, _local);
-    _expr = _parsExpr.getTokens();
-    eval(_expr, _local);  
+    _expr = eval(_parsExpr, _local);  
     if(_expr.size() != 0){
         _prms.push(_expr[0]);
     }
@@ -302,3 +290,16 @@ void assign(std::stack<unit> & params, environment & env){
     }
 }
 
+void evalStrung(unit & node, environment & env){
+    std::string _stringVal = node.name;
+    for(size_t count = 0; count < _stringVal.size(); count++){
+        if(_stringVal[count] == '%'){
+            size_t _stop = _stringVal.find('%', count + 1);
+            std::string context = _stringVal.substr(count + 1, _stop - (count + 1) + 1);
+            _units _sub = parseScript(context, env);
+            _stringVal.erase(count,_stop - count + 1);
+            _stringVal.insert(count, env.get(_sub[0].name)._childs[0].name);
+        }
+    }
+    node.name = _stringVal;
+}
