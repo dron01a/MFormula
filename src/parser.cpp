@@ -5,9 +5,7 @@ Parser::Parser(_units & units, environment & env){
     for(int count = 0; count < units.size(); count++){
         switch (units[count].type){
         case _type::_varInit:
-            units[count]._childs.push_back(units[count+1]);
-            _tokens.push_back(units[count]);
-            parseVarInit(units,env,count);
+            _tokens.push_back( parseVarInit(units,env,count));
             break;
         case _type::_functionInit:
             _tokens.push_back(parseFuncInit(units,env,count));
@@ -77,49 +75,55 @@ _units Parser::getTokens() {
     return _tokens; 
 }
 
-void Parser::parseVarInit(_units & units,environment & env, int & count){
+unit Parser::parseVarInit(_units & units,environment & env, int & count){
     if(env.have(units[count+1].name)){
         throw "var \"" + units[count+1].name + "\" already defined";
     }    
-    unit newVar(_type::_var,units[count+1].name);
-    if(units[count+2].name == "="){
-        if(units[count+3].name == "{"){
-            newVar.type = _type::_list;
-          //  count++;
-        }
-        for(int i = count; i < units.size(); i++){
-            if(units[i].name == newVar.name){
-                units[i].type = newVar.type;
+    int curPos = count;
+    count++;
+    while(units[count].type != _type::_semicolon){
+        unit newVar(_type::_var,units[count].name);
+        if(units[count+1].name == "="){
+            if(units[count+2].name == "{"){
+                newVar.type = _type::_list;
             }
-        }
-        if(newVar.type == _type::_list){
-            parseListInit(newVar,units,env,count);
+            for(int i = count; i < units.size(); i++){
+                if(units[i].name == newVar.name){
+                    units[i].type = newVar.type;
+                }
+            }
+            if(newVar.type == _type::_list){
+                parseListInit(newVar,units,env,count);
+            }
+            else{
+                count+=2;
+                while(units[count].type != _type::_semicolon){
+                    if(units[count].type == _type::_special && units[count+1].type == _type::_indentf){
+                        count++;
+                        break;
+                    }
+                    newVar._childs.push_back(units[count]);
+                    count++;
+                }
+            }
         }
         else{
-            count+=3;
-            while(units[count].type != _type::_semicolon){
-                //if(units[count].type == _type::_special && units[count+1].type != _type::_varInit){
-                //    break;
-                //}
-                newVar._childs.push_back(units[count]);
-                units.erase(units.begin()+count);
+            if(units[count + 1].type == _type::_special ){
+                count+=2;
             }
         }
+        env.add(newVar);
+        units[curPos]._childs.push_back(newVar);
     }
-    else{
-        if(units[count + 2].type == _type::_semicolon ){
-            count+=2;
-        }
-        if(units[count + 2].type == _type::_special ){
-            count+=3;
-        }
+    if(units[count + 2].type == _type::_semicolon ){
+        count+=2;
     }
-    env.add(newVar);
+    return units[curPos];
 }
 
 void Parser::parseListInit(unit & newUnit, _units & units,environment & env, int & count){
-    int stopBrt = checkCloseBrt(units,count + 3);
-    count+=4;
+    int stopBrt = checkCloseBrt(units,count + 2);
+    count+=3;
     while(count != stopBrt + 1){
         newUnit._childs.push_back(unit());
         //if(units[count].name == "{"){
@@ -148,27 +152,28 @@ void Parser::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func
 
 void Parser::parseCondition(_units & units,environment & env, int & count){
     int curPos = count;
-    int stopBrt = checkCloseBrt(units,count + 1);
-    units[curPos]._childs.push_back(unit());
-    units[curPos]._childs.push_back(unit());
-    count++;
-    units[curPos][0]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    count = stopBrt+1;
-    stopBrt = checkCloseBrt(units,count);
-    units[curPos][1]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    count = stopBrt;
+    units[count]._childs.push_back(unit());
+    units[count]._childs.push_back(unit());
+    units[curPos][0]._childs = parseContext(units,count); 
+    units[curPos][1]._childs = parseContext(units,count); 
 }
 
+_units Parser::parseContext(_units & units, int & count){
+    count++;
+    int stopBrt = checkCloseBrt(units,count);
+    _units result = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt;
+    return result;
+}
 
 unit Parser::parseIF(_units & units,environment & env, int & count){
     int curPos = count;
     parseCondition(units,env,count);
     count++;
     if(units[count].type == _type::_else){
-        int stopBrt = checkCloseBrt(units,count + 1);
         units[curPos]._childs.push_back(unit());
-        units[curPos][2]._childs = {units.begin() + count + 2, units.end() - (units.size() - stopBrt)};
-        count = stopBrt+1;
+        units[curPos][2]._childs = parseContext(units,count); 
+        count++;
     }
     count--;
     return units[curPos];
@@ -184,6 +189,7 @@ unit Parser::parseFor(_units & units,environment & env, int & count){
     int curPos = count;
     int stopBrt = checkCloseBrt(units,count + 1);
     _units condition = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
+    count = stopBrt;
     auto _del1 = std::find_if(condition.begin(), condition.end(), [](unit _a){ return _a.name == ";"; });
     auto _del2 = std::find_if(_del1+1, condition.end(), [](unit _a){ return _a.name == ";"; });
     units[curPos]._childs.push_back(unit());
@@ -193,10 +199,7 @@ unit Parser::parseFor(_units & units,environment & env, int & count){
     units[curPos][0]._childs = {condition.begin() + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del1)) + 1};
     units[curPos][1]._childs = {_del1 + 1, condition.end() - (condition.size() - std::distance(condition.begin(),_del2)) + 1};
     units[curPos][2]._childs = {_del2 + 1, condition.end()};
-    count = stopBrt+1;
-    stopBrt = checkCloseBrt(units,count);
-    units[curPos][3]._childs = {units.begin() + count + 1, units.end() - (units.size() - stopBrt)};
-    count = stopBrt;
+    units[curPos][3]._childs = parseContext(units,count); 
     return units[curPos];
 }
 

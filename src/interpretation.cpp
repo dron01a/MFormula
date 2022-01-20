@@ -16,23 +16,25 @@ _units parseScript(std::string _script, environment & env){
 }
 
 void varInit(unit & node, environment & env){
-    _units childs = env.get(node._childs[0].name)._childs;  
-    if(env.get(node._childs[0].name).type == _type::_list){
-        for(int count = 0; count < childs.size(); count++){
-            Parser childsParcer(childs[count]._childs,env);
-            childs[count]._childs = childsParcer.getTokens();
-        } 
-        for(int count = 0; count < childs.size(); count++){
-            eval(childs[count]._childs, env);
-            env.get(node._childs[0].name)._childs[count] = childs[count]._childs[0];
+    for(size_t _vars = 0;_vars < node._childs.size(); _vars++ ){
+        _units childs = env.get(node._childs[_vars].name)._childs;  
+        if(env.get(node._childs[_vars].name).type == _type::_list){
+            for(int count = 0; count < childs.size(); count++){
+                Parser childsParcer(childs[count]._childs,env);
+                childs[count]._childs = childsParcer.getTokens();
+            } 
+            for(int count = 0; count < childs.size(); count++){
+                eval(childs[count]._childs, env);
+                env.get(node._childs[_vars].name)._childs[count] = childs[count]._childs[0];
+            }
         }
-    }
-    else{
-        if(childs.size() != 0){
-            Parser childsParcer(childs,env);
-            childs = eval(childsParcer, env); 
+        else{
+            if(childs.size() != 0){
+                Parser childsParcer(childs,env);
+                childs = eval(childsParcer, env); 
+            }
+            env.get(node._childs[_vars].name)._childs = childs;
         }
-        env.get(node._childs[0].name)._childs = childs;
     }
 }
 
