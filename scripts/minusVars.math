@@ -1,0 +1,11 @@
+var a = 1;
+
+var list = { -1, 2, 3};
+
+print(-list[0]);
+
+print(a+(-1)); // output -> 0
+
+print(a-(-1)); // output -> 2
+
+print(-(78-8)+1-3); // output -> -72

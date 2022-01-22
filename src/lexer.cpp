@@ -12,8 +12,7 @@ Lexer::Lexer(std::string source, environment & env){
             int _curPos = count + 1;
             count = source.find("\"",count+1);
             token = source.substr(_curPos,count - _curPos);
-            units.push_back(unit(_type::_text, token, 0));
-            count++;
+            units.push_back(unit(_type::_string, token, 0));
             continue;
         }
         if(std::isspace(source[count])){
@@ -33,6 +32,9 @@ Lexer::Lexer(std::string source, environment & env){
             units.push_back(unit(env.get(token).type, token));
         }
         else{
+            if(token == "-" && units.back().type == _type::_openBrt){
+                token = "nvar";
+            }
             units.push_back(unit(getType(token), token, getPriority(token)));
         }
     }
@@ -43,20 +45,49 @@ _units Lexer::getUnits(){
 }
 
 _type Lexer::getType(std::string exp){
+    if(exp == "true" || exp == "false"){
+        return _type::_bool;
+    }
+    if(exp == "if"){
+        return _type::_if;
+    }
+    if(exp == "else"){
+        return _type::_else;
+    }
+    if(exp == "for"){
+        return _type::_for;
+    }
+    if(exp == "while"){
+        return _type::_while;
+    }
+    if(exp == "break"){
+        return _type::_break;
+    }
+    if(exp == "return"){
+        return _type::_return;
+    }
+    if(exp == "continue"){
+        return _type::_continue;
+    }
+    if(exp == "."){
+        return _type::_opr;
+    }
+    if(exp.find_first_not_of(".0123456789") == NPOS){
+        return _type::_num;
+    }
     if(openBrt.find(exp) != NPOS){
         return _type::_openBrt;
     } 
     if(closeBrt.find(exp) != NPOS){
         return _type::_closeBrt;
     } 
-    else if(operators.find(exp) != NPOS || exp == "==" || exp == ">=" || exp == "<="){
+    else if(operators.find(exp) != NPOS || exp == "==" || exp == "!=" 
+        ||exp == ">=" || exp == "<=" || exp == "&&" || exp == "||"
+        || exp == "++" || exp == "--"){
         return _type::_opr;
     }
     else if(exp == ","){
         return _type::_special;
-    }
-    else if(exp.find_first_not_of("0123456789.") == NPOS){
-        return _type::_num;
     }
     else if (exp == "var"){
         return _type::_varInit;
@@ -68,10 +99,10 @@ _type Lexer::getType(std::string exp){
         return _type::_semicolon;
     }
     else if (exp.find("\"") != NPOS){
-        return _type::_text;
+        return _type::_string;
     }
     else{
-        for(int count = 0; count < 12; count++ ){
+        for(int count = 0; count < 14; count++ ){
             if(exp == functions[count]){
                 return _type::_coreFunc;
             }
@@ -85,7 +116,13 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
         if(std::isspace(_source[_count])){
             _count++;
             break;
-        } 
+        }
+        //if(_source[_count] == '.'){
+        //    if(getType(_token) != _type::_num && getType(std::string(1,_source[_count+1])) != _type::_num){
+        //        _count++;
+        //        break;
+        //    }                                  
+        //} 
         _token+=_source[_count];
         _count++;
         if( getType(std::string(1,_source[_count])) == _type::_openBrt 
@@ -100,10 +137,13 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
 
 
 int Lexer::getPriority(std::string exp){
-    if (exp == "="){
+    if (exp == "==" || exp == "!=" ||exp == ">=" || exp == "<=" || exp == ">"|| exp == "<"){
         return 1;
     }
-    if (exp == "+" || exp == "-" ) {
+    if (exp == "&&" || exp == "||"){
+        return 0;
+    }
+    if (exp == "+" || exp == "-" || exp == "nvar" || exp == "++" || exp == "--" ) {
         return 2;
     }
 	if (exp == "*" || exp == "/" || exp == "%"){ 

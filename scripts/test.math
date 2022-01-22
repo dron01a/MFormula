@@ -1,11 +1,10 @@
 
-var a = 315;
-var b = 315;
+var a = 315, c , b = 315;
 
 a = 0;
 
 print("USSR");
-print(a+398-1*sin(deg(90)));
+print(a);
 print(b);
 print(b+a);
 

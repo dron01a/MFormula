@@ -9,19 +9,20 @@
 
 #define NPOS std::string::npos
 
-struct unit;
+class unit;
 class environment;
 
 typedef std::vector<unit> _units;
 
 enum class _type{
     _num, 
+    _bool,
     _openBrt,      
     _closeBrt,      
     _opr,       
     _coreFunc,  
     _special,   
-    _text,      
+    _string,      
     _semicolon, 
     _newLine,
     _var,
@@ -30,22 +31,54 @@ enum class _type{
     _comment,
     _varInit,
     _functionInit,
+    _if,
+    _else,
+    _while,
+    _for,
+    _continue,
+    _break,
+    _return,
     _indentf 
 };
 
-struct unit{
-    unit(_type t,std::string s);
-    unit(_type t,std::string s, int pr);
-    unit(double _num) ;
+class unit{
+public:
+    unit(_type t,std::string s, int pr = 0);
+    unit(double _num);
+    unit(bool _val);
     unit(){};
+    ~unit(){};
     void assign(unit unit);
     void print();
+//    void push_back(unit unit);
+
+    // math operators
     unit operator+(unit & _unit) const;
     unit operator-(unit & _unit) const;
     unit operator*(unit & _unit) const;
     unit operator/(unit & _unit) const;
     unit operator%(unit & _unit) const;
-    operator double() const;
+    unit increment();
+    unit decrement();
+    
+    // compare operators
+    bool operator==(const unit & _unit) const;
+    bool operator!=(const unit & _unit) const;
+    bool operator>(unit & _unit) const;
+    bool operator<(unit & _unit) const;
+    bool operator>=(unit & _unit) const;
+    bool operator<=(unit & _unit) const;
+
+    bool operator&&(unit & _unit) const;
+    bool operator||(unit & _unit) const;
+
+    unit & operator[](int position);
+
+    bool to_bool() const;
+    double to_double() const;
+    int to_int() const;
+    std::string to_string() const;
+
     _units _childs;
     std::string name;
     _type type;
@@ -60,6 +93,8 @@ public:
     _units & defined();
     bool have(std::string _name);
     void add(unit & _unit);
+    void comb(environment & env);
+    void saveChange(environment & env);
 private:
     _units _defined {
         unit(_type::_var,"pi"),
