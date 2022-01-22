@@ -199,23 +199,20 @@ void if_iterpr(unit & node, environment & env){
     env.saveChange(_local);
 }
 
-
-void whileInterpt(unit & node, environment & env){
-    environment _local(env);
-    Parser _condParce(node._childs[0]._childs,env);
-    Parser _exprParce(node._childs[1]._childs,_local);
-    _units cond = eval(_condParce,env);
-    _units expr;
+void loop(Parser & _exprP, Parser & _condP, Parser & _stepP, environment & _global, environment & _local){
+    _units cond = eval(_condP,_local);
+    _units step;
     while(cond[0].to_bool() == true){
-        expr = _exprParce.getTokens();
         try{
+            _units expr = _exprP.getTokens();
             eval(expr,_local);
         }
         catch(_ctrlConst _T){
             _local.saveChange(_T.env);
-            env.saveChange(_local);
+            _global.saveChange(_local);
             if(_T.type == _type::_continue){
-                cond = eval(_condParce,_local);
+                step = eval(_stepP,_local);
+                cond = eval(_condP,_local);
                 continue;
             }  
             if(_T.type == _type::_break){
@@ -223,9 +220,17 @@ void whileInterpt(unit & node, environment & env){
                 break;
             }
         }
-        cond = eval(_condParce,_local);
+        step = eval(_stepP,_local);
+        cond = eval(_condP,_local);
     }
-    env.saveChange(_local);
+    _global.saveChange(_local);
+}
+
+void whileInterpt(unit & node, environment & env){
+    environment _local(env);
+    Parser _condParce(node._childs[0]._childs,env);
+    Parser _exprParce(node._childs[1]._childs,_local);
+    loop(_exprParce, _condParce, _condParce, env, _local);
 }
 
 void forInterpt(unit & node, environment & env){
@@ -235,31 +240,7 @@ void forInterpt(unit & node, environment & env){
     Parser _stepParce(node._childs[2]._childs,_local);
     Parser _exprParce(node._childs[3]._childs,_local);
     _units init = eval(_initParce,_local);
-    _units cond = eval(_condParce,_local);
-    _units step;
-    _units expr;
-    while(cond[0].to_bool() == true){
-        expr = _exprParce.getTokens();
-        try{
-            eval(expr,_local);
-        }
-        catch(_ctrlConst _T){
-            _local.saveChange(_T.env);
-            env.saveChange(_local);
-            if(_T.type == _type::_continue){
-                step = eval(_stepParce,_local);
-                cond = eval(_condParce,_local);
-                continue;
-            }  
-            if(_T.type == _type::_break){
-                cond[0].name = "false";
-                break;
-            }
-        }
-        step = eval(_stepParce,_local);
-        cond = eval(_condParce,_local);
-    }
-    env.saveChange(_local);
+    loop(_exprParce, _condParce, _stepParce, env, _local);
 }
 
 void callFunc(unit & node, std::stack<unit> & _prms, environment & env){

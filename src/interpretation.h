@@ -24,6 +24,8 @@ void assign(std::stack<unit> & _params, environment & env);
 
 void evalStrung(unit & node, environment & env);
 
+void loop(Parser & _exprP, Parser & _condP, Parser & _stepP ,environment & _env, environment & _local);
+
 void eval(_units & tokens, environment &env);
 
 _units eval( Parser & _par, environment & env);

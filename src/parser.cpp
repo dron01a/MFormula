@@ -5,7 +5,7 @@ Parser::Parser(_units & units, environment & env){
     for(int count = 0; count < units.size(); count++){
         switch (units[count].type){
         case _type::_varInit:
-            _tokens.push_back( parseVarInit(units,env,count));
+            _tokens.push_back(parseVarInit(units,env,count));
             break;
         case _type::_functionInit:
             _tokens.push_back(parseFuncInit(units,env,count));
