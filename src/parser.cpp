@@ -86,13 +86,6 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
         if(units[count+1].name == "="){
             if(units[count+2].name == "{"){
                 newVar.type = _type::_list;
-            }
-            for(int i = count; i < units.size(); i++){
-                if(units[i].name == newVar.name){
-                    units[i].type = newVar.type;
-                }
-            }
-            if(newVar.type == _type::_list){
                 parseListInit(newVar,units,env,count);
             }
             else{
@@ -107,13 +100,16 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
                 }
             }
         }
-        else{
-            if(units[count + 1].type == _type::_special ){
-                count+=2;
-            }
-        }
         env.add(newVar);
         units[curPos]._childs.push_back(newVar);
+        switch (units[count + 1].type){
+        case _type::_special:
+            count+=2;
+            break;
+        case _type::_semicolon:
+            count++;
+            break;
+        }
     }
     if(units[count + 2].type == _type::_semicolon ){
         count+=2;
@@ -214,7 +210,7 @@ unit Parser::parseFuncInit(_units & units,environment & env, int & count){
     }
     count--;
     parseCondition(units,env,count);
-    units[curPos + 1][0]._childs.push_back(unit(_type::_special, ";")); 
+    units[curPos + 1][0]._childs.push_back(unit(_type::_semicolon, ";")); 
     units[curPos]._childs.push_back(units[curPos + 1]);
     env.add(units[curPos + 1]);
     return units[curPos];

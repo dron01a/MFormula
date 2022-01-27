@@ -21,12 +21,9 @@ void varInit(unit & node, environment & env){
         if(env.get(node._childs[_vars].name).type == _type::_list){
             for(int count = 0; count < childs.size(); count++){
                 Parser childsParcer(childs[count]._childs,env);
-                childs[count]._childs = childsParcer.getTokens();
-            } 
-            for(int count = 0; count < childs.size(); count++){
-                eval(childs[count]._childs, env);
+                childs[count]._childs = eval(childsParcer, env);
                 env.get(node._childs[_vars].name)._childs[count] = childs[count]._childs[0];
-            }
+            } 
         }
         else{
             if(childs.size() != 0){
@@ -53,7 +50,7 @@ void eval(_units & tokens,environment &env){
             varInit(tokens[count],_local);
             break;  
         case _type::_functionInit:
-            funcInit(tokens[count],_local);
+            //funcInit(tokens[count],_local);
             break;
         case _type::_if:
             if_iterpr(tokens[count],_local);
@@ -184,7 +181,7 @@ double factorial(double n){
 void if_iterpr(unit & node, environment & env){
     environment _local(env);
     Parser _condParce(node._childs[0]._childs,env);
-    _units cond= eval(_condParce,env);
+    _units cond = eval(_condParce,env);
     _units expr;
     if(cond[0].to_bool() == true){
         expr = node._childs[1]._childs;
@@ -240,7 +237,8 @@ void forInterpt(unit & node, environment & env){
     Parser _stepParce(node._childs[2]._childs,_local);
     Parser _exprParce(node._childs[3]._childs,_local);
     _units init = eval(_initParce,_local);
-    loop(_exprParce, _condParce, _stepParce, env, _local);
+    loop(_exprParce, _condParce, _stepParce, env, _local);  
+    
 }
 
 void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
@@ -250,9 +248,9 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
     _units _expr = _func._childs[1]._childs;
     Parser _parsParm(_params, _local);
     _params = _parsParm.getTokens();
-    _units _functionPar = setVars(_prms, _params.size());
+    _units _functionPar = setVars(_prms, _params[0]._childs.size());
     _local.comb(env);
-    for(int _parC = 0; _parC < _params.size(); _parC++){
+    for(int _parC = 0; _parC < _functionPar.size(); _parC++){
         _local.defined()[_parC+2].assign(_functionPar[_parC]);
     }
     Parser _parsExpr(_expr, _local);
