@@ -74,10 +74,18 @@ void eval(_units & tokens,environment &env){
                     if(params.top().type == _type::_num || params.top().type == _type::_var){
                         unit listVal(_type::_var,"listVar");
                         listVal._childs.push_back(_local.get(tokens[count].name)._childs[params.top().to_int()]);
-                        listVal._childs.push_back(tokens[count]);
-                        listVal._childs.push_back(params.top());
-                        params.pop();
-                        params.push(listVal);
+                        if(listVal._childs[0].type == _type::_list){
+                            tokens[count + 1].name = listVal._childs[0].name;
+                            tokens[count + 1].type = _type::_list;
+                            count--;
+                            params.pop();
+                        }
+                        else{
+                            listVal._childs.push_back(tokens[count]);
+                            listVal._childs.push_back(params.top());
+                            params.pop();
+                            params.push(listVal);
+                        }
                     }
                     else{
                         params.push(_local.get(tokens[count].name));

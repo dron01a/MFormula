@@ -36,7 +36,12 @@ Parser::Parser(_units & units, environment & env){
             checkCloseBrt(units,count);
         case _type::_coreFunc:
         case _type::_func:
+            oprStack.push(units[count]);
+            break;
         case _type::_list:
+            getUnitsIn(oprStack,units[count],[](unit _unit, std::stack<unit> & oprStack){
+                return  (oprStack.top().type == _type::_list);
+            });
             oprStack.push(units[count]);
             break;
         case _type::_closeBrt:
@@ -133,7 +138,6 @@ void Parser::parseListInit(unit & newUnit, _units & units,environment & env, int
             newUnit._childs[newUnit._childs.size() - 1]._childs.push_back(units[count]);
             units.erase(units.begin()+count);
             stopBrt--;
-           // count++;
         }
         count++; 
     }
