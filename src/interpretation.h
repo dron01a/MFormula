@@ -28,6 +28,8 @@ void loop(Parser & _exprP, Parser & _condP, Parser & _stepP ,environment & _env,
 
 void eval(_units & tokens, environment &env);
 
+unit * getListChild(unit & node, environment & env);
+
 _units eval( Parser & _par, environment & env);
 
 typedef unit(*simpleF)(unit);

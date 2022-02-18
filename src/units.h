@@ -38,7 +38,9 @@ enum class _type{
     _continue,
     _break,
     _return,
-    _indentf 
+    _indentf, 
+    _sqrBrtOpen,
+    _sqrBrtClose
 };
 
 class unit{
@@ -51,7 +53,7 @@ public:
     void assign(unit unit);
     void print();
 //    void push_back(unit unit);
-
+    unit* mems() { return this;  }
     // math operators
     unit operator+(unit & _unit) const;
     unit operator-(unit & _unit) const;
@@ -73,6 +75,7 @@ public:
     bool operator||(unit & _unit) const;
 
     unit & operator[](int position);
+
 
     bool to_bool() const;
     double to_double() const;

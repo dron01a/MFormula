@@ -33,20 +33,42 @@ Parser::Parser(_units & units, environment & env){
             });
             break;
         case _type::_openBrt:  
-            checkCloseBrt(units,count);
+            if(units[count].name == "["){
+                count--;
+                if(oprStack.top().type == _type::_list){
+                    _units _tmp = parseContext(units,count);
+                    oprStack.top()._childs.push_back(unit());
+                    oprStack.top()._childs.back()._childs = _tmp;
+                    _tmp.clear();
+                }
+            }
+            else{
+                checkCloseBrt(units,count);
+                oprStack.push(units[count]);
+            } 
+            break;
         case _type::_coreFunc:
         case _type::_func:
-            oprStack.push(units[count]);
-            break;
         case _type::_list:
-            getUnitsIn(oprStack,units[count],[](unit _unit, std::stack<unit> & oprStack){
-                return  (oprStack.top().type == _type::_list);
-            });
             oprStack.push(units[count]);
             break;
         case _type::_closeBrt:
             parseCloseBrt(oprStack,units[count],units[count].name[0]);
             break; 
+        case _type::_sqrBrtClose:
+            //{
+            //    _units _temp;
+            //    while(oprStack.size() && oprStack.top().type != _type::_sqrBrtOpen){
+            //        _temp.push_back(oprStack.top());
+            //        oprStack.pop();
+            //    }
+            //    oprStack.pop();
+            //    if(oprStack.top().type == _type::_list){
+            //        oprStack.top()._childs.push_back(unit());
+            //        oprStack.top()._childs.back()._childs = _temp;
+            //    }
+            //}
+            break;
         case _type::_return:
         case _type::_opr:
             getUnitsIn(oprStack,units[count],[](unit _unit, std::stack<unit> & oprStack){
@@ -226,7 +248,7 @@ int Parser::checkCloseBrt(_units & units, int position){
     int openChars = 1; 
     switch(units[position].name[0]){
         case '(':brtType = ")";break;
-        case '[':brtType = "]";break;
+        case '[':brtType = "]";units[position].type = _type::_sqrBrtOpen;break;
         case '{':brtType = "}";break;
     }
     for(int count = position + 1;; count++){
@@ -237,6 +259,9 @@ int Parser::checkCloseBrt(_units & units, int position){
             openChars--;
         }
         if(openChars == 0){
+            if(brtType == "]" ) {
+                units[count].type = _type::_sqrBrtClose;
+            }
             result = count;
             break;
         }

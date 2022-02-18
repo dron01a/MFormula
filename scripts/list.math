@@ -1,16 +1,24 @@
 var l1 = { 1 , 2, 3};
-var sum = l1[0] + l1[1] + l1[2];
-print(sum);
 
-var l2 = { 1 + 3, 10, 4};
-var l3 = { l1, l2 };
-print(l3);
-print(l3);
+l1[1] = 100;
+
+var a;
+
+a = l1[1]; 
+
+print(a);
 
 
-l1[0] = 5 + l1[0] - 1500;
+//var sum = l1[0] + l1[1] + l1[2];
+//print(sum);
+//var l2 = { 1 + 3, 10, 4};
+//var l3 = { l1, l2 };
 
-print(l1);
+
+
+//l1[0] = 5 + l1[0] - 1500;
+//
+//print(l1);
 //
 ////var list1 = {4,4};
 ////var list2 = {2,2};

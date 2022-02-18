@@ -69,32 +69,12 @@ void eval(_units & tokens,environment &env){
         case _type::_var:
             params.push(_local.get(tokens[count].name));
             break;
-        case _type::_list:{
-                if(params.size() != 0){
-                    if(params.top().type == _type::_num || params.top().type == _type::_var){
-                        unit listVal(_type::_var,"listVar");
-                        listVal._childs.push_back(_local.get(tokens[count].name)._childs[params.top().to_int()]);
-                        if(listVal._childs[0].type == _type::_list){
-                            tokens[count + 1].name = listVal._childs[0].name;
-                            tokens[count + 1].type = _type::_list;
-                            count--;
-                            params.pop();
-                        }
-                        else{
-                            listVal._childs.push_back(tokens[count]);
-                            listVal._childs.push_back(params.top());
-                            params.pop();
-                            params.push(listVal);
-                        }
-                    }
-                    else{
-                        params.push(_local.get(tokens[count].name));
-                    }
-                }
-                else{
-                    params.push(_local.get(tokens[count].name));
-                }
-            }            
+        case _type::_list: 
+            if(tokens[count]._childs.size() != 0){
+                Parser _par(tokens[count][0]._childs,_local);
+                tokens[count][0] = eval(_par,_local)[0];
+            }
+            params.push(tokens[count]);
             break;
         case _type::_opr:
             if(tokens[count].name == "--" || tokens[count].name == "++"){
@@ -270,14 +250,37 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
 
 void assign(std::stack<unit> & params, environment & env){
     _units _params = setVars(params,2);
-    if(_params[0].name == "listVar"){
-        env.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
+    if(_params[0].type == _type::_list){
+        if(_params[1].type == _type::_list){
+            *getListChild(_params[0],env) = *getListChild(_params[1],env);
+        }
+        else{
+            *getListChild(_params[0],env) = _params[1];
+        }
     }
     else{
-        _params[0].assign(_params[1]);
+        if(_params[1].type == _type::_list){
+            _params[0].assign(*getListChild(_params[1],env));
+        }
+        else{
+            _params[0].assign(_params[1]);
+        }
         env.get(_params[0].name) = _params[0];
     }
+    
 }
+
+unit * getListChild(unit & node, environment & env){
+    unit * _val;
+    if(node._childs.size() != 0){
+        _val = & env.get(node.name)[node[0].to_int()];
+    }
+    else{
+        _val = & env.get(node.name);
+    }
+    return _val;
+}
+
 
 void evalStrung(unit & node, environment & env){
     std::string _stringVal = node.name;
