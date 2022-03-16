@@ -129,13 +129,13 @@ void unit::print(){
         _childs[0].print();
         break;
     case _type::_list:
-        printf("{");
+        printf("{ ");
         _childs[0].print();
         for(int step = 1; step < _childs.size(); step++){
             printf(" , ");
             _childs[step].print();
         }
-        printf("%s\n","}");
+        printf("%s\n"," }");
         break; 
     default:
         throw "error of type";
@@ -147,12 +147,13 @@ void unit::assign(unit _unit){
     switch (_unit.type){
     case _type::_num:
     case _type::_string:
-        if(_childs.size() != 0 ){
-            _childs[0] = _unit;
-        }
-        else{
-            _childs.push_back(_unit);
-        }
+        *this = _unit;
+       // if(_childs.size() != 0 ){
+       //     *this = _unit;
+       // }
+       // else{
+       //     _childs.push_back(_unit);
+       // }
         break;
     case _type::_list: 
     case _type::_var:
@@ -349,15 +350,15 @@ bool unit::operator||(unit & _unit) const {
 }
 
 unit unit::increment(){
-    if(type == _type::_var ){
+    if(type == _type::_num ){
         return unit((double)to_int()+1);
     }
     throw "type error";
 }
 
 unit unit::decrement(){
-    if(type==_type::_var){
-        return unit((double)to_int()-1);
+    if(type == _type::_num ){
+        return  unit((double)to_int()-1);
     }
     throw "type error";
 }

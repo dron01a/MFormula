@@ -62,23 +62,34 @@ void eval(_units & tokens,environment &env){
             whileInterpt(tokens[count],_local);
             break;
         case _type::_string:
-               evalStrung(tokens[count],_local);
-        case _type::_num:
-            params.push(tokens[count]);
+            evalStrung(tokens[count],_local);
             break;
         case _type::_var:
-            params.push(_local.get(tokens[count].name));
-            break;
+            tokens[count].__mem = & _local.get(tokens[count].name);
+        case _type::_num:
         case _type::_list: 
-            if(tokens[count]._childs.size() != 0){
-                Parser _par(tokens[count][0]._childs,_local);
-                tokens[count][0] = eval(_par,_local)[0];
-            }
             params.push(tokens[count]);
             break;
         case _type::_opr:
+            if(tokens[count].name == "[]"){
+                _units _params = setVars(params,2);
+                unit _temp;
+                if(_params[1].__mem == nullptr){
+                    _temp.__mem = & _local.get(_params[1].name)[_params[0].to_int()];
+                }
+                else{
+                    _temp.__mem = & _params[1].__mem[_params[0].to_int()];
+                }
+                params.push(_temp);
+                continue;
+            }
             if(tokens[count].name == "--" || tokens[count].name == "++"){
-                _local.get(params.top().name)._childs[0] = simpleFuncs[tokens[count].name](params.top());
+                if(value(params.top()).type == _type::_var ){
+                    value(params.top())[0] = simpleFuncs[tokens[count].name](value(params.top())[0]);
+                }
+                if(value(params.top()).type == _type::_num ){
+                    value(params.top()) = (simpleFuncs[tokens[count].name](value(params.top())));
+                }
                 params.pop(); 
                 continue;
             }
@@ -90,7 +101,11 @@ void eval(_units & tokens,environment &env){
             if(tokens[count].name == "print"){
                 _units _params = setVars(params,params.size());
                 for(size_t _par = 0; _par < _params.size(); _par++){
-                    _params[_par].print();
+                    if(value(_params[_par]).type == _type::_list){
+                        _local.get(value(_params[_par]).name).print();
+                        continue;
+                    }
+                    value(_params[_par]).print();
                 }
                 printf("\n");
                 continue;
@@ -138,6 +153,21 @@ _units setVars(std::stack<unit> &args, int _count){
     return result;
 }
 
+_units rsetVars(std::stack<unit> &args, int _count){
+    _units result;
+    unit test = args.top();
+    _units temp = setVars(args, args.size()); 
+    result.resize(_count);
+    for(int i = 0; i != _count; i++){
+        result[i] = temp[i];
+    }
+    for(int i = _count; i != temp.size(); i++ ){
+        args.push(temp[i]);
+    }
+    return result;
+}
+
+
 unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
@@ -146,16 +176,16 @@ unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
         _units _params;
         if(args.size() == 1){
             _params = setVars(args,1);
-            return simpleFuncs[exp](_params[0]);
+            return simpleFuncs[exp](value(_params[0]));
         }
         else{
             _params = setVars(args,2);
         }
-        return binaryFuncs[exp](_params[0],_params[1]);
+        return binaryFuncs[exp](value(_params[0]),value(_params[1]));
     }
     else{
         _units _params = setVars(args,1);
-        return simpleFuncs[exp](_params[0]);//simpleFunc(exp,a);
+        return simpleFuncs[exp](value(_params[0]));//simpleFunc(exp,a);
     }
 }
 
@@ -250,37 +280,15 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
 
 void assign(std::stack<unit> & params, environment & env){
     _units _params = setVars(params,2);
-    if(_params[0].type == _type::_list){
-        if(_params[1].type == _type::_list){
-            *getListChild(_params[0],env) = *getListChild(_params[1],env);
-        }
-        else{
-            *getListChild(_params[0],env) = _params[1];
-        }
-    }
-    else{
-        if(_params[1].type == _type::_list){
-            _params[0].assign(*getListChild(_params[1],env));
-        }
-        else{
-            _params[0].assign(_params[1]);
-        }
-        env.get(_params[0].name) = _params[0];
-    }
-    
+    value(_params[0]).assign((_params[1]));
 }
 
-unit * getListChild(unit & node, environment & env){
-    unit * _val;
-    if(node._childs.size() != 0){
-        _val = & env.get(node.name)[node[0].to_int()];
+unit & value(unit & node){
+    if(node.__mem != nullptr){
+        return *node.__mem;
     }
-    else{
-        _val = & env.get(node.name);
-    }
-    return _val;
+    return node;
 }
-
 
 void evalStrung(unit & node, environment & env){
     std::string _stringVal = node.name;

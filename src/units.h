@@ -39,6 +39,7 @@ enum class _type{
     _break,
     _return,
     _indentf, 
+    _memOpr,
     _sqrBrtOpen,
     _sqrBrtClose
 };
@@ -81,7 +82,8 @@ public:
     double to_double() const;
     int to_int() const;
     std::string to_string() const;
-
+    
+    unit * __mem = nullptr;
     _units _childs;
     std::string name;
     _type type;
