@@ -10,7 +10,7 @@ if (n >= 1){
 if (n >= 2){
     print("2 --> 1");
 }
-for(var _count = 0; _count < n - 2; _count++){
+for(var _count = 0; _count < n - 2; _count++ ){
     next = num1 + num2;
     temp = _count+3;
     print("%temp% --> %next%");

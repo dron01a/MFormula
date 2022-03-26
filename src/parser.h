@@ -25,6 +25,8 @@ private:
     unit parseWhile(_units & units,environment & env, int & count);
     unit parseFor(_units & units,environment & env, int & count);
     _units _tokens; 
+
+    _units parseList(_units  units,environment & env, int & count);
 };
 
 #endif

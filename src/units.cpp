@@ -147,13 +147,15 @@ void unit::assign(unit _unit){
     switch (_unit.type){
     case _type::_num:
     case _type::_string:
-        *this = _unit;
-       // if(_childs.size() != 0 ){
-       //     *this = _unit;
-       // }
-       // else{
-       //     _childs.push_back(_unit);
-       // }
+        if(type == _type::_var){
+            if(_childs.size() == 0){
+                _childs.push_back(unit());
+            }
+            _childs[0] = _unit;
+        }
+        else{
+            *this = _unit;
+        }
         break;
     case _type::_list: 
     case _type::_var:

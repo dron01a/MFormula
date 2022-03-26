@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
-            "args": [ "-f", "scripts/list.math"],
+            "args": [ "-f", "scripts/list2.mth"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
