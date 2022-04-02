@@ -15,15 +15,25 @@ _units parseScript(std::string _script, environment & env){
     return result;
 }
 
+void evalList(unit & node, environment & env){
+    for(size_t count = 0; count < node._childs.size(); count++){
+        if(node[count].type == _type::_list){
+            evalList(node[count], env);
+            continue;
+        }
+        Parser pars(node[count]._childs, env);
+        node[count] = eval(pars, env)[0];
+    }
+}
+
 void varInit(unit & node, environment & env){
     for(size_t _vars = 0;_vars < node._childs.size(); _vars++ ){
         _units childs = env.get(node._childs[_vars].name)._childs;  
         if(env.get(node._childs[_vars].name).type == _type::_list){
-            for(int count = 0; count < childs.size(); count++){
-                Parser childsParcer(childs[count]._childs,env);
-                childs[count]._childs = eval(childsParcer, env);
-                env.get(node._childs[_vars].name)._childs[count] = childs[count]._childs[0];
-            } 
+            unit listNode;
+            listNode = env.get(node._childs[_vars].name);
+            evalList(listNode, env);
+            env.get(node._childs[_vars].name) = listNode;
         }
         else{
             if(childs.size() != 0){
@@ -89,9 +99,7 @@ void eval(_units & tokens,environment &env){
     env.saveChange(_local);
     tokens.clear();
     if(params.size() != 0){
-        while(params.size()){
-            tokens.push_back(value(params.top()));
-        }
+        tokens.push_back(params.top());
     }
 }
 
@@ -107,6 +115,18 @@ _units setVars(std::stack<unit> &args, int _count){
     for(int i = _count; i != 0; i--){
         result[i-1] = args.top();
         args.pop();
+    }
+    return result;
+}
+
+_units rsetVars(std::stack<unit> &args, int _count){
+    _units result;
+    _units tmp = setVars(args, args.size());
+    for(int i = 0; i < _count; i++){
+        result.push_back(tmp[i]);
+    }
+    for(int i = _count; i != tmp.size(); i++){
+        args.push(tmp[i]);
     }
     return result;
 }
@@ -241,13 +261,13 @@ void evalStrung(unit & node, environment & env){
 }
 
 void set_in_env(std::stack<unit> & params, environment & env){
-    _units _params = setVars(params,2);
+    _units _params = rsetVars(params,2);
     unit _temp;
     if(_params[1].__mem == nullptr){
-        _temp.__mem = & env.get(_params[1].name)[_params[0].to_int()];
+        _temp.__mem = & env.get(_params[1].name)[value(_params[0]).to_int()];
     }
     else{
-        _temp.__mem = & _params[1].__mem[_params[0].to_int()];
+        _temp.__mem = & _params[1].__mem->_childs[value(_params[0]).to_int()];
     }
     params.push(_temp);
 }

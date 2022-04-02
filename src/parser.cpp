@@ -35,10 +35,11 @@ Parser::Parser(_units & units, environment & env){
         case _type::_openBrt: 
             if(units[count].name == "{"){
                 count--;
-                _units _context = parseContext(units,count);
                 unit newList;
                 newList.type = _type::_list;
-
+                newList._childs = parseList(parseContext(units,count));
+                oprStack.push(newList);
+                
                 //units[count].name = "[]";
                 //units[count].type = _type::_opr;
                 //units[count].prior = 6;
@@ -60,9 +61,8 @@ Parser::Parser(_units & units, environment & env){
             if(units[count].name == "]"){
                 units[count].name = "[]";
                 units[count].type = _type::_opr;
-                units[count].prior = 7;
+                units[count].prior = 8;
                 count--;
-//                oprStack.push(unit(_type::_opr, "[]", 6));
             }
             break; 
         case _type::_return:
@@ -111,7 +111,7 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
                 newVar.type = _type::_list;
                 count++;
                 newVar._childs  = parseContext(units,count);
-                newVar._childs = parseList(newVar._childs,env,count);
+                newVar._childs = parseList(newVar._childs);
                 newVar._childs;
             }
             else{
@@ -143,7 +143,7 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
     return units[curPos];
 }
 
-_units Parser::parseList(_units units,environment & env, int & count){
+_units Parser::parseList(_units units){
     _units result;
     if(units.size() != 0){
         result.push_back(unit());
@@ -156,7 +156,7 @@ _units Parser::parseList(_units units,environment & env, int & count){
         if(units[_cnt].name == "{"){
             _cnt--;
             result[result.size()-1].type = _type::_list;
-            result[result.size()-1]._childs = parseList(parseContext(units,_cnt),env,count);
+            result[result.size()-1]._childs = parseList(parseContext(units,_cnt));
             continue;
         }
         result[result.size()-1]._childs.push_back(units[_cnt]);

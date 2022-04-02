@@ -28,6 +28,8 @@ void loop(Parser & _exprP, Parser & _condP, Parser & _stepP ,environment & _env,
 
 void eval(_units & tokens, environment &env);
 
+void evalList(unit & node, environment &env); 
+
 //unit * getListChild(unit & node, environment & env);
 
 unit & value(unit & node);
@@ -53,6 +55,8 @@ double factorial(double n);
 
 // set values to vars 
 _units setVars(std::stack<unit> &args, int _count); 
+
+_units rsetVars(std::stack<unit> &args, int _count); 
 
 void run(std::string _script);
 
