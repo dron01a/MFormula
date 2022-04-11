@@ -12,7 +12,7 @@ static std::string special = ",";
 static std::string numbers = "-0123456789.";
 static std::string functions[]{ 
     "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt",
-    "!", "log", "deg", "print", "nvar"
+    "!", "log", "deg", "print", "nvar", "size"
 };
 
 class Lexer{

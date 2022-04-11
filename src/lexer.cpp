@@ -102,7 +102,7 @@ _type Lexer::getType(std::string exp){
         return _type::_string;
     }
     else{
-        for(int count = 0; count < 14; count++ ){
+        for(int count = 0; count < 15; count++ ){
             if(exp == functions[count]){
                 return _type::_coreFunc;
             }

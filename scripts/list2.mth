@@ -1,7 +1,12 @@
-var matr = { { 1 + 2 , 2 , 5 } , { 5 - 1 , 5 , 5 } };
-
-for (var i = 0; i < 2; i++ ){
-    for (var j = 0; j < 3; j++ ){
-        print(matr[i][j]);
+func printMatr(var matr, _c, _r){
+    for(var i = 0; i < _c; i++){
+        for(var j = 0; j < _r; j++){
+            print(matr[i][j]);
+        }        
     }
 }
+
+var matr = { { 1 + 2 , 2 , 5 } , { 5 - 1 , 5 , 5 } };
+
+
+printMatr(matr, 2, 3);

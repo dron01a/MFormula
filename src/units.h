@@ -53,6 +53,7 @@ public:
     ~unit(){};
     void assign(unit unit);
     void print();
+    int size();
 //    void push_back(unit unit);
     unit* mems() { return this;  }
     // math operators

@@ -68,9 +68,9 @@ void eval(_units & tokens,environment &env){
             params.push(tokens[count]);
             break;
         case _type::_var:
+        case _type::_list:
             tokens[count].__mem = & _local.get(tokens[count].name);
         case _type::_num:
-        case _type::_list: 
             params.push(tokens[count]);
             break;
         case _type::_opr:
@@ -256,6 +256,12 @@ void evalStrung(unit & node, environment & env){
             _stringVal.erase(count,_stop - count + 1);
             _stringVal.insert(count, env.get(_sub[0].name)._childs[0].name);
         }
+        if(_stringVal[count] == '\\'){
+            if(_stringVal[count + 1] == 'n'){
+                _stringVal[count] = '\n';
+                _stringVal.erase(count+1,1);
+            }
+        }
     }
     node.name = _stringVal;
 }
@@ -263,13 +269,23 @@ void evalStrung(unit & node, environment & env){
 void set_in_env(std::stack<unit> & params, environment & env){
     _units _params = rsetVars(params,2);
     unit _temp;
-    if(_params[1].__mem == nullptr){
-        _temp.__mem = & env.get(_params[1].name)[value(_params[0]).to_int()];
+    if(_params[0].__mem == nullptr){
+        _temp.__mem = & env.get(_params[0].name)._childs[value(_params[1]).to_int()];
     }
     else{
-        _temp.__mem = & _params[1].__mem->_childs[value(_params[0]).to_int()];
+        _temp.__mem = & _params[0].__mem->_childs[value(_params[1]).to_int()];
     }
-    params.push(_temp);
+    if(params.size() != 0){
+        _units tmp = setVars(params, params.size());
+        params.push(_temp);
+        for(int i = 0; i != tmp.size(); i++){
+            params.push(tmp[i]);
+        }
+    }
+    else{
+        params.push(_temp);
+    }
+    
 }
 
 void decrem(std::stack<unit> & params, environment & env){

@@ -112,6 +112,15 @@ std::string unit::to_string() const{
     }
 }
 
+int unit::size(){
+    switch (type)
+    {
+    case _type::_list:
+        return _childs.size();
+    default:
+        break;
+    }
+}
 //void unit::push_back(unit unit){
 //    if(type == _type::_list){
 //        _childs.push_back(unit);

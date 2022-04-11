@@ -16,7 +16,6 @@ private:
     void getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func);
     void parseCloseBrt(std::stack<unit> & oprStack, unit curUnit, char _type);
     int checkCloseBrt(_units & units, int position);
-    void parseListInit(unit & newUnit, _units & units,environment & env, int & count);
     void parseCondition(_units & units,environment & env, int & count);
     _units parseContext(_units & units, int & count);
     unit parseVarInit(_units & units,environment & env, int & count);
@@ -24,9 +23,8 @@ private:
     unit parseIF(_units & units,environment & env, int & count);
     unit parseWhile(_units & units,environment & env, int & count);
     unit parseFor(_units & units,environment & env, int & count);
-    _units _tokens; 
-
     _units parseList(_units  units);
+    _units _tokens; 
 };
 
 #endif

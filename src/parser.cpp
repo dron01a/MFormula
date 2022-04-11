@@ -25,6 +25,7 @@ Parser::Parser(_units & units, environment & env){
         case _type::_string:
         case _type::_var:
         case _type::_num:
+        case _type::_list:
             _tokens.push_back(units[count]);
             break;
         case _type::_special: 
@@ -39,12 +40,6 @@ Parser::Parser(_units & units, environment & env){
                 newList.type = _type::_list;
                 newList._childs = parseList(parseContext(units,count));
                 oprStack.push(newList);
-                
-                //units[count].name = "[]";
-                //units[count].type = _type::_opr;
-                //units[count].prior = 6;
-                //count--;
-//                oprStack.push(unit(_type::_opr, "[]", 6));
             }
             else{
                 checkCloseBrt(units,count);
@@ -53,7 +48,6 @@ Parser::Parser(_units & units, environment & env){
             break;
         case _type::_coreFunc:
         case _type::_func:
-        case _type::_list:
             oprStack.push(units[count]);
             break;
         case _type::_closeBrt:
@@ -61,7 +55,7 @@ Parser::Parser(_units & units, environment & env){
             if(units[count].name == "]"){
                 units[count].name = "[]";
                 units[count].type = _type::_opr;
-                units[count].prior = 8;
+                units[count].prior = 9;
                 count--;
             }
             break; 
@@ -112,7 +106,6 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
                 count++;
                 newVar._childs  = parseContext(units,count);
                 newVar._childs = parseList(newVar._childs);
-                newVar._childs;
             }
             else{
                 count+=2;
@@ -162,55 +155,6 @@ _units Parser::parseList(_units units){
         result[result.size()-1]._childs.push_back(units[_cnt]);
     }
     return result; 
-}
-
-
-void Parser::parseListInit(unit & newUnit, _units & units,environment & env, int & count){
-    //int stopBrt = checkCloseBrt(units,count + 2);
-    //count+=3;
-    //while(count != stopBrt + 1){
-    //    newUnit._childs.push_back(unit());
-    //    if(units[count].name == "{"){
-    //        newUnit._childs.back().type = _type::_list;
-    //        parseListInit(newUnit._childs[newUnit._childs.size() - 1 ],units,env,count);
-    //    }
-    //    while(units[count].type != _type::_special){
-    //        if(units[count].type == units[stopBrt].type){
-    //            break;
-    //        }
-    //        newUnit._childs[newUnit._childs.size() - 1]._childs.push_back(units[count]);
-    //        units.erase(units.begin()+count);
-    //        stopBrt--;
-    //    }
-    //    count++; 
-    //}
-    //count+=1;
-    //int curPos = count + 1;
-    //_units context;    
-    //if(units[count+1].name == "{"){
-    //    context = parseContext(units,count);
-    //}
-    //else{
-    //    context = units;
-    //}
-    //for(int _i = 0;_i < context.size(); _i++ ){
-    //    if(context[_i].name == "{"){
-    //        unit _sub(_type::_list,"sub");
-    //        int _j = 0;
-    //        _i--;
-    //        parseListInit(_sub,context,env,_i);
-    //        newUnit._childs.push_back(_sub);
-    //    }
-    //    else if(context[_i].type == _type::_special){
-    //        _i++;
-    //    }        
-    //    else{
-    //        newUnit._childs.push_back(unit());
-    //        while(context[_i].type != _type::_special){
-    //            newUnit._childs.back()._childs.push_back(context[_i]);
-    //        }
-    //    }
-    //}
 }
 
 void Parser::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func){
@@ -307,9 +251,6 @@ int Parser::checkCloseBrt(_units & units, int position){
             openChars--;
         }
         if(openChars == 0){
-            //if(brtType == "]" ) {
-            //    units[count].type = _type::_sqrBrtClose;
-            //}
             result = count;
             break;
         }
