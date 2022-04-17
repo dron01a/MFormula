@@ -115,6 +115,7 @@ std::string unit::to_string() const{
 int unit::size(){
     switch (type)
     {
+    case _type::_var:
     case _type::_list:
         return _childs.size();
     default:

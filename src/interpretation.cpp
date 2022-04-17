@@ -40,7 +40,13 @@ void varInit(unit & node, environment & env){
                 Parser childsParcer(childs,env);
                 childs = eval(childsParcer, env); 
             }
-            env.get(node._childs[_vars].name)._childs = childs;
+            if(childs[0].type == _type::_list){
+                env.get(node._childs[_vars].name)._childs = childs[0]._childs;
+                env.get(node._childs[_vars].name).type = _type::_list;
+            }
+            else{
+                env.get(node._childs[_vars].name)._childs = childs;
+            }
         }
     }
 }
@@ -92,6 +98,7 @@ void eval(_units & tokens,environment &env){
             }
             break;
         case _type::_return:
+            params.top() = value(params.top());
             count = tokens.size();
             break;
         }
@@ -212,7 +219,6 @@ void forInterpt(unit & node, environment & env){
     Parser _exprParce(node._childs[3]._childs,_local);
     _units init = eval(_initParce,_local);
     loop(_exprParce, _condParce, _stepParce, env, _local);  
-    
 }
 
 void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
@@ -230,7 +236,7 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
     Parser _parsExpr(_expr, _local);
     _expr = eval(_parsExpr, _local);  
     if(_expr.size() != 0){
-        _prms.push(_expr[0]);
+        _prms.push(value(_expr[0]));
     }
 }
 
@@ -267,7 +273,7 @@ void evalStrung(unit & node, environment & env){
 }
 
 void set_in_env(std::stack<unit> & params, environment & env){
-    _units _params = rsetVars(params,2);
+    _units _params = setVars(params,2);
     unit _temp;
     if(_params[0].__mem == nullptr){
         _temp.__mem = & env.get(_params[0].name)._childs[value(_params[1]).to_int()];
@@ -275,16 +281,7 @@ void set_in_env(std::stack<unit> & params, environment & env){
     else{
         _temp.__mem = & _params[0].__mem->_childs[value(_params[1]).to_int()];
     }
-    if(params.size() != 0){
-        _units tmp = setVars(params, params.size());
-        params.push(_temp);
-        for(int i = 0; i != tmp.size(); i++){
-            params.push(tmp[i]);
-        }
-    }
-    else{
-        params.push(_temp);
-    }
+    params.push(_temp);
     
 }
 

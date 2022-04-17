@@ -1,12 +1,29 @@
-func printMatr(var matr, _c, _r){
-    for(var i = 0; i < _c; i++){
-        for(var j = 0; j < _r; j++){
-            print(matr[i][j]);
+func printMatr(var matr){
+    for(var i = 0; i < size(matr); i++){
+        for(var j = 0; j < size(matr[i]); j++){
+            print(matr[i][j], " ");
         }        
+        print("\n");
     }
 }
 
-var matr = { { 1 + 2 , 2 , 5 } , { 5 - 1 , 5 , 5 } };
+func sumMatr(var A, B){
+    var _R = {{0, 0},{0, 0}}; 
+    for(var i = 0; i < size(A); i++){
+        for(var j = 0; j < size(A[i]); j++){
+            _R[i][j] = A[i][j] + B[i][j];
+        }        
+    }
+    return _R;
+}
+
+var matr1 = { { 1 + 2 , 2 } , { 5 - 1 , 5} };
+var matr2 = { { 1 , 1 } , { 1 , 1 } };
+var matr3 = sumMatr(matr1,matr2);
 
 
-printMatr(matr, 2, 3);
+printMatr(matr1);
+print("\n");
+printMatr(matr2);
+print("\n");
+printMatr(matr3);

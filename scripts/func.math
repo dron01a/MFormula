@@ -2,7 +2,7 @@ var b = 0, t = 1;
 
 func error(var a, b, c){
     if( a+b > c){
-        print("error a+b > c!");
+        print("error a+b > c!\n");
     }
 }
 
@@ -10,27 +10,15 @@ error(10,10,10);
 
 func sumator(var a, b){
     var c = (a+b)*10;
-    error(a,b,c);
-    for(var i = 1; i != 5; i++){
-        a = a*i;
-        if(a < 10){
-            a = a + 5;
-            print(a);
-            continue;
-        }
-        else{
-            break;
-        }
-    }
-    print(a);
     return c-(a+b);
 }
 
 print(1,2,3);
+print("\n");
 
 var tonk = sumator(10,10);
 
-print(" tonk = %tonk% ");
+print("tonk = %tonk%\n");
 
 
 print(sumator(t,b));

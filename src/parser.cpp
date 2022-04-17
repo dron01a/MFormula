@@ -56,7 +56,8 @@ Parser::Parser(_units & units, environment & env){
                 units[count].name = "[]";
                 units[count].type = _type::_opr;
                 units[count].prior = 9;
-                count--;
+                _tokens.push_back(units[count]);
+
             }
             break; 
         case _type::_return:
@@ -110,6 +111,12 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
             else{
                 count+=2;
                 while(units[count].type != _type::_semicolon){
+                    if(units[count].type == _type::_func || units[count].type == _type::_coreFunc){
+                        newVar._childs.push_back(units[count]);
+                        newVar._childs.push_back(units[count + 1]);
+                        _units args = parseContext(units,count);
+                        newVar._childs.insert(newVar._childs.end(), args.begin(), args.end());
+                    }
                     if(units[count].type == _type::_special && units[count+1].type == _type::_indentf){
                         count++;
                         break;
