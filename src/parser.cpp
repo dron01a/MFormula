@@ -60,6 +60,13 @@ Parser::Parser(_units & units, environment & env){
 
             }
             break; 
+        case _type::_include:
+            if(units[count + 1].type != _type::_string){
+                throw "error type!!!";
+            }
+            includeFile(units[count+1].name,env);
+            count+=2;
+            break;
         case _type::_return:
         case _type::_opr:
             getUnitsIn(oprStack,units[count],[](unit _unit, std::stack<unit> & oprStack){
@@ -128,14 +135,17 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
         }
         env.add(newVar);
         units[curPos]._childs.push_back(newVar);
-        switch (units[count + 1].type){
-        case _type::_special:
-            count+=2;
-            break;
-        case _type::_semicolon:
-            count++;
-            break;
+        if(count < units.size() - 1){
+            switch (units[count + 1].type){
+            case _type::_special:
+                count+=2;
+                break;
+            case _type::_semicolon:
+                count++;
+                break;
+            }
         }
+        
     }
     if(units[count + 2].type == _type::_semicolon ){
         count+=2;
@@ -287,4 +297,19 @@ void Parser::parseCloseBrt(std::stack<unit> & oprStack, unit curUnit, char _type
         break;
     }
     oprStack.pop();
+}
+
+void includeFile(std::string _file, environment & env){
+    std::ifstream in(_file,std::ios::binary);
+    if(!in.good()){
+        throw "not found file " + _file;
+    }
+    int size = in.seekg(0,std::ios::end).tellg();
+    in.seekg(0);
+    char * buf = new char[size+1];
+    in.read(buf,size);
+    buf[size] = 0;
+    Lexer lex(buf, env);
+    _units codeTokens = lex.getUnits();
+    Parser parser(codeTokens, env);
 }

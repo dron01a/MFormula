@@ -10,9 +10,9 @@ static std::string closeBrt = ")}]";
 static std::string operators = "+-*/^%<>=";
 static std::string special = ",";         
 static std::string numbers = "-0123456789.";
-static std::string functions[]{ 
+static std::vector<std::string> functions {
     "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt",
-    "!", "log", "deg", "print", "nvar", "size"
+    "!", "log", "deg", "print", "nvar", "size",  "resize"
 };
 
 class Lexer{
@@ -26,7 +26,6 @@ private:
     _type getType(std::string exp); // return type of expression 
     void addToToken(std::string & _token, int & _count, compareFunc _func);
     int getPriority(std::string _s);
-
 };
 
 

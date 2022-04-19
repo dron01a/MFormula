@@ -169,6 +169,7 @@ void unit::assign(unit _unit){
         break;
     case _type::_list: 
     case _type::_var:
+        type = _unit.type;
         _childs = _unit._childs;
         break;
     default:
@@ -373,6 +374,19 @@ unit unit::decrement(){
         return  unit((double)to_int()-1);
     }
     throw "type error";
+}
+
+void unit::resize(int _size){
+    switch (type){
+    case _type::_var:
+    case _type::_list:
+        if(_size < 0){
+            throw "size < 0";
+        }
+        _childs.resize(_size);
+    default:
+        break;
+    }
 }
 
 

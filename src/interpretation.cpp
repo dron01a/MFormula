@@ -39,13 +39,13 @@ void varInit(unit & node, environment & env){
             if(childs.size() != 0){
                 Parser childsParcer(childs,env);
                 childs = eval(childsParcer, env); 
-            }
-            if(childs[0].type == _type::_list){
-                env.get(node._childs[_vars].name)._childs = childs[0]._childs;
-                env.get(node._childs[_vars].name).type = _type::_list;
-            }
-            else{
-                env.get(node._childs[_vars].name)._childs = childs;
+                if(childs[0].type == _type::_list){
+                    env.get(node._childs[_vars].name).assign(value(childs[0]));
+                    env.get(node._childs[_vars].name).type = _type::_list;
+                }
+                else{
+                    env.get(node._childs[_vars].name)._childs = childs;
+                }
             }
         }
     }
@@ -101,12 +101,18 @@ void eval(_units & tokens,environment &env){
             params.top() = value(params.top());
             count = tokens.size();
             break;
+        case _type::_indentf:
+            if(_local.have(tokens[count].name)){
+                tokens[count].type = _local.get(tokens[count].name).type;
+                count--;
+            }
+            break;
         }
     }
     env.saveChange(_local);
     tokens.clear();
     if(params.size() != 0){
-        tokens.push_back(params.top());
+        tokens.push_back(value(params.top()));
     }
 }
 
@@ -305,3 +311,4 @@ void increm(std::stack<unit> & params, environment & env){
     }
     params.pop();
 }
+

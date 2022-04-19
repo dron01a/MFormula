@@ -2,11 +2,14 @@
 #define __PARCER__H__
 
 #include "units.h"
+#include "lexer.h"
 
 typedef bool(*condFunc)(unit, std::stack<unit>&);
 
 // test name 
 _units getUnits(_units & units,int _begin, int _end);
+
+void includeFile(std::string _file, environment & env);
 
 class Parser{
 public:

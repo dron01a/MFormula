@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <stack>
+#include <fstream>
 
 #define NPOS std::string::npos
 
@@ -41,7 +42,8 @@ enum class _type{
     _indentf, 
     _memOpr,
     _sqrBrtOpen,
-    _sqrBrtClose
+    _sqrBrtClose,
+    _include
 };
 
 class unit{
@@ -54,6 +56,7 @@ public:
     void assign(unit unit);
     void print();
     int size();
+    void resize(int _newsize);
 //    void push_back(unit unit);
     unit* mems() { return this;  }
     // math operators

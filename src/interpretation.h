@@ -81,6 +81,11 @@ static std::map<std::string, memF> memFuncs{
     {"size", [](std::stack<unit> & params, environment & env){
         _units _params = setVars(params,1);
         params.push(unit((double)value(_params[0]).size()));
+    }},
+    {"resize", [](std::stack<unit> & params, environment & env){
+        _units _params = setVars(params,2);
+        value(_params[0]).resize(value(_params[1]).to_int());
+        //params.push(unit((double)value(_params[0]).resize()));
     }}
 };
 

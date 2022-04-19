@@ -69,6 +69,9 @@ _type Lexer::getType(std::string exp){
     if(exp == "continue"){
         return _type::_continue;
     }
+    if(exp == "include"){
+        return _type::_include;
+    }
     if(exp == "."){
         return _type::_opr;
     }
@@ -102,7 +105,7 @@ _type Lexer::getType(std::string exp){
         return _type::_string;
     }
     else{
-        for(int count = 0; count < 15; count++ ){
+        for(int count = 0; count < functions.size(); count++ ){
             if(exp == functions[count]){
                 return _type::_coreFunc;
             }

@@ -1,0 +1,56 @@
+func printMatr(var matr){
+    for(var i = 0; i < size(matr); i++){
+        for(var j = 0; j < size(matr[i]); j++){
+            print(matr[i][j], " ");
+        }        
+        print("\n");
+    }
+}
+
+func sumMatr(var A, B){
+    var _R = A; 
+    for(var i = 0; i < size(A); i++){
+        for(var j = 0; j < size(A[i]); j++){
+            _R[i][j] = A[i][j] + B[i][j];
+        }        
+    }
+    return _R;
+}
+
+func subMatr(var A, B){
+    var _R = A; 
+    for(var i = 0; i < size(A); i++){
+        for(var j = 0; j < size(A[i]); j++){
+            _R[i][j] = A[i][j] - B[i][j];
+        }        
+    }
+    return _R;
+}
+
+func mulMatrNum(var A, _num){
+    var _R = A ; 
+    for(var i = 0; i < size(A); i++){
+        for(var j = 0; j < size(A[i]); j++){
+            _R[i][j] = A[i][j]*_num;
+        }        
+    }
+    return _R;
+}
+
+func mulMatr(var A, B){
+    var _R;
+    resize(_R,size(B));
+    if(size(A[0]) != size(B)){
+        return A;
+    }
+    for(var i = 0; i < size(A); i++){
+        _R[i] = B;
+        for(var j = 0; j < size(A[i]); j++){
+            _R[i][j] = 0;
+            for(var k = 0; k < size(A); k++){
+                _R[i][j] = _R[i][j] + A[i][k] * B[k][j];
+            }
+        }    
+    }
+    return _R;
+}
