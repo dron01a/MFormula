@@ -9,7 +9,7 @@ int main(int argc, char *argv[]){
         std::cout << "not valid args";
     }
     if(strcmp(argv[1],"-s") == 0){
-        run("print("+std::string(argv[2]) +")");
+        run("print(" + std::string(argv[2]) + ")");
     }
     else if(strcmp(argv[1],"-f") == 0){
         std::ifstream in( argv[2],std::ios::binary);
