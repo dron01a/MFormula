@@ -48,3 +48,26 @@ __include files__<br>
     // lib -> name of file with code
     include lib; 
 
+## Example of code
+
+    ./examples/fibo.math
+
+    var num1 = 0;   // first num 
+    var num2 = 1;   // second num
+    var temp;       // temp var
+    var next;       // next num
+    var n = 188;    // position
+
+    if (n >= 1){
+        print("1 --> 0");
+    }
+    if (n >= 2){
+        print("2 --> 1");
+    }
+    for(var _count = 0; _count < n - 2; _count++ ){
+        next = num1 + num2;
+        temp = _count+3;
+        print("%temp% --> %next%");
+        num1 = num2;
+        num2 = next;
+    }
