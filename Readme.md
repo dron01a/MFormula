@@ -1,54 +1,53 @@
 # MFormula 
 
-## Unusual "calculator"
+## Необычный "калькулятор"
 
-A scripting language for solving mathematical and other tasks. Written in C/C++ using the standard library.
-It was originally created as a parser of mathematical expressions, later "if", "array's" and "other joys" of life were added.
-Further modifications will be introduced as needed. Ideally, get a program for calculating automatic control systems.
+Скриптовый язык для решения математических и других задач. Написан на C/C++ с использованием стандартной библиотеки.
+Изначально он был создан как парсер математических выражений, позже были добавлены "if", "array" и другие "радости жизни".
+По мере необходимости будут вноситься дополнительные изменения. В идеале обзавестись программой для расчета систем автоматического управления.
 
-<img src="doc/nauka.jpg" 
-     alt="Слава советским трудящимся и деятелям науки!"
-     aligin="left">
 
-## Current features
-__defined variables__<br>
+![Image alt](doc/nauka.jpg)
+
+## Текущие возможности
+__объявление переменных__<br>
 
     var a = 1917;
 
-__defined lists__<br>
+__объявление списков__<br>
 
     var list = { 1, 1, 1 };
 
-__defined functions__<br>
+__объявление функций__<br>
 
     func def(var a, b){
         return (a+b)*10-(a+b);
     }
 
-__if-else block__<br>
+__if-else__<br>
 
     if(a > b){
         print("a > b");
     }
 
-__for loop__<br>
+__for__<br>
 
     for(var i = 0; i != 3 ; i++ ){
         print(i);
     }
 
-__while loop__<br>
+__while__<br>
 
     while(true){
         // code
     }
 
-__include files__<br>
+__подключаемые файлы__<br>
 
     // lib -> name of file with code
     include lib; 
 
-## Example of code
+## Пример кода
 
     ./examples/fibo.math
 
