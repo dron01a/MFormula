@@ -1,0 +1,18 @@
+include "./scripts/matrix";
+
+var matr1 = { { 1 + 2 , 2 } , { 5 - 1 , 5} };
+var matr2 = { { 1, 1 } , { 1 , 1 } };
+
+
+print(" -> matrix A \n");
+printMatr(matr1);
+print("\n -> matrix B \n");
+printMatr(matr2);
+print("\n -> A + B \n");
+printMatr(sumMatr(matr1,matr2));
+print("\n -> A - B \n");
+printMatr(subMatr(matr1,matr2));
+print("\n -> A*2 \n");
+printMatr(mulMatrNum(matr1,2));
+print("\n -> A * B \n");
+printMatr(mulMatr(matr1,matr2));

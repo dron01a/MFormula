@@ -1,5 +1,7 @@
 temp/ 
 temp
 
+/lexerTests
+
 .vscode/ 
 .vscode
