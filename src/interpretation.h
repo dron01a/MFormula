@@ -28,10 +28,24 @@ void loop(Parser & _exprP, Parser & _condP, Parser & _stepP ,environment & _env,
 
 void eval(_units & tokens, environment &env);
 
+void evalList(unit & node, environment &env); 
+
+//unit * getListChild(unit & node, environment & env);
+
+unit & value(unit & node);
+
 _units eval( Parser & _par, environment & env);
 
 typedef unit(*simpleF)(unit);
 typedef unit(*binaryF)(unit, unit);
+typedef void(*memF)(std::stack<unit> &, environment & );
+typedef void(*keyFunc)(unit &, environment & );
+
+void set_in_env(std::stack<unit> & params, environment & env);
+
+void decrem(std::stack<unit> & params, environment & env);
+
+void increm(std::stack<unit> & params, environment & env);
 
 // calculations 
 unit calcUnits(std::stack<unit> &args, std::string exp, int prior);
@@ -42,10 +56,38 @@ double factorial(double n);
 // set values to vars 
 _units setVars(std::stack<unit> &args, int _count); 
 
+_units rsetVars(std::stack<unit> &args, int _count); 
+
 void run(std::string _script);
 
 // return units from script
 _units parseScript(std::string _script, environment & env);
+
+static std::map<std::string, memF> memFuncs{
+    {"[]", set_in_env},
+    {"=", assign },
+    {"++", increm },
+    {"--", decrem },
+    {"print", [](std::stack<unit> & params, environment & env){
+        _units _params = setVars(params,params.size());
+        for(size_t _par = 0; _par < _params.size(); _par++){
+            if(value(_params[_par]).type == _type::_list){
+                env.get(value(_params[_par]).name).print();
+                continue;
+            }
+            value(_params[_par]).print();
+        }
+        printf("\n");
+    }}
+};
+
+static std::map<_type, keyFunc> _keyWords{
+    {_type::_varInit, varInit },
+    {_type::_functionInit, funcInit },
+    {_type::_if, if_iterpr },
+    {_type::_for, forInterpt },
+    {_type::_while, whileInterpt }
+};
 
 static std::map<std::string, simpleF> simpleFuncs{
     {"++",[](unit a){return unit(a.increment());}},
@@ -83,6 +125,8 @@ static std::map<std::string, binaryF> binaryFuncs{
     {"^",[](unit a,unit b){return unit(pow(a.to_double(),b.to_double()));}},
     {"log",[](unit a,unit b){return unit((log(a.to_double())/log(b.to_double())));}}
 };
+
+
 
 struct _ctrlConst{
     _ctrlConst(environment _env, _type _t){

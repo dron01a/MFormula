@@ -32,8 +32,25 @@ Parser::Parser(_units & units, environment & env){
                 return oprStack.top().type != _type::_openBrt;
             });
             break;
-        case _type::_openBrt:  
-            checkCloseBrt(units,count);
+        case _type::_openBrt: 
+            if(units[count].name == "{"){
+                count--;
+                unit newList;
+                newList.type = _type::_list;
+                newList._childs = parseList(parseContext(units,count));
+                oprStack.push(newList);
+                
+                //units[count].name = "[]";
+                //units[count].type = _type::_opr;
+                //units[count].prior = 6;
+                //count--;
+//                oprStack.push(unit(_type::_opr, "[]", 6));
+            }
+            else{
+                checkCloseBrt(units,count);
+                oprStack.push(units[count]); 
+            } 
+            break;
         case _type::_coreFunc:
         case _type::_func:
         case _type::_list:
@@ -41,6 +58,12 @@ Parser::Parser(_units & units, environment & env){
             break;
         case _type::_closeBrt:
             parseCloseBrt(oprStack,units[count],units[count].name[0]);
+            if(units[count].name == "]"){
+                units[count].name = "[]";
+                units[count].type = _type::_opr;
+                units[count].prior = 8;
+                count--;
+            }
             break; 
         case _type::_return:
         case _type::_opr:
@@ -86,14 +109,10 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
         if(units[count+1].name == "="){
             if(units[count+2].name == "{"){
                 newVar.type = _type::_list;
-            }
-            for(int i = count; i < units.size(); i++){
-                if(units[i].name == newVar.name){
-                    units[i].type = newVar.type;
-                }
-            }
-            if(newVar.type == _type::_list){
-                parseListInit(newVar,units,env,count);
+                count++;
+                newVar._childs  = parseContext(units,count);
+                newVar._childs = parseList(newVar._childs);
+                newVar._childs;
             }
             else{
                 count+=2;
@@ -107,13 +126,16 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
                 }
             }
         }
-        else{
-            if(units[count + 1].type == _type::_special ){
-                count+=2;
-            }
-        }
         env.add(newVar);
         units[curPos]._childs.push_back(newVar);
+        switch (units[count + 1].type){
+        case _type::_special:
+            count+=2;
+            break;
+        case _type::_semicolon:
+            count++;
+            break;
+        }
     }
     if(units[count + 2].type == _type::_semicolon ){
         count+=2;
@@ -121,26 +143,74 @@ unit Parser::parseVarInit(_units & units,environment & env, int & count){
     return units[curPos];
 }
 
-void Parser::parseListInit(unit & newUnit, _units & units,environment & env, int & count){
-    int stopBrt = checkCloseBrt(units,count + 2);
-    count+=3;
-    while(count != stopBrt + 1){
-        newUnit._childs.push_back(unit());
-        //if(units[count].name == "{"){
-        //    newUnit._childs.back().type = _type::_list;
-        //    parceListInit(newUnit._childs[newUnit._childs.size() - 1 ],units,env,count);
-        //}
-        while(units[count].type != _type::_special){
-            if(units[count].type == units[stopBrt].type){
-                break;
-            }
-            newUnit._childs[newUnit._childs.size() - 1]._childs.push_back(units[count]);
-            units.erase(units.begin()+count);
-            stopBrt--;
-           // count++;
-        }
-        count++; 
+_units Parser::parseList(_units units){
+    _units result;
+    if(units.size() != 0){
+        result.push_back(unit());
     }
+    for(int _cnt = 0; _cnt < units.size(); _cnt++){
+        if(units[_cnt].type == _type::_special){
+            result.push_back(unit());
+            continue;
+        }
+        if(units[_cnt].name == "{"){
+            _cnt--;
+            result[result.size()-1].type = _type::_list;
+            result[result.size()-1]._childs = parseList(parseContext(units,_cnt));
+            continue;
+        }
+        result[result.size()-1]._childs.push_back(units[_cnt]);
+    }
+    return result; 
+}
+
+
+void Parser::parseListInit(unit & newUnit, _units & units,environment & env, int & count){
+    //int stopBrt = checkCloseBrt(units,count + 2);
+    //count+=3;
+    //while(count != stopBrt + 1){
+    //    newUnit._childs.push_back(unit());
+    //    if(units[count].name == "{"){
+    //        newUnit._childs.back().type = _type::_list;
+    //        parseListInit(newUnit._childs[newUnit._childs.size() - 1 ],units,env,count);
+    //    }
+    //    while(units[count].type != _type::_special){
+    //        if(units[count].type == units[stopBrt].type){
+    //            break;
+    //        }
+    //        newUnit._childs[newUnit._childs.size() - 1]._childs.push_back(units[count]);
+    //        units.erase(units.begin()+count);
+    //        stopBrt--;
+    //    }
+    //    count++; 
+    //}
+    //count+=1;
+    //int curPos = count + 1;
+    //_units context;    
+    //if(units[count+1].name == "{"){
+    //    context = parseContext(units,count);
+    //}
+    //else{
+    //    context = units;
+    //}
+    //for(int _i = 0;_i < context.size(); _i++ ){
+    //    if(context[_i].name == "{"){
+    //        unit _sub(_type::_list,"sub");
+    //        int _j = 0;
+    //        _i--;
+    //        parseListInit(_sub,context,env,_i);
+    //        newUnit._childs.push_back(_sub);
+    //    }
+    //    else if(context[_i].type == _type::_special){
+    //        _i++;
+    //    }        
+    //    else{
+    //        newUnit._childs.push_back(unit());
+    //        while(context[_i].type != _type::_special){
+    //            newUnit._childs.back()._childs.push_back(context[_i]);
+    //        }
+    //    }
+    //}
 }
 
 void Parser::getUnitsIn(std::stack<unit> & oprStack, unit curUnit, condFunc func){
@@ -214,7 +284,7 @@ unit Parser::parseFuncInit(_units & units,environment & env, int & count){
     }
     count--;
     parseCondition(units,env,count);
-    units[curPos + 1][0]._childs.push_back(unit(_type::_special, ";")); 
+    units[curPos + 1][0]._childs.push_back(unit(_type::_semicolon, ";")); 
     units[curPos]._childs.push_back(units[curPos + 1]);
     env.add(units[curPos + 1]);
     return units[curPos];
@@ -226,7 +296,7 @@ int Parser::checkCloseBrt(_units & units, int position){
     int openChars = 1; 
     switch(units[position].name[0]){
         case '(':brtType = ")";break;
-        case '[':brtType = "]";break;
+        case '[':brtType = "]";break;      //units[position].type = _type::_sqrBrtOpen;break;
         case '{':brtType = "}";break;
     }
     for(int count = position + 1;; count++){
@@ -237,6 +307,9 @@ int Parser::checkCloseBrt(_units & units, int position){
             openChars--;
         }
         if(openChars == 0){
+            //if(brtType == "]" ) {
+            //    units[count].type = _type::_sqrBrtClose;
+            //}
             result = count;
             break;
         }

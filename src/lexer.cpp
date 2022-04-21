@@ -125,6 +125,9 @@ void Lexer::addToToken(std::string & _token, int & _count, compareFunc _func){
         //} 
         _token+=_source[_count];
         _count++;
+        if(_source[_count] == ';'){
+            break;
+        }
         if( getType(std::string(1,_source[_count])) == _type::_openBrt 
             || getType(std::string(1,_source[_count])) == _type::_closeBrt
             || getType(_token) == _type::_openBrt
@@ -143,13 +146,13 @@ int Lexer::getPriority(std::string exp){
     if (exp == "&&" || exp == "||"){
         return 0;
     }
-    if (exp == "+" || exp == "-" || exp == "nvar" || exp == "++" || exp == "--" ) {
+    if (exp == "+" || exp == "-"  ) {
         return 2;
     }
 	if (exp == "*" || exp == "/" || exp == "%"){ 
         return 3;
     }
-	if (exp == "^") {
+	if (exp == "^"|| exp == "nvar" || exp == "++" || exp == "--") {
         return 4;
     }
     if (exp == "!"){

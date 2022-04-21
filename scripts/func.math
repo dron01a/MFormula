@@ -1,10 +1,14 @@
-func error(var a; var b; var c){
+var b = 0, t = 1;
+
+func error(var a, b, c){
     if( a+b > c){
         print("error a+b > c!");
     }
 }
 
-func sumator(var a; var b){
+error(10,10,10);
+
+func sumator(var a, b){
     var c = (a+b)*10;
     error(a,b,c);
     for(var i = 1; i != 5; i++){
@@ -28,7 +32,5 @@ var tonk = sumator(10,10);
 
 print(" tonk = %tonk% ");
 
-var b = 10;
-var t = 1;
 
 print(sumator(t,b));

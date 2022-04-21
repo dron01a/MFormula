@@ -15,18 +15,25 @@ _units parseScript(std::string _script, environment & env){
     return result;
 }
 
+void evalList(unit & node, environment & env){
+    for(size_t count = 0; count < node._childs.size(); count++){
+        if(node[count].type == _type::_list){
+            evalList(node[count], env);
+            continue;
+        }
+        Parser pars(node[count]._childs, env);
+        node[count] = eval(pars, env)[0];
+    }
+}
+
 void varInit(unit & node, environment & env){
     for(size_t _vars = 0;_vars < node._childs.size(); _vars++ ){
         _units childs = env.get(node._childs[_vars].name)._childs;  
         if(env.get(node._childs[_vars].name).type == _type::_list){
-            for(int count = 0; count < childs.size(); count++){
-                Parser childsParcer(childs[count]._childs,env);
-                childs[count]._childs = childsParcer.getTokens();
-            } 
-            for(int count = 0; count < childs.size(); count++){
-                eval(childs[count]._childs, env);
-                env.get(node._childs[_vars].name)._childs[count] = childs[count]._childs[0];
-            }
+            unit listNode;
+            listNode = env.get(node._childs[_vars].name);
+            evalList(listNode, env);
+            env.get(node._childs[_vars].name) = listNode;
         }
         else{
             if(childs.size() != 0){
@@ -50,64 +57,26 @@ void eval(_units & tokens,environment &env){
     for(int count = 0; count < tokens.size(); count++){
         switch (tokens[count].type){
         case _type::_varInit:
-            varInit(tokens[count],_local);
-            break;  
         case _type::_functionInit:
-            funcInit(tokens[count],_local);
-            break;
         case _type::_if:
-            if_iterpr(tokens[count],_local);
-            break;
         case _type::_for:
-            forInterpt(tokens[count],_local);
-            break;
         case _type::_while:
-            whileInterpt(tokens[count],_local);
+            _keyWords[tokens[count].type](tokens[count], _local);
             break;
         case _type::_string:
-               evalStrung(tokens[count],_local);
-        case _type::_num:
+            evalStrung(tokens[count],_local);
             params.push(tokens[count]);
             break;
         case _type::_var:
-            params.push(_local.get(tokens[count].name));
-            break;
-        case _type::_list:{
-                if(params.size() != 0){
-                    if(params.top().type == _type::_num || params.top().type == _type::_var){
-                        unit listVal(_type::_var,"listVar");
-                        listVal._childs.push_back(_local.get(tokens[count].name)._childs[params.top().to_int()]);
-                        listVal._childs.push_back(tokens[count]);
-                        listVal._childs.push_back(params.top());
-                        params.pop();
-                        params.push(listVal);
-                    }
-                    else{
-                        params.push(_local.get(tokens[count].name));
-                    }
-                }
-                else{
-                    params.push(_local.get(tokens[count].name));
-                }
-            }            
+            tokens[count].__mem = & _local.get(tokens[count].name);
+        case _type::_num:
+        case _type::_list: 
+            params.push(tokens[count]);
             break;
         case _type::_opr:
-            if(tokens[count].name == "--" || tokens[count].name == "++"){
-                _local.get(params.top().name)._childs[0] = simpleFuncs[tokens[count].name](params.top());
-                params.pop(); 
-                continue;
-            }
-            if(tokens[count].name == "="){
-                assign(params,_local);
-                continue;
-            }
         case _type::_coreFunc:
-            if(tokens[count].name == "print"){
-                _units _params = setVars(params,params.size());
-                for(size_t _par = 0; _par < _params.size(); _par++){
-                    _params[_par].print();
-                }
-                printf("\n");
+            if(memFuncs.count(tokens[count].name) != 0){
+                memFuncs[tokens[count].name](params,_local);
                 continue;
             }
             params.push(calcUnits(params,tokens[count].name,tokens[count].prior));
@@ -116,15 +85,12 @@ void eval(_units & tokens,environment &env){
             callFunc(tokens[count],params,_local);
             break;
         case _type::_break:  
-            {
-                _ctrlConst _thr(_local,_type::_break); 
-                throw _thr;
-            }
         case _type::_continue:
             {
-                _ctrlConst _thr(_local,_type::_continue); 
+                _ctrlConst _thr(_local,tokens[count].type); 
                 throw _thr;
             }
+            break;
         case _type::_return:
             count = tokens.size();
             break;
@@ -153,24 +119,29 @@ _units setVars(std::stack<unit> &args, int _count){
     return result;
 }
 
+_units rsetVars(std::stack<unit> &args, int _count){
+    _units result;
+    _units tmp = setVars(args, args.size());
+    for(int i = 0; i < _count; i++){
+        result.push_back(tmp[i]);
+    }
+    for(int i = _count; i != tmp.size(); i++){
+        args.push(tmp[i]);
+    }
+    return result;
+}
+
 unit calcUnits(std::stack<unit> &args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
-    if((prior > 0 && exp != "++" && exp != "--" && exp != "!" && exp != "nvar") || exp == "log" || exp == "&&" || exp == "||"){
-        _units _params;
-        if(args.size() == 1){
-            _params = setVars(args,1);
-            return simpleFuncs[exp](_params[0]);
-        }
-        else{
-            _params = setVars(args,2);
-        }
-        return binaryFuncs[exp](_params[0],_params[1]);
+    if((prior > 0  && exp != "!" && exp != "nvar") || exp == "log" || exp == "&&" || exp == "||"){
+        _units _params = setVars(args,2);
+        return binaryFuncs[exp](value(_params[0]),value(_params[1]));
     }
     else{
         _units _params = setVars(args,1);
-        return simpleFuncs[exp](_params[0]);//simpleFunc(exp,a);
+        return simpleFuncs[exp](value(_params[0]));//simpleFunc(exp,a);
     }
 }
 
@@ -184,7 +155,7 @@ double factorial(double n){
 void if_iterpr(unit & node, environment & env){
     environment _local(env);
     Parser _condParce(node._childs[0]._childs,env);
-    _units cond= eval(_condParce,env);
+    _units cond = eval(_condParce,env);
     _units expr;
     if(cond[0].to_bool() == true){
         expr = node._childs[1]._childs;
@@ -240,7 +211,8 @@ void forInterpt(unit & node, environment & env){
     Parser _stepParce(node._childs[2]._childs,_local);
     Parser _exprParce(node._childs[3]._childs,_local);
     _units init = eval(_initParce,_local);
-    loop(_exprParce, _condParce, _stepParce, env, _local);
+    loop(_exprParce, _condParce, _stepParce, env, _local);  
+    
 }
 
 void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
@@ -250,10 +222,10 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
     _units _expr = _func._childs[1]._childs;
     Parser _parsParm(_params, _local);
     _params = _parsParm.getTokens();
-    _units _functionPar = setVars(_prms, _params.size());
+    _units _functionPar = setVars(_prms, _params[0]._childs.size());
     _local.comb(env);
-    for(int _parC = 0; _parC < _params.size(); _parC++){
-        _local.defined()[_parC+2].assign(_functionPar[_parC]);
+    for(int _parC = 0; _parC < _functionPar.size(); _parC++){
+        _local.defined()[_parC+2].assign(value(_functionPar[_parC]));
     }
     Parser _parsExpr(_expr, _local);
     _expr = eval(_parsExpr, _local);  
@@ -264,13 +236,14 @@ void callFunc(unit & node, std::stack<unit> & _prms, environment & env){
 
 void assign(std::stack<unit> & params, environment & env){
     _units _params = setVars(params,2);
-    if(_params[0].name == "listVar"){
-        env.get(_params[0]._childs[1].name)._childs[_params[0]._childs[2].to_int()] = _params[1];
+    value(_params[0]).assign(value(_params[1]));
+}
+
+unit & value(unit & node){
+    if(node.__mem != nullptr){
+        return *node.__mem;
     }
-    else{
-        _params[0].assign(_params[1]);
-        env.get(_params[0].name) = _params[0];
-    }
+    return node;
 }
 
 void evalStrung(unit & node, environment & env){
@@ -285,4 +258,37 @@ void evalStrung(unit & node, environment & env){
         }
     }
     node.name = _stringVal;
+}
+
+void set_in_env(std::stack<unit> & params, environment & env){
+    _units _params = rsetVars(params,2);
+    unit _temp;
+    if(_params[1].__mem == nullptr){
+        _temp.__mem = & env.get(_params[1].name)[value(_params[0]).to_int()];
+    }
+    else{
+        _temp.__mem = & _params[1].__mem->_childs[value(_params[0]).to_int()];
+    }
+    params.push(_temp);
+}
+
+void decrem(std::stack<unit> & params, environment & env){
+    if(value(params.top()).type == _type::_var ){
+        value(params.top())[0] = value(params.top())[0].decrement();
+    }
+    if(value(params.top()).type == _type::_num ){
+        value(params.top()) = value(params.top()).decrement();
+    }
+    params.pop();
+}
+
+
+void increm(std::stack<unit> & params, environment & env){
+    if(value(params.top()).type == _type::_var ){
+        value(params.top())[0] = value(params.top())[0].increment();
+    }
+    if(value(params.top()).type == _type::_num ){
+        value(params.top()) = value(params.top()).increment();
+    }
+    params.pop();
 }
