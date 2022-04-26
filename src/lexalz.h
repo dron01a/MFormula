@@ -1,6 +1,8 @@
 #ifndef __LEXALZ__
 #define __LEXALZ__
 
+#include <fstream>
+
 #include "unit.h"
 
 #define NPOS std::string::npos
@@ -19,19 +21,24 @@ static std::vector<std::string> functions {
 typedef bool(*compareFunc)(std::string, char);
 
 /**
-    @param _sorce string with code
-    @param env environment of script
+    @param _source string with code
+    @param _str number of string
     @return vector with code unit
 */
-_units lex(std::string & _sorce, environment & env);
+_units lex(std::string & _source, int _str = 0);
+
+/**
+    @param file name of file with source code
+    @return vector with code unit
+*/
+_units lex_file(std::string file);
 
 /**
  *  Get type of token
  *  @param _token string with token
- *  @param env environment of script
  *  @return type of token
 */
-static _type get_type(std::string & _token, environment & env);
+static _type get_type(std::string _token);
 
 /**
  * Get priority of token
@@ -42,10 +49,11 @@ static int get_priority(std::string & _token);
 
 /**
  *  Add chars to token depending on the result of the function
+ *  @param _source string with code
  *  @param _token string with token 
  *  @param _count num of currient character
  *  @param _func pointer to function    
 */
-static void add_to_token(std::string & _token, int & _count, compareFunc _func);
+static void add_to_token(std::string & _source, std::string & _token, int & _count, compareFunc _func);
 
 #endif
