@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <stack>
+
+#define NPOS std::string::npos
 
 struct unit;
 class environment;
@@ -23,11 +26,9 @@ enum class _type{
     _special,   
     _string,      
     _semicolon, 
-    _newLine,
     _var,
     _list,
     _func,
-    _comment,
     _varInit,
     _functionInit,
     _if,
@@ -38,14 +39,14 @@ enum class _type{
     _break,
     _return,
     _indentf, 
-    _memOpr,
-    _sqrBrtOpen,
-    _sqrBrtClose,
-    _include
+    _include,
+    _classInit,
+    _classVar,
+    _classFV,
+    _classFM
 };
 
 struct unit{
-public:
     /**
      * class constructor
      * 
@@ -84,10 +85,10 @@ public:
         std::string str_data; 
     } _unitData;
 
-    _type type;
-    int prior = 0;
-    int _str = 0;
-    int _col = 0;
+    _type type = _type::_indentf;
+    size_t prior = 0;
+    size_t _str = 0;
+    size_t _col = 0;
     
 };
 
@@ -103,6 +104,15 @@ public:
     void saveChange(environment & env);
 };
 
+class error{
+    /**
+     * class constructor
+     * 
+     * @param _token token with error 
+     * @param _message message with text of error 
+    */
+    error(unit & _token, std::string _message);
+};
 
 
 #endif

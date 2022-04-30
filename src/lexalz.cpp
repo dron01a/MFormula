@@ -20,56 +20,50 @@ _units lex_file(std::string name){
 
 _units lex(std::string & source, int _str){
     _units _result; // result of function
-    size_t _col = 0;   // cur col 
-    int _next_line = source.find('\n',0);
     for(int count = 0; count < source.size(); count++){
-        _col = count;
         std::string token; // temp string for string with token
-        if(source[count] == '/' && source[count+1] == '/'){
-            count = source.find("\n",count+1); // skip comments
-        }
+        int _col = count;
         if(std::isspace(source[count])){
             continue; // skip staces
         }
-        if(source[count] == '\"'){
-            int _curPos = count + 1;
-            count = source.find("\"",count+1);
-            token = source.substr(_curPos,count - _curPos);
-            _result.push_back(unit(_type::_string, token, 0)); // add string unit
-            _result.back()._col = _col;
-            _result.back()._str = _str;
-            continue;
+        if(source[count] == '/' && source[count+1] == '/'){
+            count = source.find("\n",count+1); // skip comments
         }
-        else if(_delim.find(source[count])==NPOS){
-            add_to_token(source,token,count,[](std::string _delim, char _char){
-                return _delim.find(_char)==NPOS;
-            });
+        if(source[count] == '\"'){
+            token = source.substr(count + 1,source.find("\"",count+1) - count - 1);
+            count = source.find("\"",count+1);
+            _result.push_back(unit(_type::_string, token, 0)); // add string unit
         }
         else{
-            add_to_token(source,token,count,[](std::string _delim, char _char){
-                return _delim.find(_char)!=NPOS;
-            });
+            if(delim.find(source[count])==NPOS){
+                add_to_token(source,token,count,[](std::string _delim, char _char){
+                    return _delim.find(_char)==NPOS;
+                });
+            }
+            else{
+                add_to_token(source,token,count,[](std::string _delim, char _char){
+                    return _delim.find(_char)!=NPOS;
+                });
+            }
+            if(token == "-" && _result.back().type == _type::_openBrt){
+                token = "nvar";
+            }
+            _result.push_back(unit(get_type(token), token, get_priority(token)));
         }
-        if(token == "-" && _result.back().type == _type::_openBrt){
-            token = "nvar";
-        }
-        _result.push_back(unit(get_type(token), token, get_priority(token)));
         _result.back()._col = _col;
         _result.back()._str = _str;
-      //  _col += token.size() + 1;
     }
     return _result;
 }
 
 void add_to_token(std::string & _source, std::string & _token, int & _count, compareFunc _func){
-    while(_func(_delim, _source[_count]) && _source[_count] != '\0'){
+    while(_func(delim, _source[_count]) && _source[_count] != '\0'){
         if(std::isspace(_source[_count])){
             _count++;
             break;
         }
         if(_source[_count] == '.'){
             if(get_type(_token) != _type::_num && get_type(std::string(1,_source[_count+1])) != _type::_num){
-//                _count++;
                 break;
             }                                  
             if(_token.size() == 0){
@@ -80,13 +74,11 @@ void add_to_token(std::string & _source, std::string & _token, int & _count, com
         } 
         _token+=_source[_count];
         _count++;
-        if(_source[_count] == ';'){
-            break;
-        }
         if( get_type(std::string(1,_source[_count])) == _type::_openBrt 
             || get_type(std::string(1,_source[_count])) == _type::_closeBrt
             || get_type(_token) == _type::_openBrt
-            || get_type(_token) == _type::_closeBrt ){
+            || get_type(_token) == _type::_closeBrt 
+            || _source[_count] == ';'){
             break;
         } 
     }
@@ -166,7 +158,7 @@ _type get_type(std::string _token){
     return _type::_indentf;
 }
 
-int get_priority(std::string & _token){
+size_t get_priority(std::string & _token){
     if (_token == "==" || _token == "!=" ||_token == ">=" || _token == "<=" || _token == ">"|| _token == "<"){
         return 1;
     }

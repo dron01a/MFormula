@@ -7,7 +7,7 @@
 
 #define NPOS std::string::npos
 
-static std::string _delim = "|&!{}[]()+-*/^%,;<>=\n";
+static std::string delim = "|&!{}[]()+-*/^%,;<>=\n";
 static std::string openBrt = "[{(";
 static std::string closeBrt = ")}]";
 static std::string operators = "+-*/^%<>=";
@@ -45,7 +45,7 @@ static _type get_type(std::string _token);
  *  @param _token string with token
  *  @return int value priority
 */
-static int get_priority(std::string & _token);
+static size_t get_priority(std::string & _token);
 
 /**
  *  Add chars to token depending on the result of the function
