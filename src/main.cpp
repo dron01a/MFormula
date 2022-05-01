@@ -27,10 +27,12 @@
 //}
 
 #include "lexalz.h"
+#include "parse.h"
 
 int main(){
-    std::string _str = "a.b = 11.2; var _str = \"test str\"; var a = 1;";
-
+    std::string _str = "var list = { as, we , can }; var a = 2;";
+    environment env;
     _units _res = lex(_str);
+    _units _res1 = parse(_res, env);    
     return 0;
 }

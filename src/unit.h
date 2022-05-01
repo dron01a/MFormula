@@ -94,24 +94,70 @@ struct unit{
 
 class environment {
 public:
-    environment();
+
+    /**
+     * constructor
+     *  
+     * @param env environment of code 
+     * 
+    */
     environment(environment & env);
+    
+    // constructor
+    environment();
+    
+    /**
+     * get unit in environment 
+     * 
+     * @param _name name of needed unit 
+     * 
+     * @return unit from name
+    */     
     unit & get(std::string _name);
-    _units & defined();
+    
+    // return all defined units
+    _units & defined(); 
+    
+    /**
+     * 
+     * check unit in environment 
+     *  
+     * @param _name name of needed unit 
+     *
+     * @return true or false 
+    */
     bool have(std::string _name);
+
+    /**
+     * add unit toin environment 
+     * 
+     * @param _unit new unit 
+    */     
     void add(unit & _unit);
+    
+    // combuned invironment
     void comb(environment & env);
-    void saveChange(environment & env);
+
+    void save_change(environment & env);
+private:
+    // defined var`s and functions
+    _units _defined {
+        unit(_type::_var,"pi"),
+        unit(_type::_var,"e"),    
+    };
 };
 
-class error{
+struct error{
     /**
      * class constructor
      * 
      * @param _token token with error 
      * @param _message message with text of error 
     */
-    error(unit & _token, std::string _message);
+    error(unit & _token, std::string _message) : _unit(_unit), message(_message){};
+    
+    unit _unit;
+    std::string message;
 };
 
 
