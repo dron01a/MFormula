@@ -425,7 +425,7 @@ bool environment::have(std::string _name){
     return false;
 }
 
-void environment::saveChange(environment & env){
+void environment::save_change(environment & env){
     for(int i = 0; i < env.defined().size(); i++){
         if(have(env.defined()[i].name)){
             get(env.defined()[i].name) = env.defined()[i];

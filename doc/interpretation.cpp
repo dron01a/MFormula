@@ -109,7 +109,7 @@ void eval(_units & tokens,environment &env){
             break;
         }
     }
-    env.saveChange(_local);
+    env.save_change(_local);
     tokens.clear();
     if(params.size() != 0){
         tokens.push_back(value(params.top()));
@@ -180,7 +180,7 @@ void if_iterpr(unit & node, environment & env){
         Parser _exprParse(expr,_local);
         eval(_exprParse,_local);
     }
-    env.saveChange(_local);
+    env.save_change(_local);
 }
 
 void loop(Parser & _exprP, Parser & _condP, Parser & _stepP, environment & _global, environment & _local){
@@ -192,8 +192,8 @@ void loop(Parser & _exprP, Parser & _condP, Parser & _stepP, environment & _glob
             eval(expr,_local);
         }
         catch(_ctrlConst _T){
-            _local.saveChange(_T.env);
-            _global.saveChange(_local);
+            _local.save_change(_T.env);
+            _global.save_change(_local);
             if(_T.type == _type::_continue){
                 step = eval(_stepP,_local);
                 cond = eval(_condP,_local);
@@ -207,7 +207,7 @@ void loop(Parser & _exprP, Parser & _condP, Parser & _stepP, environment & _glob
         step = eval(_stepP,_local);
         cond = eval(_condP,_local);
     }
-    _global.saveChange(_local);
+    _global.save_change(_local);
 }
 
 void whileInterpt(unit & node, environment & env){

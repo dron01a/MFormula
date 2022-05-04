@@ -16,16 +16,6 @@ typedef unit(*parce_key)(unit &, environment &, size_t &);
 */
 _units parse(_units & _tokens,environment & env);
 
-/**
- *  Parse inti of variables and lists
- * 
- * @param _tokens vector of code tokens
- * @param env envinronment of run code
- * @param position currient index of _tokens
- * 
- * @return code unit with initializable variables
-*/
-unit parse_var_init(_units & _tokens,environment & env, size_t & position);
 
 /**
  *  Find in vector close brt from this index 
@@ -59,6 +49,17 @@ _units copy_from(_units & _tokens, size_t _begin, size_t _end);
 _units cut_from(_units & _tokens, size_t & _begin, size_t _end);
 
 /**
+ *  Parse inti of variables and lists
+ * 
+ * @param _tokens vector of code tokens
+ * @param env envinronment of run code
+ * @param position currient index of _tokens
+ * 
+ * @return code unit with initializable variables
+*/
+unit parse_var_init(_units & _tokens,environment & env, size_t & position);
+
+/**
  *  Parse list init 
  *  
  *  @param _tokens vector with list childs 
@@ -66,6 +67,17 @@ _units cut_from(_units & _tokens, size_t & _begin, size_t _end);
  *  @return vector of list initialization
 */
 _units parse_list(_units _tokens);
+
+/**
+ *  Parse inti of functions
+ * 
+ * @param _tokens vector of code tokens
+ * @param env envinronment of run code
+ * @param position currient index of _tokens
+ * 
+ * @return code unit with initializable function
+*/
+unit parse_func_init(_units & _tokens,environment & env, size_t & position);
 
 
 

@@ -154,7 +154,7 @@ struct error{
      * @param _token token with error 
      * @param _message message with text of error 
     */
-    error(unit & _token, std::string _message) : _unit(_unit), message(_message){};
+    error(unit & _token, std::string _message) : _unit(_token), message(_message){};
     
     unit _unit;
     std::string message;

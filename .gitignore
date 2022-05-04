@@ -2,6 +2,6 @@ temp/
 temp
 
 /lexerTests
-
+./old_src
 .vscode/ 
 .vscode

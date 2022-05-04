@@ -103,7 +103,7 @@ public:
     bool have(std::string _name);
     void add(unit & _unit);
     void comb(environment & env);
-    void saveChange(environment & env);
+    void save_change(environment & env);
 private:
     _units _defined {
         unit(_type::_var,"pi"),

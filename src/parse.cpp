@@ -6,7 +6,10 @@ _units parse(_units & _tokens,environment & env){
     for (size_t i = 0; i < _tokens.size(); i++){
         switch (_tokens[i].type){
         case _type::_varInit:
-            _result.push_back(parse_var_init(_tokens,env,i)); // parse _type:: var  
+            _result.push_back(parse_var_init(_tokens,env,i)); // parse _type::_var  
+            break;
+        case _type::_functionInit:
+            
             break;
         case _type::_break:
         case _type::_continue:
@@ -22,6 +25,43 @@ _units parse(_units & _tokens,environment & env){
         }
     }
     return _result;
+}
+
+_units copy_from(_units & _tokens, size_t _begin, size_t _end){
+    return {_tokens.begin() + _begin, _tokens.end() - (_tokens.size() - _end)};
+}
+
+_units cut_from(_units & _tokens, size_t & _begin, size_t _end){
+    _units result = copy_from(_tokens,_begin,_end);
+    _begin = _end;
+    return result;
+}
+
+size_t find_close_brt(_units & _tokens, size_t position){
+    int result; // position of close brt 
+    std::string type; // type of brt
+    int open_chars = 1; // currient count of open brt 
+    switch(_tokens[position].name[0]){
+        case '(':type = ")";break;     // set type o brt 
+        case '[':type = "]";break;   
+        case '{':type = "}";break;
+    }
+    for(int count = position + 1;; count++){
+        if(_tokens[count].name == _tokens[position].name){
+            open_chars++;
+        }
+        if(_tokens[count].name == type){
+            open_chars--;
+        }
+        if(open_chars == 0){
+            result = count; // save result 
+            break;
+        }
+    }
+    if(open_chars != 0){
+        throw error(_tokens[position],"not found closing character \"" + type + "\"");
+    }
+    return result;
 }
 
 unit parse_var_init(_units & _tokens,environment & env, size_t & position){
@@ -69,43 +109,6 @@ unit parse_var_init(_units & _tokens,environment & env, size_t & position){
     return _result;
 }
 
-size_t find_close_brt(_units & _tokens, size_t position){
-    int result; // position of close brt 
-    std::string type; // type of brt
-    int open_chars = 1; // currient count of open brt 
-    switch(_tokens[position].name[0]){
-        case '(':type = ")";break;     // set type o brt 
-        case '[':type = "]";break;   
-        case '{':type = "}";break;
-    }
-    for(int count = position + 1;; count++){
-        if(_tokens[count].name == _tokens[position].name){
-            open_chars++;
-        }
-        if(_tokens[count].name == type){
-            open_chars--;
-        }
-        if(open_chars == 0){
-            result = count; // save result 
-            break;
-        }
-    }
-    if(open_chars != 0){
-        throw error(_tokens[position],"not found closing character \"" + type + "\"");
-    }
-    return result;
-}
-
-_units copy_from(_units & _tokens, size_t _begin, size_t _end){
-    return {_tokens.begin() + _begin, _tokens.end() - (_tokens.size() - _end)};
-}
-
-_units cut_from(_units & _tokens, size_t & _begin, size_t _end){
-    _units result = copy_from(_tokens,_begin,_end);
-    _begin = _end;
-    return result;
-}
-
 _units parse_list(_units _tokens){
     _units result;
     if(_tokens.size() != 0){
@@ -118,7 +121,7 @@ _units parse_list(_units _tokens){
         }
         if(_tokens[count].name == "{"){
             result[result.size()-1].type = _type::_list;
-            result[result.size()-1]._childs = parse_list(copy_from(_tokens,count,find_close_brt(_tokens,count)));
+            result[result.size()-1]._childs = parse_list(copy_from(_tokens,count + 1,find_close_brt(_tokens,count)));
             count = find_close_brt(_tokens,count);
             continue;
         }
@@ -126,3 +129,24 @@ _units parse_list(_units _tokens){
     }
     return result; 
 }
+
+unit parse_func_init(_units & _tokens,environment & env, size_t & position){
+    unit result;
+
+    return result;
+}
+
+//  int curPos = count;
+//    count+=2;
+//    units[curPos + 1].type = _type::_func;
+//    for(int i = count; i < units.size(); i++){
+//        if(units[i].name == units[curPos + 1].name){
+//            units[i].type = units[curPos + 1].type;
+//        }
+//    }
+//    count--;
+//    parseCondition(units,env,count);
+//    units[curPos + 1][0]._childs.push_back(unit(_type::_semicolon, ";")); 
+//    units[curPos]._childs.push_back(units[curPos + 1]);
+//    env.add(units[curPos + 1]);
+//    return units[curPos];
