@@ -4,13 +4,11 @@ _units parse(_units & _tokens,environment & env){
     _units _result; // result of function
     std::stack<unit> _operations; // stack with operations +-/* ... 
     for (size_t i = 0; i < _tokens.size(); i++){
+        if(_key_words_parse.count(_tokens[i].type) != 0){
+            _result.push_back(_key_words_parse[_tokens[i].type](_tokens,env,i));
+            continue;
+        }
         switch (_tokens[i].type){
-        case _type::_varInit:
-            _result.push_back(parse_var_init(_tokens,env,i)); // parse _type::_var  
-            break;
-        case _type::_functionInit:
-            
-            break;
         case _type::_break:
         case _type::_continue:
         case _type::_bool:
@@ -20,7 +18,14 @@ _units parse(_units & _tokens,environment & env){
         case _type::_list:
             _result.push_back(_tokens[i]);
             break;
+        case _type::_indentf:
+            if(env.have(_tokens[i].name)){
+                _tokens[i].type = env.get(_tokens[i].name).type;
+                i--;  // step back to parse token 
+            }
+            break;
         default:
+            throw error(_tokens[i], "unknown variable or function!");
             break;
         }
     }
@@ -131,22 +136,38 @@ _units parse_list(_units _tokens){
 }
 
 unit parse_func_init(_units & _tokens,environment & env, size_t & position){
-    unit result;
+    unit result; 
+    position++;
+    unit func = parse_token_condition(_tokens,env,position); // get body of function 
+    func.type = _type::_func;  // set type 
+    func[0]._childs.push_back(unit(_type::_semicolon,";"));
+    env.add(func); // add to env 
+    return result; 
+}
 
+unit parse_token_condition(_units & _tokens,environment & env, size_t & position){
+    unit result(_tokens[position]);
+    result._childs.resize(2);
+    position+=2;        // cut condition 
+    result[0]._childs = cut_from(_tokens,position,find_close_brt(_tokens,position - 1));
+    position+=2;       // cut body 
+    result[1]._childs = cut_from(_tokens,position,find_close_brt(_tokens,position - 1));
     return result;
 }
 
-//  int curPos = count;
-//    count+=2;
-//    units[curPos + 1].type = _type::_func;
-//    for(int i = count; i < units.size(); i++){
-//        if(units[i].name == units[curPos + 1].name){
-//            units[i].type = units[curPos + 1].type;
-//        }
-//    }
-//    count--;
-//    parseCondition(units,env,count);
-//    units[curPos + 1][0]._childs.push_back(unit(_type::_semicolon, ";")); 
-//    units[curPos]._childs.push_back(units[curPos + 1]);
-//    env.add(units[curPos + 1]);
-//    return units[curPos];
+unit parse_if(_units & _tokens,environment & env, size_t & position){
+    unit result = parse_token_condition(_tokens,env,position);
+    result.type = _type::_if;
+    if(_tokens[position + 1].type == _type::_else){
+        result._childs.push_back(unit());
+        position+=3;
+        result[2]._childs = cut_from(_tokens,position,find_close_brt(_tokens,position - 1));
+    }
+    return result;
+}
+
+unit parse_while(_units & _tokens,environment & env, size_t & position){
+    unit result= parse_token_condition(_tokens,env,position);
+    result.type = _type::_while;
+    return result;
+}

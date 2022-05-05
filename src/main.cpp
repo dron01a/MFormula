@@ -30,11 +30,12 @@
 #include "parse.h"
 
 int main(){
+    environment env;
+    std::string _str = "if(1 = 0){a = v}";
+    _units _res;
     try{
-        std::string _str = "var list = { as, we , {1 , 2} };";
-        environment env;
-        _units _res = lex(_str);
-        _units _res1 = parse(_res, env);   
+        _res = lex(_str);
+        _res = parse(_res, env);   
     }
     catch(error & _error){
         printf("in line:%zu col:%zu\n error:%s", _error._unit._str,_error._unit._col, _error.message.c_str());

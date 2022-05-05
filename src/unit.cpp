@@ -51,6 +51,11 @@ unit::unit(double _num){
     prior = 0;
 }
 
+unit & unit::operator[](int position){
+    return _childs[position];
+}
+
+
 environment::environment(){
     _defined[0]._childs.push_back(unit(_type::_num,"3.1415926535"));
     _defined[1]._childs.push_back(unit(_type::_num,"2.7182818284"));

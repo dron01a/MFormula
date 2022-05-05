@@ -1,9 +1,10 @@
 #ifndef __PARSER__H__
 #define __PARSER__H__
 
+#include <map>
+
 #include "unit.h"
 
-typedef unit(*parce_key)(unit &, environment &, size_t &);
 
 /**
  *  Parse code tokens 
@@ -80,6 +81,50 @@ _units parse_list(_units _tokens);
 unit parse_func_init(_units & _tokens,environment & env, size_t & position);
 
 
+/**
+ *  Parse condition and body of 
+ *      key words: if, for, while and body of functions  
+ * 
+ * @param _tokens vector of code tokens
+ * @param env envinronment of run code
+ * @param position currient index of _tokens
+ * 
+ * @return code unit with token
+*/
+unit parse_token_condition(_units & _tokens,environment & env, size_t & position);
+
+/**
+ *  Parse if and else  
+ * 
+ * @param _tokens vector of code tokens
+ * @param env envinronment of run code
+ * @param position currient index of _tokens
+ * 
+ * @return code unit with token
+*/
+unit parse_if(_units & _tokens,environment & env, size_t & position);
+
+/**
+ *  Parse loop while
+ * 
+ * @param _tokens vector of code tokens
+ * @param env envinronment of run code
+ * @param position currient index of _tokens
+ * 
+ * @return code unit with token
+*/
+unit parse_while(_units & _tokens,environment & env, size_t & position);
+
+typedef unit(*parse_key)(_units &, environment &, size_t &);
+
+static std::map<_type, parse_key> _key_words_parse {
+    {_type::_varInit, parse_var_init},
+    {_type::_functionInit, parse_func_init},
+    {_type::_if, parse_if},
+    {_type::_while, parse_while}
+
+    
+};
 
 
 #endif

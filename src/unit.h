@@ -71,6 +71,8 @@ struct unit{
     */
     unit(bool _val);
 
+    unit & operator[](int position);
+
     unit(){};
     ~unit(){};
 
