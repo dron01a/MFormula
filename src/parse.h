@@ -2,6 +2,7 @@
 #define __PARSER__H__
 
 #include <map>
+#include <algorithm>
 
 #include "unit.h"
 
@@ -105,7 +106,7 @@ unit parse_token_condition(_units & _tokens,environment & env, size_t & position
 unit parse_if(_units & _tokens,environment & env, size_t & position);
 
 /**
- *  Parse loop while
+ *  Parse loop while and for
  * 
  * @param _tokens vector of code tokens
  * @param env envinronment of run code
@@ -113,7 +114,8 @@ unit parse_if(_units & _tokens,environment & env, size_t & position);
  * 
  * @return code unit with token
 */
-unit parse_while(_units & _tokens,environment & env, size_t & position);
+unit parse_loop(_units & _tokens,environment & env, size_t & position);
+
 
 typedef unit(*parse_key)(_units &, environment &, size_t &);
 
@@ -121,9 +123,8 @@ static std::map<_type, parse_key> _key_words_parse {
     {_type::_varInit, parse_var_init},
     {_type::_functionInit, parse_func_init},
     {_type::_if, parse_if},
-    {_type::_while, parse_while}
-
-    
+    {_type::_while, parse_loop},
+    {_type::_for, parse_loop}
 };
 
 

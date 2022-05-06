@@ -142,6 +142,8 @@ unit parse_func_init(_units & _tokens,environment & env, size_t & position){
     func.type = _type::_func;  // set type 
     func[0]._childs.push_back(unit(_type::_semicolon,";"));
     env.add(func); // add to env 
+    result._childs.push_back(func);
+    result.type = _type::_functionInit;
     return result; 
 }
 
@@ -166,8 +168,7 @@ unit parse_if(_units & _tokens,environment & env, size_t & position){
     return result;
 }
 
-unit parse_while(_units & _tokens,environment & env, size_t & position){
-    unit result= parse_token_condition(_tokens,env,position);
-    result.type = _type::_while;
+unit parse_loop(_units & _tokens,environment & env, size_t & position){
+    unit result = parse_token_condition(_tokens,env,position);
     return result;
 }

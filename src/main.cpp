@@ -31,7 +31,7 @@
 
 int main(){
     environment env;
-    std::string _str = "if(1 = 0){a = v}";
+    std::string _str = "for(1 = 0){a = v}";
     _units _res;
     try{
         _res = lex(_str);
