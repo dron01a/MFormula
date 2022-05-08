@@ -31,7 +31,7 @@
 
 int main(){
     environment env;
-    std::string _str = "for(1 = 0){a = v}";
+    std::string _str = "30+4*5+sin";
     _units _res;
     try{
         _res = lex(_str);
@@ -39,6 +39,9 @@ int main(){
     }
     catch(error & _error){
         printf("in line:%zu col:%zu\n error:%s", _error._unit._str,_error._unit._col, _error.message.c_str());
+    }
+    catch(const char * _mes){
+        printf("%s\n", _mes);
     }
      
     return 0;

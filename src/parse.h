@@ -6,6 +6,9 @@
 
 #include "unit.h"
 
+typedef bool(*cond_func)(unit, std::stack<unit>&);
+
+typedef unit(*parse_key)(_units &, environment &, size_t &);
 
 /**
  *  Parse code tokens 
@@ -117,7 +120,36 @@ unit parse_if(_units & _tokens,environment & env, size_t & position);
 unit parse_loop(_units & _tokens,environment & env, size_t & position);
 
 
-typedef unit(*parse_key)(_units &, environment &, size_t &);
+/**
+ *  Push token in stack to vector, if result of cond_func == true
+ * 
+ * @param _tokens vector of code tokens
+ * @param opr stack with operations
+ * @param token currient token
+ * @param func func with condition
+ * 
+*/
+void push_token_if(_units & _tokens, std::stack<unit> & opr, unit token, cond_func func);
+
+/**
+ *  Push tokens in stack to vector
+ *  
+ *  @param _tokens vector of code tokens
+ *  @param opr stack with operations
+ *
+*/
+void push_stack_to_output(_units & _tokens, std::stack<unit> & opr);
+
+/**
+ * Parse close bracket
+ * 
+ *  @param _tokens vector of code tokens
+ *  @param opr stack with operations
+ *  @param token currient token
+ *  
+*/
+void parse_close_brt(_units & _tokens,std::stack<unit> & opr, unit token);
+
 
 static std::map<_type, parse_key> _key_words_parse {
     {_type::_varInit, parse_var_init},
