@@ -49,15 +49,14 @@ _units parse(_units & _tokens,environment & env){
                 return oprs.top().type != _type::_openBrt; 
             });
             break;
+        case _type::_semicolon:
+            push_stack_to_output(_result,_operations);
+            break;
         case _type::_indentf:
             if(env.have(_tokens[i].name)){
                 _tokens[i].type = env.get(_tokens[i].name).type;
                 i--;  // step back to parse token 
             }
-            break;
-        case _type::_semicolon:
-            push_stack_to_output(_result,_operations);
-            break;
         default:
             throw error(_tokens[i], "unknown variable or function!");
         }

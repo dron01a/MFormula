@@ -49,6 +49,8 @@
         "cstring": "cpp",
         "ctime": "cpp",
         "iomanip": "cpp",
-        "hash_map": "cpp"
+        "hash_map": "cpp",
+        "chrono": "cpp",
+        "ratio": "cpp"
     }
 }

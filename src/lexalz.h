@@ -28,12 +28,6 @@ typedef bool(*compareFunc)(std::string, char);
 _units lex(std::string & _source, int _str = 0);
 
 /**
-    @param file name of file with source code
-    @return vector with code unit
-*/
-_units lex_file(std::string file);
-
-/**
  *  Get type of token
  *  @param _token string with token
  *  @return type of token

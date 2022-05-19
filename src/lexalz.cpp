@@ -1,23 +1,5 @@
 #include "lexalz.h"
 
-_units lex_file(std::string name){
-    _units _result; // result of function
-    _units _temp;   // temp vector
-    std::ifstream in(name,std::ios::binary); // file with code
-    std::string _buf; // temp string 
-    int _cur_string = 0;
-    while(std::getline(in,_buf)){
-        _temp = lex(_buf, _cur_string);  // get units of string 
-        for(size_t i = 0; i < _temp.size(); i++){
-            _result.push_back(_temp[i]); // load to result
-        }
-        _cur_string++;
-    }
-    in.close();
-    return _result;
-}
-
-
 _units lex(std::string & source, int _str){
     _units _result; // result of function
     for(int count = 0; count < source.size(); count++){

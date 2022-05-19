@@ -17,29 +17,41 @@ enum errors{
 };
 
 enum class _type{
+    _opr = 0, 
+    
+    _func, 
+    _coreFunc,  
+    _list,
+    
+          
+    _string,      
     _num, 
     _bool,
-    _openBrt,      
-    _closeBrt,      
-    _opr,       
-    _coreFunc,  
-    _special,   
-    _string,      
-    _semicolon, 
     _var,
-    _list,
-    _func,
+    _continue,
+    _break,
+    
+    
+    _openBrt,      
+    _closeBrt,
+
+    _special,   
+    _semicolon, 
+
     _varInit,
     _functionInit,
     _if,
     _else,
     _while,
     _for,
-    _continue,
-    _break,
     _return,
+    
     _indentf, 
+    
     _include,
+
+    _pointer,
+
     _classInit,
     _classVar,
     _classFV,
