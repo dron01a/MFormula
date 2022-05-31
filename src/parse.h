@@ -6,9 +6,9 @@
 
 #include "unit.h"
 
-typedef bool(*cond_func)(unit, std::stack<unit>&);
+typedef bool(*cond_func)(unit, unit_stack &);
 
-typedef unit(*parse_key)(_units &, environment &, size_t &);
+typedef unit(*parse_key)(unit_vector &, environment &, size_t &);
 
 /**
  *  Parse code tokens 
@@ -19,7 +19,7 @@ typedef unit(*parse_key)(_units &, environment &, size_t &);
  *
  * @return vector of code tokens, in order of execution 
 */
-_units parse(_units & _tokens,environment & env);
+unit_vector parse(unit_vector & _tokens,environment & env);
 
 
 /**
@@ -30,7 +30,7 @@ _units parse(_units & _tokens,environment & env);
  * 
  *  @return index in _tokens of close brt )}]
 */
-size_t find_close_brt(_units & _tokens, size_t position);
+size_t find_close_brt(unit_vector & _tokens, size_t position);
 
 
 /**
@@ -41,7 +41,7 @@ size_t find_close_brt(_units & _tokens, size_t position);
  * 
  *  @return vector with elements in a certain range 
 */
-_units copy_from(_units & _tokens, size_t _begin, size_t _end);
+unit_vector copy_from(unit_vector & _tokens, size_t _begin, size_t _end);
 
 /**
  *  Сut objects from the vector
@@ -51,7 +51,7 @@ _units copy_from(_units & _tokens, size_t _begin, size_t _end);
  * 
  *  @return vector with elements in a certain range 
 */
-_units cut_from(_units & _tokens, size_t & _begin, size_t _end);
+unit_vector cut_from(unit_vector & _tokens, size_t & _begin, size_t _end);
 
 /**
  *  Parse inti of variables and lists
@@ -62,7 +62,7 @@ _units cut_from(_units & _tokens, size_t & _begin, size_t _end);
  * 
  * @return code unit with initializable variables
 */
-unit parse_var_init(_units & _tokens,environment & env, size_t & position);
+unit parse_var_init(unit_vector & _tokens,environment & env, size_t & position);
 
 /**
  *  Parse list init 
@@ -71,7 +71,7 @@ unit parse_var_init(_units & _tokens,environment & env, size_t & position);
  * 
  *  @return vector of list initialization
 */
-_units parse_list(_units _tokens);
+unit_vector parse_list(unit_vector _tokens);
 
 /**
  *  Parse inti of functions
@@ -82,7 +82,7 @@ _units parse_list(_units _tokens);
  * 
  * @return code unit with initializable function
 */
-unit parse_func_init(_units & _tokens,environment & env, size_t & position);
+unit parse_func_init(unit_vector & _tokens,environment & env, size_t & position);
 
 
 /**
@@ -95,7 +95,7 @@ unit parse_func_init(_units & _tokens,environment & env, size_t & position);
  * 
  * @return code unit with token
 */
-unit parse_token_condition(_units & _tokens,environment & env, size_t & position);
+unit parse_token_condition(unit_vector & _tokens,environment & env, size_t & position);
 
 /**
  *  Parse if and else  
@@ -106,7 +106,7 @@ unit parse_token_condition(_units & _tokens,environment & env, size_t & position
  * 
  * @return code unit with token
 */
-unit parse_if(_units & _tokens,environment & env, size_t & position);
+unit parse_if(unit_vector & _tokens,environment & env, size_t & position);
 
 /**
  *  Parse loop while and for
@@ -117,7 +117,7 @@ unit parse_if(_units & _tokens,environment & env, size_t & position);
  * 
  * @return code unit with token
 */
-unit parse_loop(_units & _tokens,environment & env, size_t & position);
+unit parse_loop(unit_vector & _tokens,environment & env, size_t & position);
 
 
 /**
@@ -129,7 +129,7 @@ unit parse_loop(_units & _tokens,environment & env, size_t & position);
  * @param func func with condition
  * 
 */
-void push_token_if(_units & _tokens, std::stack<unit> & opr, unit token, cond_func func);
+void push_token_if(unit_vector & _tokens, unit_stack & opr, unit token, cond_func func);
 
 /**
  *  Push tokens in stack to vector
@@ -138,7 +138,7 @@ void push_token_if(_units & _tokens, std::stack<unit> & opr, unit token, cond_fu
  *  @param opr stack with operations
  *
 */
-void push_stack_to_output(_units & _tokens, std::stack<unit> & opr);
+void push_stack_to_output(unit_vector & _tokens, unit_stack & opr);
 
 /**
  * Parse close bracket
@@ -148,7 +148,7 @@ void push_stack_to_output(_units & _tokens, std::stack<unit> & opr);
  *  @param token currient token
  *  
 */
-void parse_close_brt(_units & _tokens,std::stack<unit> & opr, unit token);
+void parse_close_brt(unit_vector & _tokens,unit_stack & opr, unit token);
 
 
 static std::map<_type, parse_key> _key_words_parse {

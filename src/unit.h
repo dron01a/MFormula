@@ -10,7 +10,8 @@
 struct unit;
 class environment;
 
-typedef std::vector<unit> _units;
+typedef std::vector<unit> unit_vector;
+typedef std::stack<unit> unit_stack;
 
 enum errors{
     SORCE_EMPTY
@@ -74,7 +75,7 @@ struct unit{
      * 
      * @param _num double value of unit
     */
-    unit(double _num);
+    unit(long double _num);
 
     /**
      * class constructor
@@ -85,19 +86,23 @@ struct unit{
 
     unit & operator[](int position);
 
+    bool to_bool() const;
+    long double to_double() const;
+    int to_int() const;
+    std::string to_string() const;
+
+    void assign(unit unit);
+    void print();
+    int size();
+    void resize(int _newsize);
+
     unit(){};
     ~unit(){};
 
-    _units _childs;
+    unit_vector _childs;
     std::string name;
 
     unit * __mem = nullptr;
-
-    typedef union _data{
-        double float_data;
-        long double long_data;
-        std::string str_data; 
-    } _unitData;
 
     _type type = _type::_indentf;
     size_t prior = 0;
@@ -130,7 +135,7 @@ public:
     unit & get(std::string _name);
     
     // return all defined units
-    _units & defined(); 
+    unit_vector & defined(); 
     
     /**
      * 
@@ -155,7 +160,7 @@ public:
     void save_change(environment & env);
 private:
     // defined var`s and functions
-    _units _defined {
+    unit_vector _defined {
         unit(_type::_var,"pi"),
         unit(_type::_var,"e"),    
     };

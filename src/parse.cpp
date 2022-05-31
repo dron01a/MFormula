@@ -1,8 +1,8 @@
 #include "parse.h"
 
-_units parse(_units & _tokens,environment & env){
-    _units _result; // result of function
-    std::stack<unit> _operations; // stack with operations +-/* ... 
+unit_vector parse(unit_vector & _tokens,environment & env){
+    unit_vector _result; // result of function
+    unit_stack _operations; // stack with operations +-/* ... 
     for (size_t i = 0; i < _tokens.size(); i++){
         if(_key_words_parse.count(_tokens[i].type) != 0){
             _result.push_back(_key_words_parse[_tokens[i].type](_tokens,env,i));
@@ -65,17 +65,17 @@ _units parse(_units & _tokens,environment & env){
     return _result;
 }
 
-_units copy_from(_units & _tokens, size_t _begin, size_t _end){
+unit_vector copy_from(unit_vector & _tokens, size_t _begin, size_t _end){
     return {_tokens.begin() + _begin, _tokens.end() - (_tokens.size() - _end)};
 }
 
-_units cut_from(_units & _tokens, size_t & _begin, size_t _end){
-    _units result = copy_from(_tokens,_begin,_end);
+unit_vector cut_from(unit_vector & _tokens, size_t & _begin, size_t _end){
+    unit_vector result = copy_from(_tokens,_begin,_end);
     _begin = _end;
     return result;
 }
 
-size_t find_close_brt(_units & _tokens, size_t position){
+size_t find_close_brt(unit_vector & _tokens, size_t position){
     int result; // position of close brt 
     std::string type; // type of brt
     int open_chars = 1; // currient count of open brt 
@@ -102,7 +102,7 @@ size_t find_close_brt(_units & _tokens, size_t position){
     return result;
 }
 
-unit parse_var_init(_units & _tokens,environment & env, size_t & position){
+unit parse_var_init(unit_vector & _tokens,environment & env, size_t & position){
     unit _result(_tokens[position]);
     if(env.have(_tokens[position+1].name)){
         throw error(_tokens[position+1], "var \"" + _tokens[position+1].name + "\" already defined");
@@ -147,8 +147,8 @@ unit parse_var_init(_units & _tokens,environment & env, size_t & position){
     return _result;
 }
 
-_units parse_list(_units _tokens){
-    _units result;
+unit_vector parse_list(unit_vector _tokens){
+    unit_vector result;
     if(_tokens.size() != 0){
         result.push_back(unit());
     }
@@ -168,7 +168,7 @@ _units parse_list(_units _tokens){
     return result; 
 }
 
-unit parse_func_init(_units & _tokens,environment & env, size_t & position){
+unit parse_func_init(unit_vector & _tokens,environment & env, size_t & position){
     unit result; 
     position++;
     unit func = parse_token_condition(_tokens,env,position); // get body of function 
@@ -180,7 +180,7 @@ unit parse_func_init(_units & _tokens,environment & env, size_t & position){
     return result; 
 }
 
-unit parse_token_condition(_units & _tokens,environment & env, size_t & position){
+unit parse_token_condition(unit_vector & _tokens,environment & env, size_t & position){
     unit result(_tokens[position]);
     result._childs.resize(2);
     position+=2;        // cut condition 
@@ -190,7 +190,7 @@ unit parse_token_condition(_units & _tokens,environment & env, size_t & position
     return result;
 }
 
-unit parse_if(_units & _tokens,environment & env, size_t & position){
+unit parse_if(unit_vector & _tokens,environment & env, size_t & position){
     unit result = parse_token_condition(_tokens,env,position);
     result.type = _type::_if;
     if(_tokens[position + 1].type == _type::_else){
@@ -201,38 +201,38 @@ unit parse_if(_units & _tokens,environment & env, size_t & position){
     return result;
 }
 
-unit parse_loop(_units & _tokens,environment & env, size_t & position){
+unit parse_loop(unit_vector & _tokens,environment & env, size_t & position){
     unit result = parse_token_condition(_tokens,env,position);
     return result;
 }
 
-void push_token_if(_units & _tokens, std::stack<unit> & opr, unit token, cond_func func){
+void push_token_if(unit_vector & _tokens, unit_stack & opr, unit token, cond_func func){
     while(opr.size() && func(token, opr)){
         _tokens.push_back(opr.top());
         opr.pop();
     }
 }
 
-void push_stack_to_output(_units & _tokens, std::stack<unit> & opr){
-    push_token_if(_tokens,opr,_tokens.back(),[](unit _unit, std::stack<unit> & oprs){ 
+void push_stack_to_output(unit_vector & _tokens, unit_stack & opr){
+    push_token_if(_tokens,opr,_tokens.back(),[](unit _unit, unit_stack & oprs){ 
         return oprs.size() != 0; 
     });
 }
 
-void parse_close_brt(_units & _tokens,std::stack<unit> & opr, unit token){
+void parse_close_brt(unit_vector & _tokens,unit_stack & opr, unit token){
     switch (token.name[0]){
     case ')':
-        push_token_if(_tokens,opr,token,[](unit _unit, std::stack<unit> & opr){ 
+        push_token_if(_tokens,opr,token,[](unit _unit, unit_stack & opr){ 
             return opr.top().name != "("; 
         });
         break;
     case ']':
-        push_token_if(_tokens,opr,token,[](unit _unit, std::stack<unit> & opr){ 
+        push_token_if(_tokens,opr,token,[](unit _unit, unit_stack & opr){ 
             return opr.top().name != "["; 
         });
         break;
     case '}':
-        push_token_if(_tokens,opr,token,[](unit _unit, std::stack<unit> & opr){ 
+        push_token_if(_tokens,opr,token,[](unit _unit, unit_stack & opr){ 
             return opr.top().name != "{"; 
         });
         break;

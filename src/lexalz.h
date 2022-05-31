@@ -25,7 +25,7 @@ typedef bool(*compareFunc)(std::string, char);
     @param _str number of string
     @return vector with code unit
 */
-_units lex(std::string & _source, int _str = 0);
+unit_vector lex(std::string & _source, int _str = 0);
 
 /**
  *  Get type of token

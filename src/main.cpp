@@ -18,7 +18,7 @@ std::ifstream open_file(std::string file);
     @param file name of file with source code
     @return vector with code unit
 */
-_units lex_file(std::string file);
+unit_vector lex_file(std::string file);
 
 int main(int argc, char *argv[]){
     if(argc <= 1 ){
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
     if(strcmp(argv[1],"-f") == 0){
         environment env;
         try{
-            _units _code = lex_file(argv[2]);
+            unit_vector _code = lex_file(argv[2]);
             _code = parse(_code, env);
         }
         catch(error & _error){
@@ -51,9 +51,9 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-_units lex_file(std::string name){
-    _units _result; // result of function
-    _units _temp;   // temp vector
+unit_vector lex_file(std::string name){
+    unit_vector _result; // result of function
+    unit_vector _temp;   // temp vector
     std::ifstream in = open_file(name); // file with code     
     std::string _buf; // temp string 
     int _cur_string = 0;

@@ -32,7 +32,7 @@ unit::unit(bool _val){
     prior = 0;
 }
 
-unit::unit(double _num){
+unit::unit(long double _num){
     type = _type::_num;
     name = std::to_string(_num);
     if (name.find(".",0) != NPOS){
@@ -55,6 +55,77 @@ unit & unit::operator[](int position){
     return _childs[position];
 }
 
+int unit::to_int() const{
+    switch (type){
+    case _type::_num:
+        return std::atoi(name.c_str());
+        break;
+    case _type::_var:
+        return _childs[0].to_int();
+    default:
+        throw "error type";
+        break;
+    }
+}
+
+bool unit::to_bool() const{
+    switch (type){
+    case _type::_bool:
+        if( name == "true"){
+            return true;
+        }
+        if(name == "false"){
+            return false;
+        }
+        throw "error type";
+        break;
+    case _type::_var:
+        return _childs[0].to_bool();
+    default:
+        throw "error type";
+        break;
+    }
+}
+
+long double unit::to_double() const{
+    switch (type){
+    case _type::_num:
+        return std::stold(name);
+        break;
+    case _type::_var:
+        return _childs[0].to_double();
+        break;
+    default:
+        throw "error type";
+        break;
+    }
+}
+
+std::string unit::to_string() const{
+    switch (type){
+    case _type::_num:
+    case _type::_string:
+    case _type::_bool:
+        return name;
+        break;
+    case _type::_var:
+        return _childs[0].name;
+        break;
+    default:
+        break;
+    }
+}
+
+int unit::size(){
+    switch (type)
+    {
+    case _type::_var:
+    case _type::_list:
+        return _childs.size();
+    default:
+        break;
+    }
+}
 
 environment::environment(){
     _defined[0]._childs.push_back(unit(_type::_num,"3.1415926535"));
@@ -65,7 +136,7 @@ environment::environment(environment &env){
     this->_defined = env.defined(); 
 }
 
-_units & environment::defined(){
+unit_vector & environment::defined(){
     return _defined;
 }
 

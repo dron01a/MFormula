@@ -1,7 +1,7 @@
 #include "lexalz.h"
 
-_units lex(std::string & source, int _str){
-    _units _result; // result of function
+unit_vector lex(std::string & source, int _str){
+    unit_vector _result; // result of function
     for(int count = 0; count < source.size(); count++){
         std::string token; // temp string for string with token
         int _col = count;
