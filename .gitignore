@@ -1,7 +1,8 @@
 temp/ 
 temp
-
+old_src
 /lexerTests
-
+./examples
+./old_src
 .vscode/ 
 .vscode
