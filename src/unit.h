@@ -96,6 +96,27 @@ struct unit{
     int size();
     void resize(int _newsize);
 
+    unit operator+(unit & _unit) const;
+    unit operator-(unit & _unit) const;
+    unit operator*(unit & _unit) const;
+    unit operator/(unit & _unit) const;
+    unit operator%(unit & _unit) const;
+    unit increment();
+    unit decrement();
+    
+    // compare operators
+    bool operator==(const unit & _unit) const;
+    bool operator!=(const unit & _unit) const;
+    bool operator>(unit & _unit) const;
+    bool operator<(unit & _unit) const;
+    bool operator>=(unit & _unit) const;
+    bool operator<=(unit & _unit) const;
+
+    bool operator&&(unit & _unit) const;
+    bool operator||(unit & _unit) const;
+
+
+
     unit(){};
     ~unit(){};
 

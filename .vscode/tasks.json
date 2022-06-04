@@ -6,7 +6,10 @@
             "command": "g++",
             "args": [
                 "-g",
-                "src/*.cpp",
+                "src/main.cpp",
+                "src/lexalz.cpp",
+                "src/parse.cpp",
+                "src/unit.cpp",
                 "-o",
                 "main"
             ],
