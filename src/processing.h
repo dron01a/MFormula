@@ -148,6 +148,15 @@ double factorial(double n);
 */
 unit opr_proc(unit_stack & args, std::string exp, int prior);
 
+/**
+ * 
+ * @param node node with function informations 
+ * @param param stack with parametrs 
+ * @param env envinronment of run code
+ * 
+*/
+void call_func(unit & node, unit_stack & params,  environment & env);
+
 struct _ctrl{
     _ctrl(environment _env, _type _t){
         env = _env;
@@ -180,6 +189,7 @@ static std::map<std::string, memF> mem_func{
             }
             value(_params[_par]).print();
         }
+        printf("\n");
     }},
     {"size", [](std::stack<unit> & params, environment & env){
         unit_vector _params = set_vars(params,1);
@@ -193,7 +203,7 @@ static std::map<std::string, memF> mem_func{
 };
 
 
-static std::map<std::string, simple_func> simpleFuncs{
+static std::map<std::string, simple_func> simple_funcs{
     {"++",[](unit a){return unit(a.increment());}},
     {"--",[](unit a){return unit(a.decrement());}},
     {"nvar",[](unit a){return unit(-a.to_double());}},
@@ -212,7 +222,7 @@ static std::map<std::string, simple_func> simpleFuncs{
     {"!",[](unit a){return unit((long double)factorial(a.to_double()));}}
 };
 
-static std::map<std::string, binary_func> binaryFuncs{
+static std::map<std::string, binary_func> binary_funcs{
     {"==",[](unit a,unit b){return unit(a==b);}},
     {"!=",[](unit a,unit b){return unit(a!=b);}},
     {">",[](unit a,unit b){return unit(a>b);}},

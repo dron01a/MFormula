@@ -10,6 +10,7 @@ error(10,10,10);
 
 func sumator(var a, b){
     var c = (a+b)*10;
+    print(c);
     return c-(a+b);
 }
 
@@ -18,7 +19,9 @@ print("\n");
 
 var tonk = sumator(10,10);
 
-print("tonk = %tonk%\n");
+print("tonk = ", tonk );
+
+//print("tonk = %tonk%\n");
 
 
 print(sumator(t,b));

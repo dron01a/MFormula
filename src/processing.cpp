@@ -1,6 +1,6 @@
 #include "processing.h"
 
-void eval(unit_vector & tokens,environment &env){
+void eval(unit_vector & tokens,environment & env){
     environment _local(env); // local envinronment 
     unit_stack params;       // stack with args 
     for(size_t count = 0; count < tokens.size(); count++){
@@ -10,6 +10,8 @@ void eval(unit_vector & tokens,environment &env){
         }
         switch (tokens[count].type){
         case _type::_string:
+        params.push(tokens[count]);
+            break;
         case _type::_var:
         case _type::_list:
             tokens[count].__mem = & _local.get(tokens[count].name);
@@ -23,6 +25,9 @@ void eval(unit_vector & tokens,environment &env){
                 continue;
             }
             params.push(opr_proc(params,tokens[count].name,tokens[count].prior));
+            break;
+        case _type::_func:
+            call_func(tokens[count],params,_local);
             break;
         case _type::_return:
             params.top() = value(params.top());
@@ -42,6 +47,11 @@ void eval(unit_vector & tokens,environment &env){
             }
             break;
         }
+    }
+    env.save_change(_local);
+    tokens.clear();
+    if(params.size() != 0){
+        tokens.push_back(value(params.top()));
     }
 }
 
@@ -147,13 +157,13 @@ void for_interpt(unit & node, environment & env){
     auto del2 = std::find_if(del1 + 1, node._childs[0]._childs.end(),[](unit & _unit){
         return _unit.type == _type::_semicolon;
     });
-    unit_vector init = { node._childs[0]._childs.begin(), del1 - 1 }; // initial conditions
+    unit_vector init = { node._childs[0]._childs.begin(), del1 + 1 }; // initial conditions
     init = parse(init,_local); 
-    unit_vector cond = {del1 + 1, del2 -1}; // condition of loop 
+    unit_vector cond = {del1 + 1, del2 }; // condition of loop 
     cond = parse(cond,_local);
     unit_vector step = { del2 + 1, node._childs[0]._childs.end()}; // step of loop 
     step = parse(step,_local);
-    unit_vector expr = parse(node._childs[2]._childs,_local); // loop 
+    unit_vector expr = parse(node._childs[1]._childs,_local); // loop 
     eval(init,_local);
     loop(expr, cond, step, env, _local);  
 }
@@ -234,10 +244,28 @@ unit opr_proc(unit_stack & args, std::string exp, int prior){
     }
     if((prior > 0  && exp != "!" && exp != "nvar") || exp == "log" || exp == "&&" || exp == "||"){
         unit_vector _params = set_vars(args,2);
-        return binaryFuncs[exp](value(_params[0]),value(_params[1]));
+        return binary_funcs[exp](value(_params[0]),value(_params[1]));
     }
     else{
         unit_vector _params = set_vars(args,1);
-        return simpleFuncs[exp](value(_params[0]));//simpleFunc(exp,a);
+        return simple_funcs[exp](value(_params[0]));
+    }
+}
+
+void call_func(unit & node, unit_stack & params,  environment & env){
+    environment _local; 
+    unit _func = env.get(node.name);
+    unit_vector _par = _func._childs[0]._childs;    // function parametrs 
+    unit_vector _body = _func._childs[1]._childs;   // budy of function 
+    _par = parse(_par, _local); // parse parametrs of functions 
+    unit_vector _func_args = set_vars(params,_par[0]._childs.size());
+    _local.comb(env);
+    for (int count = 0; count < _func_args.size(); count++ ){
+        _local.defined()[count+2].assign(value(_func_args[count]));
+    }
+    _body = parse(_body,_local); // parse body of function
+    eval(_body,_local);
+    if(_body.size() != 0){
+        params.push(value(_body[0])); // set output 
     }
 }

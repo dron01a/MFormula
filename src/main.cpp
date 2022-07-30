@@ -6,6 +6,7 @@
 
 #include "lexalz.h"
 #include "parse.h"
+#include "processing.h"
 
 
 /**
@@ -29,6 +30,7 @@ int main(int argc, char *argv[]){
         try{
             unit_vector _code = lex_file(argv[2]);
             _code = parse(_code, env);
+            eval(_code, env);
         }
         catch(error & _error){
             std::ifstream in = open_file(argv[2]); // file with code

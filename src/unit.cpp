@@ -127,31 +127,6 @@ int unit::size(){
     }
 }
 
-void unit::assign(unit _unit){
-    switch (_unit.type){
-    case _type::_num:
-    case _type::_string:
-        if(type == _type::_var){
-            if(_childs.size() == 0){
-                _childs.push_back(unit());
-            }
-            _childs[0] = _unit;
-        }
-        else{
-            *this = _unit;
-        }
-        break;
-    case _type::_list: 
-    case _type::_var:
-        type = _unit.type;
-        _childs = _unit._childs;
-        break;
-    default:
-        throw "error of type";
-        break;
-    }
-}
-
 unit unit::increment(){
     if(type == _type::_num ){
         return unit((long double)to_int()+1);
@@ -228,9 +203,9 @@ void unit::assign(unit _unit){
     }
 }
 
-unit & unit::operator[](int position){
-    return _childs[position];
-}
+//unit & unit::operator[](int position){
+//    return _childs[position];
+//}
 
 unit unit::operator+(unit & _unit) const{
     switch (type){

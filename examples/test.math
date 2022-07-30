@@ -1,13 +1,86 @@
+include "./scripts/matrix";
 
-var a = 315, c , b = 315;
+var matr1 = { { 1 + 2 , 2 } , { 5 - 1 , 5} };
+var matr2 = { { 1, 1 } , { 1 , 1 } };
 
-a = 0;
 
-print("USSR");
+prinrt(" -> matrix A \n");
+printMatr(matr1);
+print("\n -> matrix B \n");
+printMatr(matr2);
+print("\n -> A + B \n");
+printMatr(sumMatr(matr1,matr2));
+print("\n -> A - B \n");
+printMatr(subMatr(matr1,matr2));
+print("\n -> A*2 \n");
+printMatr(mulMatrNum(matr1,2));
+print("\n -> A * B \n");
+printMatr(mulMatr(matr1,matr2));
+
+
+var a = 0;
+var b = 1;
+
+if(a == 0 && b == 1 ){
+    a = (-1);
+    b = 2;
+}
+print("---------------------------------------------");
+while(b != 150){
+    a = a + 1;
+    if(a % 2 == 0){
+        print(a);
+    }
+    else{
+        continue;
+    }
+    b = b + 1;
+}
+print("---------------------------------------------");
 print(a);
 print(b);
-print(b+a);
 
-print(a);
+var _test = 4^2;
 
+print(_test);
+
+var num1 = 0;   // первое число 
+var num2 = 1;   // второе число
+var temp;       // временное хранение
+var next;       // слудующее число
+var n = 7000;    // нужная позиция
+
+if (n >= 1){
+    print("1 --> 0");
+}
+if (n >= 2){
+    print("2 --> 1");
+}
+for(var _count = 0; _count < n - 2; _count++ ){
+    next = num1 + num2;
+    temp = _count+3;
+    print(temp," --> ",next);
+    num1 = num2;
+    num2 = next;
+}
+
+print("---------------------------------------------");
+print("start !=");
+for(var i = 0; i != 3 ; i = i + 1 ){
+    print(i);
+}
+print("!= done!");
+print("---------------------------------------------");
+print("start < ");
+for(var i = 0; i < 3 ; i = i + 1 ){
+    print(i);
+}
+print("< done!");
+print("---------------------------------------------");
+print("start <=");
+for(var i = 0; i <= 3 ; i++ ){
+    print(i);
+}
+print("<= done!");
+print("---------------------------------------------");
 
