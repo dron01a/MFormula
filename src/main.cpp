@@ -25,10 +25,26 @@ int main(int argc, char *argv[]){
     if(argc <= 1 ){
         std::cout << "not valid args";
     }
-    if(strcmp(argv[1],"-f") == 0){
-        environment env;
+    environment env;
+    unit_vector _code;
+    if(strcmp(argv[1],"-s") == 0){
         try{
-            unit_vector _code = lex_file(argv[2]);
+            _code = lex(std::string("print("+std::string(argv[2])+")"), 0);
+            _code = parse(_code, env);
+            eval(_code, env);
+        }
+        catch(error & _error){
+            std::string _error_point;
+            _error_point.resize(_error.message.size());
+            _error_point.insert(0, _error_point.size(),'-');
+            _error_point.insert(_error._unit._col, "^");
+            printf("line:%zu col:%zu\terror: %s\n\n", _error._unit._str,_error._unit._col, _error.message.c_str());
+            printf("%s\n%s\n",_error.message.c_str(),_error_point.c_str());
+        }
+    }
+    if(strcmp(argv[1],"-f") == 0){
+        try{
+            _code = lex_file(argv[2]);
             _code = parse(_code, env);
             eval(_code, env);
         }

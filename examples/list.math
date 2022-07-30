@@ -7,7 +7,6 @@ l1[2]++;
 print(l1);
 print(a);
 
-var c = sum(0,6);
 print(c);
 
 
