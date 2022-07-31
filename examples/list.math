@@ -7,6 +7,6 @@ l1[2]++;
 print(l1);
 print(a);
 
-print(c);
 
+print(c);
 

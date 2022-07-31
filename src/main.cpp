@@ -27,30 +27,21 @@ int main(int argc, char *argv[]){
     }
     environment env;
     unit_vector _code;
-    if(strcmp(argv[1],"-s") == 0){
-        try{
+    try{
+        if(strcmp(argv[1],"-s") == 0){
             _code = lex(std::string("print("+std::string(argv[2])+")"), 0);
-            _code = parse(_code, env);
-            eval(_code, env);
         }
-        catch(error & _error){
-            std::string _error_point;
-            _error_point.resize(_error.message.size());
-            _error_point.insert(0, _error_point.size(),'-');
-            _error_point.insert(_error._unit._col, "^");
-            printf("line:%zu col:%zu\terror: %s\n\n", _error._unit._str,_error._unit._col, _error.message.c_str());
-            printf("%s\n%s\n",_error.message.c_str(),_error_point.c_str());
-        }
-    }
-    if(strcmp(argv[1],"-f") == 0){
-        try{
+        if(strcmp(argv[1],"-f") == 0){
             _code = lex_file(argv[2]);
-            _code = parse(_code, env);
-            eval(_code, env);
         }
-        catch(error & _error){
+        _code = parse(_code, env);
+        eval(_code, env);
+    }
+    catch(error _error){
+        std::string _error_point;
+        std::string _buf; // temp string 
+        if(strcmp(argv[1],"-f") == 0){
             std::ifstream in = open_file(argv[2]); // file with code
-            std::string _buf; // temp string 
             std::string _error_point;
             size_t _str = 0;
             while(std::getline(in,_buf)){
@@ -59,12 +50,14 @@ int main(int argc, char *argv[]){
                 }
                 _str++;
             }
-            _error_point.resize(_buf.size());
-            _error_point.insert(0, _error_point.size(),'-');
-            _error_point.insert(_error._unit._col, "^");
-            printf("line:%zu col:%zu\terror: %s\n\n", _error._unit._str,_error._unit._col, _error.message.c_str());
-            printf("%s\n%s\n",_buf.c_str(),_error_point.c_str());
         }
+        if(strcmp(argv[1],"-s") == 0){
+            _buf = argv[2];
+        }
+        _error_point.insert(0, _buf.size(),'-');
+        _error_point.insert(_error._unit._col, "^");
+        printf("line:%zu col:%zu\nerror: %s\n\n", _error._unit._str,_error._unit._col, _error.message.c_str());
+        printf("%s\n%s\n",_buf.c_str(),_error_point.c_str());
     }
     return 0;
 }

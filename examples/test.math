@@ -1,10 +1,10 @@
-include "./scripts/matrix";
+include "./examples/matrix";
 
 var matr1 = { { 1 + 2 , 2 } , { 5 - 1 , 5} };
 var matr2 = { { 1, 1 } , { 1 , 1 } };
 
 
-prinrt(" -> matrix A \n");
+print(" -> matrix A \n");
 printMatr(matr1);
 print("\n -> matrix B \n");
 printMatr(matr2);
@@ -17,6 +17,7 @@ printMatr(mulMatrNum(matr1,2));
 print("\n -> A * B \n");
 printMatr(mulMatr(matr1,matr2));
 
+exit;
 
 var a = 0;
 var b = 1;
@@ -84,3 +85,5 @@ for(var i = 0; i <= 3 ; i++ ){
 print("<= done!");
 print("---------------------------------------------");
 
+run("./examples/fibo.math");
+run("./examples/for.math");

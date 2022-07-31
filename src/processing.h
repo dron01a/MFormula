@@ -199,6 +199,23 @@ static std::map<std::string, memF> mem_func{
         unit_vector _params = set_vars(params,2);
         value(_params[0]).resize(value(_params[1]).to_int());
         //params.push(unit((double)value(_params[0]).resize()));
+    }},
+    {"run", [](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,1);
+        if(_params[0].type != _type::_string){
+            throw error(_params[0], "error type!");
+        }
+        system(std::string("math -f " + _params[0].to_string()).c_str());
+    }},
+    {"system", [](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,1);
+        if(_params[0].type != _type::_string){
+            throw error(_params[0], "error type!");
+        }
+        std::system(_params[0].to_string().c_str());
+    }},
+    {"exit", [](std::stack<unit> & params, environment & env){
+        exit(0);
     }}
 };
 
