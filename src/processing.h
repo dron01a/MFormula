@@ -3,6 +3,7 @@
 
 #include "unit.h"
 #include "parse.h"
+#include "fileio.h"
 
 #include "math.h"
 
@@ -205,7 +206,9 @@ static std::map<std::string, memF> mem_func{
         if(_params[0].type != _type::_string){
             throw error(_params[0], "error type!");
         }
-        system(std::string("math -f " + _params[0].to_string()).c_str());
+        unit_vector _subcode = lex_file(_params[0].to_string());
+        _subcode = parse(_subcode,env);
+        eval(_subcode, env);
     }},
     {"system", [](std::stack<unit> & params, environment & env){
         unit_vector _params = set_vars(params,1);

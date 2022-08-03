@@ -11,6 +11,7 @@
                 "./src/parse.cpp",
                 "./src/unit.cpp",
                 "./src/processing.cpp",
+                "./src/fileio.cpp",
                 "-o",
                 "main"
             ],

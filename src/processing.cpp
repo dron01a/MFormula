@@ -22,6 +22,9 @@ void eval(unit_vector & tokens,environment & env){
         case _type::_coreFunc:
             if(mem_func.count(tokens[count].name) != 0){
                 mem_func[tokens[count].name](params,_local);
+                if(tokens[count].name == "run"){
+                    env.comb(_local);
+                }
                 continue;
             }
             params.push(opr_proc(params,tokens[count].name,tokens[count].prior));

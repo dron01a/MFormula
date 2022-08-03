@@ -1,92 +1,84 @@
 #include <iostream>
 #include <iomanip>
-#include <fstream>
-#include "string.h"
 
+#include "string.h"
 
 #include "lexalz.h"
 #include "parse.h"
 #include "processing.h"
+#include "fileio.h"
 
-
-/**
-    @param file name of file with source code
-    @return file stream 
-*/
-std::ifstream open_file(std::string file);
-
-/**
-    @param file name of file with source code
-    @return vector with code unit
-*/
-unit_vector lex_file(std::string file);
+void error_proc(error & _err, std::string source, std::string mode);
 
 int main(int argc, char *argv[]){
-    if(argc <= 1 ){
+    if(argc < 1 ){
         std::cout << "not valid args";
     }
     environment env;
     unit_vector _code;
-    try{
-        if(strcmp(argv[1],"-s") == 0){
-            _code = lex(std::string("print("+std::string(argv[2])+")"), 0);
-        }
-        if(strcmp(argv[1],"-f") == 0){
-            _code = lex_file(argv[2]);
-        }
-        _code = parse(_code, env);
-        eval(_code, env);
-    }
-    catch(error _error){
-        std::string _error_point;
-        std::string _buf; // temp string 
-        if(strcmp(argv[1],"-f") == 0){
-            std::ifstream in = open_file(argv[2]); // file with code
-            std::string _error_point;
-            size_t _str = 0;
-            while(std::getline(in,_buf)){
-                if(_str == _error._unit._str){
-                    break;
+    if(argc == 1){
+        while(true){
+            std::string source; // string with command 
+            try{
+                std::cout << "\nmf > ";
+                getline(std::cin,source);
+                _code = lex(source += ";",0);
+                _code = parse(_code, env);
+                eval(_code, env);
+                if(_code.size() != 0 ){
+                    if(_code[0].type == _type::_num || _code[0].type == _type::_string || _code[0].type == _type::_var || _code[0].type == _type::_list){
+                        _code[0].print();
+                    }
                 }
-                _str++;
+            }
+            catch(error _error){
+                error_proc(_error, source, "-s");
+            }
+            catch(const char * _error){
+                std::cout << _error << std::endl;
             }
         }
-        if(strcmp(argv[1],"-s") == 0){
-            _buf = argv[2];
+    }
+    else {
+        try{
+            if(strcmp(argv[1],"-s") == 0){
+                _code = lex(std::string("print("+std::string(argv[2])+")"), 0);    // lex data
+            }
+            if(strcmp(argv[1],"-f") == 0){
+                _code = lex_file(argv[2]);
+            }
+            _code = parse(_code, env);  // parce data
+            eval(_code, env);           // eval
         }
-        _error_point.insert(0, _buf.size(),'-');
-        _error_point.insert(_error._unit._col, "^");
-        printf("line:%zu col:%zu\nerror: %s\n\n", _error._unit._str,_error._unit._col, _error.message.c_str());
-        printf("%s\n%s\n",_buf.c_str(),_error_point.c_str());
+        catch(error _error){
+            error_proc(_error, argv[2], argv[1]);
+        }
+        catch(const char * _error){
+            std::cout << _error << std::endl;
+        }
     }
     return 0;
 }
 
-unit_vector lex_file(std::string name){
-    unit_vector _result; // result of function
-    unit_vector _temp;   // temp vector
-    std::ifstream in = open_file(name); // file with code     
+void error_proc(error & _err, std::string source, std::string mode){
+    std::string _error_point;
     std::string _buf; // temp string 
-    int _cur_string = 0;
-    while(std::getline(in,_buf)){
-        _temp = lex(_buf, _cur_string);  // get units of string
-        if(_temp.size() != 0 && _temp[0].type == _type::_include){
-            _temp = lex_file(_temp[1].name);
-        } 
-        for(size_t i = 0; i < _temp.size(); i++){
-            _result.push_back(_temp[i]); // load to result
+    if(mode == "-f"){
+        std::ifstream in = open_file(source); // file with code
+        std::string _error_point;
+        size_t _str = 0;
+        while(std::getline(in,_buf)){
+            if(_str == _err._unit._str){
+                break;
+            }
+            _str++;
         }
-        _cur_string++;
     }
-    in.close();
-    return _result;
-}
-
-std::ifstream open_file(std::string name){
-    std::ifstream in(name,std::ios::binary); // file with code
-    if(in.bad()){
-        std::cout << "not found file " << name << std::endl;
-        throw;
+    if(mode == "-s"){
+        _buf = source;
     }
-    return in;
+    _error_point.insert(0, _buf.size(),'-');
+    _error_point.insert(_err._unit._col, "^");
+    printf("line:%zu col:%zu\nerror: %s\n\n", _err._unit._str,_err._unit._col, _err.message.c_str());
+    printf("%s\n%s\n",_buf.c_str(),_error_point.c_str());
 }
