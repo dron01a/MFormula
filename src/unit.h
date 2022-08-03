@@ -1,6 +1,8 @@
 #ifndef ____UNIT__HHH____
 #define ____UNIT__HHH____
 
+#include <iostream>
+
 #include <string>
 #include <vector>
 #include <stack>
@@ -200,5 +202,10 @@ struct error{
     std::string message;
 };
 
+
+std::istream& operator>> (std::istream& _stream,unit & unit);
+
+
+std::ostream& operator<< (std::ostream& _stream,unit & unit);
 
 #endif

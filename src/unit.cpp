@@ -198,14 +198,42 @@ void unit::assign(unit _unit){
         _childs = _unit._childs;
         break;
     default:
-        throw "error of type";
+        throw error(_unit,"error of type");
         break;
     }
 }
 
-//unit & unit::operator[](int position){
-//    return _childs[position];
-//}
+std::istream& operator>> (std::istream& _stream,unit & unit){
+    std::getline(_stream,unit.name);
+    unit.type = _type::_string;    
+    if(!unit.name.find_first_not_of(".0123456789") == NPOS){
+        unit.type = _type::_num;
+    } 
+    return _stream;
+}
+
+std::ostream& operator<< (std::ostream& _stream,unit & unit){
+    switch (unit.type){
+    case _type::_num:
+    case _type::_string:
+        _stream << unit.name;
+        break;
+    case _type::_var:
+        _stream << unit._childs[0];
+        break;
+    case _type::_list:
+        _stream << "{ " << unit._childs[0];
+        for(int step = 1; step < unit._childs.size(); step++){
+            _stream << ", " << unit._childs[step];
+        }
+        _stream << "}\n";
+        break; 
+    default:
+        throw error(unit,"error of type");
+        break;
+    }
+    return _stream;
+}
 
 unit unit::operator+(unit & _unit) const{
     switch (type){

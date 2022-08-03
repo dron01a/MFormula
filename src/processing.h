@@ -185,12 +185,13 @@ static std::map<std::string, memF> mem_func{
         unit_vector _params = set_vars(params,params.size());
         for(size_t _par = 0; _par < _params.size(); _par++){
             if(value(_params[_par]).type == _type::_list){
-                env.get(value(_params[_par]).name).print();
+                std::cout << env.get(value(_params[_par]).name);
+               // env.get(value(_params[_par]).name).print();
                 continue;
             }
-            value(_params[_par]).print();
+            std::cout << value(_params[_par]);
         }
-        printf("\n");
+        std::cout << std::endl;
     }},
     {"size", [](std::stack<unit> & params, environment & env){
         unit_vector _params = set_vars(params,1);
@@ -219,6 +220,14 @@ static std::map<std::string, memF> mem_func{
     }},
     {"exit", [](std::stack<unit> & params, environment & env){
         exit(0);
+    }},
+    {"read",[](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,params.size());
+        for(size_t i = 0; i < _params.size(); i++){
+            unit _temp;
+            std::cin >> _temp;
+            value(_params[i]).assign(_temp);
+        }
     }}
 };
 
