@@ -223,9 +223,6 @@ void push_stack_to_output(unit_vector & _tokens, unit_stack & opr){
         _tokens.push_back(opr.top());
         opr.pop();
     }
-    //push_token_if(_tokens,opr,_tokens.back(),[](unit _unit, unit_stack & oprs){ 
-    //    return oprs.size() != 0; 
-    //});
 }
 
 void parse_close_brt(unit_vector & _tokens,unit_stack & opr, unit token){

@@ -205,10 +205,12 @@ void unit::assign(unit _unit){
 
 std::istream& operator>> (std::istream& _stream,unit & unit){
     std::getline(_stream,unit.name);
-    unit.type = _type::_string;    
-    if(!unit.name.find_first_not_of(".0123456789") == NPOS){
-        unit.type = _type::_num;
+    if(unit.name.find_first_not_of(".0123456789") != NPOS){
+        unit.type = _type::_string;
     } 
+    else{
+        unit.type = _type::_num;    
+    }
     return _stream;
 }
 
@@ -465,4 +467,11 @@ void environment::comb(environment & env){
             _defined.push_back(env.defined()[i]);
         }
     }
+}
+
+std::ostream& operator<< (std::ostream& _stream,error & _error){
+    _stream << "line:" << _error._unit._str; 
+    _stream << " col:" << _error._unit._col;
+    _stream << "\nerror:" << _error.message << "\n\n";
+    return _stream;
 }

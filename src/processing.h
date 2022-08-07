@@ -228,6 +228,9 @@ static std::map<std::string, memF> mem_func{
             std::cin >> _temp;
             value(_params[i]).assign(_temp);
         }
+    }},
+    {"clear", [](std::stack<unit> & params, environment & env){
+        std::cout << "\x1B[2J\x1B[H";
     }}
 };
 

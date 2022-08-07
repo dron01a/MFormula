@@ -1,0 +1,18 @@
+var a,b,c = "-";
+
+
+while(c != "."){
+    read(a, c , b);
+    if(c == "+"){
+        print(a+b);
+    }
+    if(c == "-"){
+        print(a+b);
+    }
+    if(c == "/"){
+        print(a+b);
+    }
+    if(c == "*"){
+        print(a+b);
+    }
+}

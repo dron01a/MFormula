@@ -20,14 +20,14 @@ int main(int argc, char *argv[]){
         while(true){
             std::string source; // string with command 
             try{
-                std::cout << "\nmf > ";
+                std::cout << "mf > ";
                 getline(std::cin,source);
                 _code = lex(source += ";",0);
                 _code = parse(_code, env);
                 eval(_code, env);
                 if(_code.size() != 0 ){
                     if(_code[0].type == _type::_num || _code[0].type == _type::_string || _code[0].type == _type::_var || _code[0].type == _type::_list){
-                        _code[0].print();
+                        std::cout << _code[0] << std::endl;
                     }
                 }
             }
@@ -79,6 +79,5 @@ void error_proc(error & _err, std::string source, std::string mode){
     }
     _error_point.insert(0, _buf.size(),'-');
     _error_point.insert(_err._unit._col, "^");
-    printf("line:%zu col:%zu\nerror: %s\n\n", _err._unit._str,_err._unit._col, _err.message.c_str());
-    printf("%s\n%s\n",_buf.c_str(),_error_point.c_str());
+    std::cout << _err << _buf << std::endl << _error_point << std::endl;
 }

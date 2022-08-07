@@ -202,10 +202,28 @@ struct error{
     std::string message;
 };
 
-
+/**
+ * operator >>
+ * from input struct unit
+ * 
+ * @param _stream input stream 
+ * @param unit unit 
+ * 
+*/
 std::istream& operator>> (std::istream& _stream,unit & unit);
 
-
+/**
+ * operator <<
+ * from input struct unit
+ * 
+ * @param _stream output stream 
+ * @param unit unit 
+ * 
+*/
 std::ostream& operator<< (std::ostream& _stream,unit & unit);
+
+
+std::ostream& operator<< (std::ostream& _stream,error & _error);
+
 
 #endif
