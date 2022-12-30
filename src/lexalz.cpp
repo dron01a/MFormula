@@ -8,7 +8,7 @@ unit_vector lex(std::string source, int _str){
         if(std::isspace(source[count])){
             continue; // skip staces
         }
-        if(source[count] == '/' && source[count+1] == '/'){
+        if((source[count] == '/' && source[count+1] == '/') || (source[count] == '\\' && source[count+1] == '\\')){
             count = source.find("\n",count+1); // skip comments
         }
         if(source[count] == '\"'){
@@ -112,7 +112,8 @@ _type get_type(std::string _token){
     } 
     else if(operators.find(_token) != NPOS || _token == "==" || _token == "!=" 
         ||_token == ">=" || _token == "<=" || _token == "&&" || _token == "||"
-        || _token == "++" || _token == "--"){
+        || _token == "++" || _token == "--" || _token == "+=" || _token == "-=" 
+        ||  _token == "*=" || _token == "/=" || _token == "^=" || _token == "%="){
         return _type::_opr;
     }
     else if(_token == ","){

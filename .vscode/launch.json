@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
-            "args": [ "-f", "calc.mf"],
+            "args": ["-f","./examples/for.mf"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

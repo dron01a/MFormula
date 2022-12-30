@@ -55,6 +55,7 @@ enum class _type{
 
     _pointer,
 
+    _class_sp,
     _classInit,
     _classVar,
     _classFV,
@@ -106,6 +107,12 @@ struct unit{
     unit increment();
     unit decrement();
     
+    void operator+=(unit & _unit);
+    void operator-=(unit & _unit);
+    void operator*=(unit & _unit);
+    void operator/=(unit & _unit);
+    void operator%=(unit & _unit);
+
     // compare operators
     bool operator==(const unit & _unit) const;
     bool operator!=(const unit & _unit) const;
@@ -116,8 +123,6 @@ struct unit{
 
     bool operator&&(unit & _unit) const;
     bool operator||(unit & _unit) const;
-
-
 
     unit(){};
     ~unit(){};

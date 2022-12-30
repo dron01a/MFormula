@@ -207,7 +207,7 @@ static std::map<std::string, memF> mem_func{
         if(_params[0].type != _type::_string){
             throw error(_params[0], "error type!");
         }
-        unit_vector _subcode = lex_file(_params[0].to_string());
+        unit_vector _subcode = lex_file(_params[0].to_string(), env);
         _subcode = parse(_subcode,env);
         eval(_subcode, env);
     }},
@@ -231,7 +231,31 @@ static std::map<std::string, memF> mem_func{
     }},
     {"clear", [](std::stack<unit> & params, environment & env){
         std::cout << "\x1B[2J\x1B[H";
-    }}
+    }},
+    {"+=",[](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,2);
+        value(_params[0]) += value(_params[1]);
+    }},
+    {"-=",[](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,2);
+        value(_params[0]) -= value(_params[1]);
+    }},    
+    {"/=",[](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,2);
+        value(_params[0]) /= value(_params[1]);
+    }},    
+    {"*=",[](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,2);
+        value(_params[0]) *= value(_params[1]);
+    }},
+    {"%=",[](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,2);
+        value(_params[0]) %= value(_params[1]);
+    }},
+    {"^=",[](std::stack<unit> & params, environment & env){
+        unit_vector _params = set_vars(params,2);
+        value(_params[0]) = binary_funcs["^"](value(_params[0]),value(_params[1]));
+    }},
 };
 
 

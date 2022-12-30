@@ -186,7 +186,7 @@ void unit::assign(unit _unit){
             if(_childs.size() == 0){
                 _childs.push_back(unit());
             }
-            _childs[0] = _unit;
+            _childs[0] =  _unit;
         }
         else{
             *this = _unit;
@@ -417,6 +417,65 @@ bool unit::operator||(unit & _unit) const {
     }
 }
 
+void unit::operator+=(unit & _unit){
+    switch (type){
+    case _type::_var:
+    case _type::_string:
+        this->assign(*this + _unit);
+        break;
+    default:
+        throw error(_unit,"error of type");
+        break;
+    }
+}
+
+void unit::operator-=(unit & _unit){
+    switch (type){
+    case _type::_var:
+    case _type::_string:
+        this->assign(*this - _unit);
+        break;
+    default:
+        throw error(_unit,"error of type");
+        break;
+    }
+}
+
+void unit::operator*=(unit & _unit){
+    switch (type){
+    case _type::_var:
+    case _type::_string:
+        this->assign(*this * _unit);
+        break;
+    default:
+        throw error(_unit,"error of type");
+        break;
+    }
+}
+
+void unit::operator/=(unit & _unit){
+    switch (type){
+    case _type::_var:
+    case _type::_string:
+        this->assign(*this / _unit);
+        break;
+    default:
+        throw error(_unit,"error of type");
+        break;
+    }
+}
+
+void unit::operator%=(unit & _unit){
+    switch (type){
+    case _type::_var:
+    case _type::_string:
+        this->assign(*this % _unit);
+        break;
+    default:
+        throw error(_unit,"error of type");
+        break;
+    }
+}
 
 environment::environment(){
     _defined[0]._childs.push_back(unit(_type::_num,"3.1415926535"));

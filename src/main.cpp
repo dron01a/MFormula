@@ -8,6 +8,8 @@
 #include "processing.h"
 #include "fileio.h"
 
+#define _ERROR(source, mode) catch(error _error){ error_proc(_error, source, mode);}catch(const char * _error){std::cout << _error << std::endl;}
+
 void error_proc(error & _err, std::string source, std::string mode);
 
 int main(int argc, char *argv[]){
@@ -31,12 +33,7 @@ int main(int argc, char *argv[]){
                     }
                 }
             }
-            catch(error _error){
-                error_proc(_error, source, "-s");
-            }
-            catch(const char * _error){
-                std::cout << _error << std::endl;
-            }
+            _ERROR(source, "-s");
         }
     }
     else {
@@ -45,17 +42,12 @@ int main(int argc, char *argv[]){
                 _code = lex(std::string("print("+std::string(argv[2])+")"), 0);    // lex data
             }
             if(strcmp(argv[1],"-f") == 0){
-                _code = lex_file(argv[2]);
+                _code = lex_file(argv[2], env);
             }
             _code = parse(_code, env);  // parce data
             eval(_code, env);           // eval
         }
-        catch(error _error){
-            error_proc(_error, argv[2], argv[1]);
-        }
-        catch(const char * _error){
-            std::cout << _error << std::endl;
-        }
+        _ERROR(argv[2], argv[1]);
     }
     return 0;
 }
