@@ -176,6 +176,44 @@ static std::map<_type, key_func> key_words_iterpr{
     {_type::_while, while_interpt }
 };
 
+static std::map<std::string, simple_func> simple_funcs{
+    {"++",[](unit a){return unit(a.increment());}},
+    {"--",[](unit a){return unit(a.decrement());}},
+    {"nvar",[](unit a){return unit(-a.to_double());}},
+    {"sin",[](unit a){return unit(sin(a.to_double()));}},
+    {"cos",[](unit a){return unit(cos(a.to_double()));}},
+    {"tg",[](unit a){return unit(tan(a.to_double()));}},
+    {"ctg",[](unit a){return unit((1/tan(a.to_double())));}},
+    {"arcsin",[](unit a){return unit(asin(a.to_double()));}},
+    {"arccos",[](unit a){return unit(acos(a.to_double()));}},
+    {"arctg",[](unit a){return unit(atan(a.to_double()));}},
+    {"arcctg",[](unit a){return unit((atan(-a.to_double())+M_PI_2));}},
+    {"abs",[](unit a){return unit(abs(a.to_double()));}},
+    {"ln",[](unit a){return unit(log(a.to_double()));}},
+    {"deg",[](unit a){return unit((a.to_double()*M_PI/180));}},
+    {"sqrt",[](unit a){return unit(pow(a.to_double(),(1/2)));}},
+    {"!",[](unit a){return unit((long double)factorial(a.to_double()));}}
+};
+
+static std::map<std::string, binary_func> binary_funcs{
+    {"==",[](unit a,unit b){return unit(a==b);}},
+    {"!=",[](unit a,unit b){return unit(a!=b);}},
+    {">",[](unit a,unit b){return unit(a>b);}},
+    {"<",[](unit a,unit b){return unit(a<b);}},
+    {">=",[](unit a,unit b){return unit(a>=b);}},
+    {"<=",[](unit a,unit b){return unit(a<=b);}},
+    {"&&",[](unit a,unit b){return unit(a&&b);}},
+    {"||",[](unit a,unit b){return unit(a||b);}},
+    {"+",[](unit a,unit b){return a+b;}},
+    {"-",[](unit a,unit b){return a-b;}},
+    {"/",[](unit a,unit b){return a/b;}},
+    {"*",[](unit a,unit b){return a*b;}},
+    {"%",[](unit a,unit b){return a%b;}},
+    {"^",[](unit a,unit b){return unit(pow(a.to_double(),b.to_double()));}},
+    {"log",[](unit a,unit b){return unit((log(a.to_double())/log(b.to_double())));}},
+    {"round",[](unit a,unit b){return unit(round(a.to_double()*pow(10,b.to_double()))/pow(10,b.to_double()));}}
+};
+
 static std::map<std::string, memF> mem_func{
     {"[]", set_in_env},
     {"=", assign },
@@ -256,44 +294,6 @@ static std::map<std::string, memF> mem_func{
         unit_vector _params = set_vars(params,2);
         value(_params[0]) = binary_funcs["^"](value(_params[0]),value(_params[1]));
     }},
-};
-
-
-static std::map<std::string, simple_func> simple_funcs{
-    {"++",[](unit a){return unit(a.increment());}},
-    {"--",[](unit a){return unit(a.decrement());}},
-    {"nvar",[](unit a){return unit(-a.to_double());}},
-    {"sin",[](unit a){return unit(sin(a.to_double()));}},
-    {"cos",[](unit a){return unit(cos(a.to_double()));}},
-    {"tg",[](unit a){return unit(tan(a.to_double()));}},
-    {"ctg",[](unit a){return unit((1/tan(a.to_double())));}},
-    {"arcsin",[](unit a){return unit(asin(a.to_double()));}},
-    {"arccos",[](unit a){return unit(acos(a.to_double()));}},
-    {"arctg",[](unit a){return unit(atan(a.to_double()));}},
-    {"arcctg",[](unit a){return unit((atan(-a.to_double())+M_PI_2));}},
-    {"abs",[](unit a){return unit(abs(a.to_double()));}},
-    {"ln",[](unit a){return unit(log(a.to_double()));}},
-    {"deg",[](unit a){return unit((a.to_double()*M_PI/180));}},
-    {"sqrt",[](unit a){return unit(pow(a.to_double(),(1/2)));}},
-    {"!",[](unit a){return unit((long double)factorial(a.to_double()));}}
-};
-
-static std::map<std::string, binary_func> binary_funcs{
-    {"==",[](unit a,unit b){return unit(a==b);}},
-    {"!=",[](unit a,unit b){return unit(a!=b);}},
-    {">",[](unit a,unit b){return unit(a>b);}},
-    {"<",[](unit a,unit b){return unit(a<b);}},
-    {">=",[](unit a,unit b){return unit(a>=b);}},
-    {"<=",[](unit a,unit b){return unit(a<=b);}},
-    {"&&",[](unit a,unit b){return unit(a&&b);}},
-    {"||",[](unit a,unit b){return unit(a||b);}},
-    {"+",[](unit a,unit b){return a+b;}},
-    {"-",[](unit a,unit b){return a-b;}},
-    {"/",[](unit a,unit b){return a/b;}},
-    {"*",[](unit a,unit b){return a*b;}},
-    {"%",[](unit a,unit b){return a%b;}},
-    {"^",[](unit a,unit b){return unit(pow(a.to_double(),b.to_double()));}},
-    {"log",[](unit a,unit b){return unit((log(a.to_double())/log(b.to_double())));}}
 };
 
 #endif

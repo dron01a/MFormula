@@ -20,10 +20,11 @@ unit_vector parse(unit_vector & _tokens,environment & env){
             break;
         case _type::_openBrt:
             find_close_brt(_tokens,i);
-            if(_tokens[i].name == "{" ){
+            if( _tokens[i].name == "{" ){
                 unit _temp_list(_type::_list, ""); // temp space of list var 
-                _temp_list._childs = parse_list(cut_from(_tokens,i,find_close_brt(_tokens,i - 1)));
-                _operations.push(_temp_list);
+                i++;
+                _temp_list._childs = parse_list(cut_from(_tokens,i,find_close_brt(_tokens,i-1)));
+                _result.push_back(_temp_list);
                 continue;
             } 
             _operations.push(_tokens[i]);

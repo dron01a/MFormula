@@ -14,7 +14,12 @@ void eval(unit_vector & tokens,environment & env){
             break;
         case _type::_var:
         case _type::_list:
-            tokens[count].__mem = & _local.get(tokens[count].name);
+            if(tokens[count].name == ""){
+                eval_list(tokens[count],_local);
+            }
+            else{
+                tokens[count].__mem = & _local.get(tokens[count].name);
+            }
         case _type::_num:
             params.push(tokens[count]);
             break;
@@ -245,7 +250,7 @@ unit opr_proc(unit_stack & args, std::string exp, int prior){
     if(args.size() == 0){
         throw std::string("operation:" + exp +" --> no arguments!");
     }
-    if((prior > 0  && exp != "!" && exp != "nvar") || exp == "log" || exp == "&&" || exp == "||"){
+    if((prior > 0  && exp != "!" && exp != "nvar") || exp == "log" || exp == "round" || exp == "&&" || exp == "||"){
         unit_vector _params = set_vars(args,2);
         return binary_funcs[exp](value(_params[0]),value(_params[1]));
     }

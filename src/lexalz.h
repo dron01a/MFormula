@@ -16,7 +16,7 @@ static std::string numbers = "-0123456789.";
 static std::vector<std::string> functions {
     "abs", "arc", "cos", "sin", "tg", "ln", "ctg", "sqrt",
     "!", "log", "deg", "print", "nvar", "size",  "resize",
-    "system", "run", "exit" , "read", "clear", "env"
+    "system", "run", "exit" , "read", "clear", "env", "round"
 };
 
 typedef bool(*compareFunc)(std::string, char);

@@ -15,10 +15,6 @@ class environment;
 typedef std::vector<unit> unit_vector;
 typedef std::stack<unit> unit_stack;
 
-enum errors{
-    SORCE_EMPTY
-};
-
 enum class _type{
     _opr = 0, 
     
@@ -33,7 +29,7 @@ enum class _type{
     _var,
     _continue,
     _break,
-    
+    _complex,
     
     _openBrt,      
     _closeBrt,
@@ -227,7 +223,14 @@ std::istream& operator>> (std::istream& _stream,unit & unit);
 */
 std::ostream& operator<< (std::ostream& _stream,unit & unit);
 
-
+/**
+ * operator >>
+ * from output struct unit
+ * 
+ * @param _stream output stream 
+ * @param unit unit 
+ * 
+*/
 std::ostream& operator<< (std::ostream& _stream,error & _error);
 
 
