@@ -1,6 +1,6 @@
 print("---------------------------------------------");
 print("start !=");
-for(var i = 0; i != 3 ; i = i + 1 ){
+for(var i = 0; i != 3 ; i += 1 ){
     print(i);
 }
 print("!= done!");

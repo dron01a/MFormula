@@ -1,6 +1,8 @@
 #ifndef ____UNIT__HHH____
 #define ____UNIT__HHH____
 
+#include <iostream>
+
 #include <string>
 #include <vector>
 #include <stack>
@@ -12,10 +14,6 @@ class environment;
 
 typedef std::vector<unit> unit_vector;
 typedef std::stack<unit> unit_stack;
-
-enum errors{
-    SORCE_EMPTY
-};
 
 enum class _type{
     _opr = 0, 
@@ -31,7 +29,7 @@ enum class _type{
     _var,
     _continue,
     _break,
-    
+    _complex,
     
     _openBrt,      
     _closeBrt,
@@ -53,6 +51,7 @@ enum class _type{
 
     _pointer,
 
+    _class_sp,
     _classInit,
     _classVar,
     _classFV,
@@ -95,6 +94,31 @@ struct unit{
     void print();
     int size();
     void resize(int _newsize);
+
+    unit operator+(unit & _unit) const;
+    unit operator-(unit & _unit) const;
+    unit operator*(unit & _unit) const;
+    unit operator/(unit & _unit) const;
+    unit operator%(unit & _unit) const;
+    unit increment();
+    unit decrement();
+    
+    void operator+=(unit & _unit);
+    void operator-=(unit & _unit);
+    void operator*=(unit & _unit);
+    void operator/=(unit & _unit);
+    void operator%=(unit & _unit);
+
+    // compare operators
+    bool operator==(const unit & _unit) const;
+    bool operator!=(const unit & _unit) const;
+    bool operator>(unit & _unit) const;
+    bool operator<(unit & _unit) const;
+    bool operator>=(unit & _unit) const;
+    bool operator<=(unit & _unit) const;
+
+    bool operator&&(unit & _unit) const;
+    bool operator||(unit & _unit) const;
 
     unit(){};
     ~unit(){};
@@ -178,6 +202,36 @@ struct error{
     unit _unit;
     std::string message;
 };
+
+/**
+ * operator >>
+ * from input struct unit
+ * 
+ * @param _stream input stream 
+ * @param unit unit 
+ * 
+*/
+std::istream& operator>> (std::istream& _stream,unit & unit);
+
+/**
+ * operator <<
+ * from input struct unit
+ * 
+ * @param _stream output stream 
+ * @param unit unit 
+ * 
+*/
+std::ostream& operator<< (std::ostream& _stream,unit & unit);
+
+/**
+ * operator >>
+ * from output struct unit
+ * 
+ * @param _stream output stream 
+ * @param unit unit 
+ * 
+*/
+std::ostream& operator<< (std::ostream& _stream,error & _error);
 
 
 #endif

@@ -19,27 +19,33 @@ unit_vector parse(unit_vector & _tokens,environment & env){
             _result.push_back(_tokens[i]);
             break;
         case _type::_openBrt:
-            if(_tokens[i].name == "{" ){
+            find_close_brt(_tokens,i);
+            if( _tokens[i].name == "{" ){
                 unit _temp_list(_type::_list, ""); // temp space of list var 
-                _temp_list._childs = parse_list(cut_from(_tokens,i,find_close_brt(_tokens,i - 1)));
-                _operations.push(_temp_list);
+                i++;
+                _temp_list._childs = parse_list(cut_from(_tokens,i,find_close_brt(_tokens,i-1)));
+                _result.push_back(_temp_list);
                 continue;
             } 
-            find_close_brt(_tokens,i);
             _operations.push(_tokens[i]);
             break;        
         case _type::_closeBrt:
             parse_close_brt(_result,_operations,_tokens[i]);
             if(_tokens[i].name == "]"){
-                _tokens.push_back(unit(_type::_opr,"[]"));
+                _result.push_back(unit(_type::_opr,"[]"));
             }
             break;
         case _type::_return:
         case _type::_opr:
             push_token_if(_result,_operations,_tokens[i],[](unit _unit, std::stack<unit> & oprs){
                 return  ((oprs.top().type == _type::_opr && _unit.prior <= oprs.top().prior) 
-                    || oprs.top().type > _type::_opr);
+                    || oprs.top().type == _type::_func 
+                    || oprs.top().type == _type::_coreFunc 
+                    || oprs.top().type == _type::_list
+                );
             });
+            _operations.push(_tokens[i]);
+            break;
         case _type::_coreFunc:
         case _type::_func:
             _operations.push(_tokens[i]);
@@ -53,12 +59,12 @@ unit_vector parse(unit_vector & _tokens,environment & env){
             push_stack_to_output(_result,_operations);
             break;
         case _type::_indentf:
-            if(env.have(_tokens[i].name)){
-                _tokens[i].type = env.get(_tokens[i].name).type;
-                i--;  // step back to parse token 
+            if(!env.have(_tokens[i].name)){
+                throw error(_tokens[i], "unknown variable or function!");
             }
-        default:
-            throw error(_tokens[i], "unknown variable or function!");
+            _tokens[i].type = env.get(_tokens[i].name).type;
+            i--;  // step back to parse token 
+        break;
         }
     }
     push_stack_to_output(_result,_operations);
@@ -214,9 +220,10 @@ void push_token_if(unit_vector & _tokens, unit_stack & opr, unit token, cond_fun
 }
 
 void push_stack_to_output(unit_vector & _tokens, unit_stack & opr){
-    push_token_if(_tokens,opr,_tokens.back(),[](unit _unit, unit_stack & oprs){ 
-        return oprs.size() != 0; 
-    });
+    while(opr.size()){
+        _tokens.push_back(opr.top());
+        opr.pop();
+    }
 }
 
 void parse_close_brt(unit_vector & _tokens,unit_stack & opr, unit token){
@@ -240,4 +247,5 @@ void parse_close_brt(unit_vector & _tokens,unit_stack & opr, unit token){
         error(token, "error type");
         break;
     }
+    opr.pop();
 }
