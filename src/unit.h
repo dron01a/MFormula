@@ -1,237 +1,222 @@
-#ifndef ____UNIT__HHH____
-#define ____UNIT__HHH____
+#ifndef ____UNIT__H____
+#define ____UNIT__H____
 
 #include <iostream>
-
 #include <string>
+#include <sstream>
 #include <vector>
 #include <stack>
+#include <cctype>
+#include <map>
+#include <algorithm>
+#include <utility>
+#include "math.h"
 
 #define NPOS std::string::npos
 
-struct unit;
-class environment;
+namespace mf {
 
-typedef std::vector<unit> unit_vector;
-typedef std::stack<unit> unit_stack;
+	class lexer;
+	struct unit;
 
-enum class _type{
-    _opr = 0, 
-    
-    _func, 
-    _coreFunc,  
-    _list,
-    
-          
-    _string,      
-    _num, 
-    _bool,
-    _var,
-    _continue,
-    _break,
-    _complex,
-    
-    _openBrt,      
-    _closeBrt,
+	typedef std::vector<unit> unit_vector;
+	typedef std::stack<unit> unit_stack;
 
-    _special,   
-    _semicolon, 
+	enum class _type : uint8_t {
+		_opr = 0,
+		_func,
+		_core_func,
+	
+		_list,
+		_string,
+		_num,
+		_bool,
+		_char,
+		_var,
+		_self,
+		_const,
 
-    _varInit,
-    _functionInit,
-    _if,
-    _else,
-    _while,
-    _for,
-    _return,
-    
-    _indentf, 
-    
-    _include,
+		_open_c_brt, // {
+		_open_r_brt, // (
+		_open_s_brt, // [
+	
+		_close_c_brt, // }
+		_close_r_brt, // )
+		_close_s_brt, // ]
 
-    _pointer,
+		_special,
+		_semicolon,
+		_colon,  // :
+	
+		_var_init,
+		_self_init,
+		_const_init,
+		_function_init,
 
-    _class_sp,
-    _classInit,
-    _classVar,
-    _classFV,
-    _classFM
-};
+		_if,
+		_else,
+		_while,
+		_for,
+		_switch,
+		_case,
+		_default,
+		_return,
+		_continue,
+		_break,
 
-struct unit{
-    /**
-     * class constructor
-     * 
-     * @param t type of code unit
-     * @param s string value
-     * @param pr priority of unit
-     * 
-    */
-    unit(_type t,std::string s, int pr = 0);
+		_indentf,
+	
+		_include,
+	
+		_pointer,
+	
+		_type,
+		_type_init,
+		_type_var,
+		_type_constr,
+		_type_field_call_opr,
+	
+		_this,
+		_point_opr,
+	
+		_end_of_code
+	};
 
-    /**
-     * class constructor
-     * 
-     * @param _num double value of unit
-    */
-    unit(long double _num);
+	enum class obj_env_type {
+	    _obj = 0,
+	    _type
+	};
 
-    /**
-     * class constructor
-     * 
-     * @param _val double value of unit
-    */
-    unit(bool _val);
+	struct unit {
+		unit(unit&& moved) = default;
+		unit(const unit & copy) = default;
+	    unit(_type t, std::string s, int pos = 0);
+		unit(_type t);
+	    unit(long double _num);
+	    unit(bool _val);
+	    unit(){};
+		~unit();
+		
+		unit& operator=(const unit & copy) = default;
+		unit& operator=(unit&& moved) = default;
 
-    unit & operator[](int position);
+	    unit & operator[](int position);
+	    
+	    unit operator+(unit & _unit) const;
+	    unit operator-(unit & _unit) const;
+	    unit operator*(unit & _unit) const;
+	    unit operator/(unit & _unit) const;
+	    unit operator%(unit & _unit) const;
+	    unit operator^(unit & _unit) const;
+	
+	    unit increment();
+	    unit decrement();
+	    
+	    void operator+=(unit & _unit);
+	    void operator-=(unit & _unit);
+	    void operator*=(unit & _unit);
+	    void operator/=(unit & _unit);
+	    void operator%=(unit & _unit);
+	    void operator^=(unit & _unit);
+	
+	    // операции сравнения 
+	    bool operator==(const unit & _unit) const;
+	    bool operator!=(const unit & _unit) const;
+	    bool operator>(unit & _unit) const;
+	    bool operator<(unit & _unit) const;
+	    bool operator>=(unit & _unit) const;
+	    bool operator<=(unit & _unit) const;
+	    bool operator&&(unit & _unit) const;
+	    bool operator||(unit & _unit) const;
+	
+	    bool to_bool() const;
+	    long double to_double() const;
+	    int to_int() const;
+	    std::string to_string() const;
+	
+	    void assign(unit & unit);
+	    int size();
+	    void resize(int _newsize);
+	
+	    unit_vector _childs;
+	    std::string name;
+	    
+	    long double double_val = 0; 
+	    bool bool_val; 
+	
+	    unit * __mem = nullptr;
+	
+	    _type type = _type::_indentf;
+	    size_t prior = 0;
+	    size_t _str = 0;
+	    size_t _col = 0;
+		size_t stream_pos = 0;
 
-    bool to_bool() const;
-    long double to_double() const;
-    int to_int() const;
-    std::string to_string() const;
+		lexer * src = nullptr;
+	};
 
-    void assign(unit unit);
-    void print();
-    int size();
-    void resize(int _newsize);
+	struct error{
+	    //конструктор класса
+	    error(unit _token, std::string _message) : _unit(_token), message(_message){};
+	    unit _unit; 
+	    std::string message;
+	};
+	
+	// для чтения структуры unit из потока
+	std::istream& operator>> (std::istream& _stream, unit & unit);
+	
+	// для вывода структуры unit в поток
+	std::ostream& operator<< (std::ostream& _stream, unit & unit);
+	
+	// для вывода структуры error в поток
+	std::ostream& operator<< (std::ostream& _stream, error & _error);
+	
+	// дает ссылку на оригинальную частицу кода 
+	unit & original(unit & node);
+	
+	// возвращает частицу кода со значением родительского узла 
+	unit value(unit & node);
+	
+	unit value(unit * node);
 
-    unit operator+(unit & _unit) const;
-    unit operator-(unit & _unit) const;
-    unit operator*(unit & _unit) const;
-    unit operator/(unit & _unit) const;
-    unit operator%(unit & _unit) const;
-    unit increment();
-    unit decrement();
-    
-    void operator+=(unit & _unit);
-    void operator-=(unit & _unit);
-    void operator*=(unit & _unit);
-    void operator/=(unit & _unit);
-    void operator%=(unit & _unit);
-
-    // compare operators
-    bool operator==(const unit & _unit) const;
-    bool operator!=(const unit & _unit) const;
-    bool operator>(unit & _unit) const;
-    bool operator<(unit & _unit) const;
-    bool operator>=(unit & _unit) const;
-    bool operator<=(unit & _unit) const;
-
-    bool operator&&(unit & _unit) const;
-    bool operator||(unit & _unit) const;
-
-    unit(){};
-    ~unit(){};
-
-    unit_vector _childs;
-    std::string name;
-
-    unit * __mem = nullptr;
-
-    _type type = _type::_indentf;
-    size_t prior = 0;
-    size_t _str = 0;
-    size_t _col = 0;
-    
-};
-
-class environment {
-public:
-
-    /**
-     * constructor
-     *  
-     * @param env environment of code 
-     * 
-    */
-    environment(environment & env);
-    
-    // constructor
-    environment();
-    
-    /**
-     * get unit in environment 
-     * 
-     * @param _name name of needed unit 
-     * 
-     * @return unit from name
-    */     
-    unit & get(std::string _name);
-    
-    // return all defined units
-    unit_vector & defined(); 
-    
-    /**
-     * 
-     * check unit in environment 
-     *  
-     * @param _name name of needed unit 
-     *
-     * @return true or false 
-    */
-    bool have(std::string _name);
-
-    /**
-     * add unit toin environment 
-     * 
-     * @param _unit new unit 
-    */     
-    void add(unit & _unit);
-    
-    // combuned invironment
-    void comb(environment & env);
-
-    void save_change(environment & env);
-private:
-    // defined var`s and functions
-    unit_vector _defined {
-        unit(_type::_var,"pi"),
-        unit(_type::_var,"e"),    
-    };
-};
-
-struct error{
-    /**
-     * class constructor
-     * 
-     * @param _token token with error 
-     * @param _message message with text of error 
-    */
-    error(unit & _token, std::string _message) : _unit(_token), message(_message){};
-    
-    unit _unit;
-    std::string message;
-};
-
-/**
- * operator >>
- * from input struct unit
- * 
- * @param _stream input stream 
- * @param unit unit 
- * 
-*/
-std::istream& operator>> (std::istream& _stream,unit & unit);
-
-/**
- * operator <<
- * from input struct unit
- * 
- * @param _stream output stream 
- * @param unit unit 
- * 
-*/
-std::ostream& operator<< (std::ostream& _stream,unit & unit);
-
-/**
- * operator >>
- * from output struct unit
- * 
- * @param _stream output stream 
- * @param unit unit 
- * 
-*/
-std::ostream& operator<< (std::ostream& _stream,error & _error);
-
+}
 
 #endif
+
+//                  __________        __________
+//                  \--------/ <\  /> \--------/
+//                   \-------\__/  \__/-------/
+//                     \------\      /------/
+//                             /\  /\
+//							  "' \/ '"
+//                      |ИМПЕРАТОР ЗАЩИТИТ|  
+//                      |СЛАВА БОГУ МАШИНЕ|
+
+
+//class code_unit {
+	//public:
+
+	//	// методы для установки и получения значений 
+
+	//	void str(std::string & val);
+	//	std::string str();
+	//	void str(std::string & val);
+	//	std::string str();
+	//	void str(std::string & val);
+	//	std::string str();
+
+
+	//private:
+	//	// параметры характеризующее значение вложенное в частицу кода
+	//	std::string _string_val; // строковое значение
+	//	long double _double_val = 0; // числововое значение 
+	//	bool _bool_val = false; // логическое значение 
+	//	code_unit * _ptr_val = nullptr; // область памяти на которую сссылается частица кода
+	//	unit_vector _list_data; // внутренние члены частицы кода
+
+	//	// параметры характерезующие положение в коде
+	//	size_t prior = 0; // приоретет
+	//	size_t _str = 0; // линия 
+	//	size_t _col = 0; // столбец
+	//	_type type = _type::_indentf; // тип 
+	//};

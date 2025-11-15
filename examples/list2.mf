@@ -4,11 +4,11 @@ var matr1 = { { 1 + 2 , 2 } , { 5 - 1 , 5} };
 var matr2 = { { 1, 1 } , { 1 , 1 } };
 
 
-print(" -> matrix A \n");
+print("matrix A");
 printMatr(matr1);
-print("\n -> matrix B \n");
+print("matrix B");
 printMatr(matr2);
-print("\n -> A + B \n");
+print("A + B");
 printMatr(sumMatr(matr1,matr2));
 print("\n -> A - B \n");
 printMatr(subMatr(matr1,matr2));

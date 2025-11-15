@@ -2,6 +2,10 @@
 
 ## Unusual "calculator"
 
+Скриптовый язык программирования для решения математических и других задач. Написан на C/C++ с использованием стандартной библиотеки.
+Изначально он создавался как сложный калькулятор математических выражений, позже были добавлены "if", "массивы" и "другие радости" жизни.
+По мере необходимости будут вноситься дополнительные изменения.
+
 A scripting language for solving mathematical and other tasks. Written in C/C++ using the standard library.
 It was originally created as a parser of mathematical expressions, later "if", "array's" and "other joys" of life were added.
 Further modifications will be introduced as needed. Ideally, get a program for calculating automatic control systems.
@@ -50,7 +54,7 @@ __include files__<br>
 
 ## Example of code
 
-    ./examples/fibo.math
+    #./examples/fibo.math
 
     var num1 = 0;   // first num 
     var num2 = 1;   // second num
@@ -71,3 +75,8 @@ __include files__<br>
         num1 = num2;
         num2 = next;
     }
+
+
+## Warning
+
+Операции * и % работают только для обычных чисел, для комплексных чисел требуется отдельная реализауция

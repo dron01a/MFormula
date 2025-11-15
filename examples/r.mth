@@ -1,0 +1,237 @@
+
+var                  
+    Pном = 17.2,
+    Mc = 5,
+    Jн = 7, 
+    Emax = 0.6,
+    П = 0.7,
+    Uпуск = 27,
+    Uп = 28,
+    Uпд = 27,
+    Uкэ = 2,
+    Mп = 0.38,
+    Jдв = 7.8,
+    Mн = 0.04,
+    Tдв = 0.015,
+    Tя = 0.00065,
+    tr = 0.7
+    ;
+
+var Pтр = 2*П*(Mc+Jн*Emax);
+print("Pтр =", Pтр);
+
+var Uд = Uп - 1.4 - 2*Uкэ;
+print("Uд = ",Uд);
+
+var Mп` = (Uд*Mп)/Uпд;
+print("Мп` = ",Mп`);
+
+var wн = 2*pi*4500/60;
+print("wн = ", wн);
+
+var wд = wн*(Mп`-Mн)/(Mп-Mн);
+print("wд = ", wд);
+
+var ОПЧ = wд/0.7;
+print("ОПЧ =",ОПЧ);
+
+
+var n = 1;
+
+if(ОПЧ <= 9 && ОПЧ >= 1 ){
+    n = 1;
+}
+if(ОПЧ >= 9 && ОПЧ <= 40 ){
+    n = 2;
+}
+if(ОПЧ >= 40 && ОПЧ <= 190 ){
+    n = 3;
+}
+if(ОПЧ >= 190 && ОПЧ <= 870 ){
+    n = 4;
+}
+if(ОПЧ >= 870 && ОПЧ <= 4000 ){
+    n = 5;
+}
+
+print("n =",n);
+
+var q = (ОПЧ)^(1/n);
+print("q = ",q);
+
+var КПД = 0.95^n; 
+
+print(КПД);
+
+var Ptr = 2*П*((Mc/КПД)+Jн*Emax); 
+print(" Ptr = ",  Ptr);
+
+var Zш = 20;
+
+var Zкср = (q*Zш) + (1 - 0.88044);
+print("Zksr = ",Zкср);
+
+var Zk = { 0, 0, 0, 0 };
+
+var c = nvar(9);
+
+for(var i = 0; i < 4; i++ ){
+    print("i = ", i);
+    Zk[i] = Zкср + c;
+    print(Zk[i]);
+    c = c + 6;
+}
+
+print(Zk);
+
+var qp = 1;
+for(var i = 0; i < 4; i++){
+    qp = qp * Zk[i];
+}
+qp = qp/(Zш^n);
+
+print("qp = ",qp);
+
+var rasn = abs((ОПЧ-qp)/ОПЧ)*100; 
+
+print(rasn);
+
+var m=((8*Mc*1000)/(4*400*Zкср))^(1/2);
+print("m = ", m);
+
+m = 0.5; 
+
+var Kш = 4;
+var bk = Kш*m;
+var bш = bk + 4*m; 
+print("bch = ",bш);
+print("bk = ",bk);
+
+var dш = m*Zш;
+print(dш);
+
+var dk = {0,0,0,0};
+for(var i = 0; i < 4; i++){
+    dk[i] = m*Zk[i];
+}
+print("dk = ", dk);
+
+var L = {0,0,0,0};
+for(var i = 0; i < 4; i++){
+    L[i] = (dш+dk[i])/2;
+}
+print("L = ",L);
+
+var J0 = (Jдв+(Jн/(qp*qp)*10*10*10*10*10*10))*0.1; 
+print("J0 = ",J0);
+
+var Jk = {0, 0, 0, 0};
+for(var i = 0; i < 4; i++){
+    Jk[i] = (pi*bk*8*(L[i]^4))/(2*9.8)*0.1*0.1*0.1*0.1*0.1*0.1;
+}
+print("Jk = ", Jk);
+
+var Jпр = J0;
+for(var i = 0; i < 4; i++){
+    Jпр = Jпр + (Jk[i]/(q^((i+1)*2)));
+}
+print("Jpr = ", Jпр);
+
+var X = Jпр/J0*100;
+print("X = ", X);
+
+var дельта = X - 100; 
+print("дельта = ", дельта);
+
+
+var Tm = Tдв * (1 + (J0/Jдв*0.1));
+print("Tm = ", Tm);
+
+var TT = Tm/Tдв*100;
+print("TT = ",TT);
+
+var Kr = 1/qp;
+print("Kr = ",Kr);
+
+var K_OMEGA = (П*60*180)/((10-5)*pi);
+print("K_OMEGA = ",K_OMEGA);
+
+var Ky = K_OMEGA/(6.75*20*Kr);
+print("Ky = ",Ky);
+
+var TmT = Tm*Tя;
+print("TmT = ",TmT);
+
+var A = 20*log(K_OMEGA,10);
+print("A = ",A);
+
+var w1 = 1/Tm;
+print("w1 = ",w1);
+
+var w2 = 1/Tя;
+print("w2 = ",w2);
+
+var lgw1 = log(w1,10);
+print("lgw1 = ",lgw1, " ",lgw1*5 );
+
+var lgw2 = log(w2,10);
+print("lgw2 = ", lgw2, " ",lgw2*5 );
+
+var w_srez_hochetsa = 3*pi/tr;
+print("w_srez_hochetsa = ", w_srez_hochetsa);
+
+w_srez_hochetsa = 224.4;
+
+print("w_srez_hochetsa = ", w_srez_hochetsa);
+
+var w`` = 3 * w_srez_hochetsa;
+var w` =  (w_srez_hochetsa^2)/w``; 
+
+print("w` = ", w`, " ", 1/w`);
+print("w`` = ", w``," ", 1/w``);
+
+var lgw` = log(w`,10);
+print("lgw` = ",lgw`, " ",lgw`*5 );
+
+var lgw`` = log(w``,10);
+print("lgw`` = ",lgw``, " ",lgw``*5 );
+
+
+print("lgst = ", 20*log(K_OMEGA,10), " ", 4*20*log(K_OMEGA,10)/20 );
+
+var T = {  0.0653, Tm, 1/w` , 1/w`` }; 
+
+for(var i = 0; i < 4; i++){
+    print("T",i+1," = ", T[i]," ", log(1/T[i],10), " ", log(1/T[i],10)*5);
+}
+
+
+var C = { 0.047, 0.27 , 0.033, 0.015 };
+
+print("C =", C);
+
+var R = { T[1]/C[0], T[0]/C[1], T[2]/C[2], T[3]/C[3]};
+
+print("R =", R);
+
+
+R[0] = 330;
+R[1] = 240;
+R[2] = 390;
+R[3] = 100;
+
+print("R =", R);
+
+var K1 = R[1]/R[0];
+var K2 = R[3]/R[2];
+var Kky = K1*K2;
+
+print("K1 = ", K1);
+print("K2 = ", K2);
+print("Kky = ", Kky);
+
+var R18 = (R[0]*R[1])/(R[0]+R[1]);
+var R21 = (R[2]*R[3])/(R[2]+R[3]);
+
+print("R18 =", R18);
+print("R21 =", R21);

@@ -1,0 +1,38 @@
+var n_d = 31;
+var day = 9;
+var d_w = 2;
+var mounth = 1;
+var cur_days = 0;
+
+if(mounth == 1){
+    n_d -= 8;
+}
+
+var cur_d_w = d_w;
+
+if(day != 1){
+    while( day != 1){
+        day--;
+        d_w--;
+        if(d_w == 0){
+            day-=2;
+            d_w = 5;
+        }
+    }
+}
+
+print("day = ", day);
+print("d_w = ", d_w);
+
+
+
+for(var coint = 0; coint < n_d + 2; coint++){
+    cur_d_w++;
+    cur_days++;
+    if(cur_d_w == 5){
+        coint += 2;
+        cur_d_w = 1;
+    }
+}
+
+print("cur_days = ", cur_days);

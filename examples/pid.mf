@@ -1,0 +1,19 @@
+type pid{
+	func pid(var kp, ki, kd){
+	}
+	func calc(var input){
+		var result = 0;
+		return result;
+	}
+	var _kp = 0;
+	var _ki = 0;
+	var _kd = 0;
+	var max = -1, min = -1;
+	var integral, p_error;
+	var dt;
+	var target;
+};
+
+var a = pid(0, 0, 0);
+
+print(a.calc(0));

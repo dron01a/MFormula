@@ -1,0 +1,125 @@
+// стандартный тип
+type complex{
+	func complex(var _re, _im){
+		re = _re;
+		im = _im;
+	}
+	var re;	// реальная часть
+	var im; // мнимая часть
+};
+
+// преобразование из числа в комплексное
+func n_to_c(var n){
+	if( get_type(n) != "complex" && get_type(n) != "number" ){ 
+		error("Неправильный тип 1");
+	}
+	if( get_type(n) == "complex" ){
+		return n;
+	}
+	print(2, " ", n.re);
+	return complex(n, 0);
+}
+
+// сложение
+func add(var a, b){
+	if( get_type(a) != "complex" && get_type(a) != "number" ){ 
+		error("Неверный тип данных");
+	}
+	if( get_type(b) != "complex" && get_type(b) != "number" ){
+		error("Неверный тип данных");
+	}
+	var re = n_to_c(a).re + n_to_c(b).re;
+	var im = n_to_c(a).im + n_to_c(b).im;
+	return complex(re, im);
+}
+
+// вычитание
+func sub(var a, b){
+	if( get_type(a) != "complex" && get_type(a) != "number" ){ 
+		error("Неверный тип данных");
+	}
+	if( get_type(b) != "complex" && get_type(b) != "number" ){
+		error("Неверный тип данных");
+	}
+	var re = n_to_c(a).re - n_to_c(b).re;
+	var im = n_to_c(a).im - n_to_c(b).im;
+	return complex(re, im);
+}
+
+// умножение
+func mul(var a, b){
+	if( get_type(a) != "complex" && get_type(a) != "number" ){ 
+		error("Неверный тип данных");
+	}
+	if( get_type(b) != "complex" && get_type(b) != "number" ){
+		error("Неверный тип данных");
+	}
+	var re = (n_to_c(a).re * n_to_c(b).re) - (n_to_c(a).im * n_to_c(b).im);
+	var im = (n_to_c(a).im * n_to_c(b).re) + (n_to_c(a).re * n_to_c(b).im);
+	return complex(re, im);
+}
+
+// деление
+func div(var a, b){
+	if( get_type(a) != "complex" && get_type(a) != "number" ){ 
+		error("Неверный тип данных");
+	}
+	if( get_type(b) != "complex" && get_type(b) != "number" ){
+		error("Неверный тип данных");
+	}
+	var c_s = complex(n_to_c(b).re, -n_to_c(b).im);
+	var num = mul(n_to_c(a), c_s); 
+	var zn = mul(b, c_s);
+	var re = num.re / zn.re;
+	var im = num.im / zn.re;
+	return complex(re, im);
+}
+
+// тригонометрическая форма
+func trig(var a){
+	var r = ((n_to_c(a).re ^ 2) + (n_to_c(a).im ^ 2))^(1/2);
+	var fi = arctg(n_to_c(a).im / n_to_c(a).re);
+	return complex(r * cos(fi), r * sin(fi));
+}
+
+// Возведение в степень
+func pow(var a, n){
+	if( get_type(a) != "complex" && get_type(a) != "number" ){ 
+		error("Неверный тип данных");
+	}
+	if( get_type(n) != "number" ){
+		error("Неверный тип данных");
+	}
+	var r = ((n_to_c(a).re ^ 2) + (n_to_c(a).im ^ 2))^(1/2);
+	var fi = arctg(n_to_c(a).im / n_to_c(a).re);
+	return complex((r^n) * cos(n * fi), (r^n) *sin(n * fi));
+}
+
+// вывести комплексное число
+func print_complex(var a){
+	if( get_type(a) != "complex" && get_type(a) != "number" ){ 
+		error("Неверный тип данных");
+	}
+	if(get_type(a) == "complex"){
+		if(a.im > 0){
+			print(a.re, "+", a.im, "i");
+		}
+		if(a.im < 0){
+			print(a.re, a.im, "i");
+		}
+		if(a.im == 0){
+			print(a.re);
+		}
+	}
+	if(get_type(a) == "number"){
+		print(a);
+	}
+}
+
+// переобразование в строку
+func complex_to_string(var a){
+	if( get_type(a) != "complex"){ 
+		error("Неверный тип данных");
+	}
+	// var result =  
+}

@@ -1,0 +1,19 @@
+var num1 = 0;  
+var num2 = 1;                
+var n = 700;      
+
+func f(var x){
+	print(x);
+}
+
+func calc(self n1, n2){
+	var next = n1 + n2;
+    n1 = n2;
+	return next;
+}
+
+for(var _count = 0; _count < (n - 2); _count++) {
+   num2 = calc(num1, num2);
+}
+
+print(num2);

@@ -21,7 +21,5 @@ var tonk = sumator(10,10);
 
 print("tonk = ", tonk );
 
-//print("tonk = %tonk%\n");
-
 
 print(sumator(t,b));

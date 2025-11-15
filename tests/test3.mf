@@ -2,9 +2,9 @@ var num1 = 0;
 var num2 = 1;      
 var temp;       
 var next;         
-var n = 1000000;      
+var n = 500;      
 
-for(var _count = 0; _count < n - 2; _count++ ){
+for(var _count = 0; _count < n - 1; _count++ ){
     next = num1 + num2;
     temp = _count+3;
     num1 = num2;

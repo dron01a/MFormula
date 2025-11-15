@@ -2,7 +2,9 @@ var a,b,c = "-";
 
 
 while(c != "."){
-    read(a, c , b);
+    read(a);
+    read(c);
+    read(b);
     if(c == "+"){
         print(a+b);
     }

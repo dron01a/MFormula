@@ -1,0 +1,13 @@
+var a = 1;
+var t = 1;
+var r = 1;
+
+for(var i = 0; i < 10; i++){
+    var a = 2;
+    r+=a;
+    print(a);
+}
+
+print(r);
+delete(r);
+print(defined());

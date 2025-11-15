@@ -1,0 +1,24 @@
+type user_type{
+    func user_type(var param){
+        a = param;
+        b = param;
+    }
+    var a, b;
+};
+
+type user_type_not_construct{
+    var a = 1, b = 1;
+};
+
+var a = 1;
+var user_type_var = user_type(1);
+var user_type_var1 = user_type(2);
+
+var test_var = user_type_not_construct();
+
+user_type_var1.a = user_type_var.a * 2 + user_type_var.b + a;
+user_type_var1.b = 1;
+
+user_type_var = user_type_var1;
+
+print(test_var.a, " ", test_var.b);

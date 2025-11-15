@@ -1,0 +1,15 @@
+var a = 1;
+
+print("test begin");
+
+if(a == 0){
+	print("a = 0");
+}
+else if( a == 1){
+	print("a = 1");
+}
+else if( a == 1 && a > 0){
+	print("error");
+}
+
+print("test end");
