@@ -1,34 +1,21 @@
-var a = 0;
-var b = 1;
+var a = -11;
 
-if(a + 1 == b){
-    print("no error");
-    if( a == 0){
-        a = a + 1;
-        if(a == 1){
-            a = 2;
-            print(a);
-        }
-        if(a == 2){
-            a = 2 - 1;
-            print(a);
-        }
-        if(b==0){
+print("test begin");
 
-        }
-        else{
-            print("b != 0");
-        }
-    }
-    if(a == b){
-        a = 1;
-    }
+false;
+
+if(a == -11){
+	print("if_block_1");
+}
+a = -45;
+if(a > -12){
+	print("if_block_2");
 }
 else{
-    print("error");
+	if( a < 2){
+		print("if_block_3");
+	}
+	print("else_block_2");
 }
 
-if(a == 1){
-    a = 1.023010;
-    print(a);
-}
+print("test end");

@@ -1,32 +1,20 @@
-
-
 func sq_edu(var K){
     if(size(K) > 3 || size(K) < 3){
-        print("Неверное колличество аргументов");
-        print("Остановка программы");
         exit;
     }
     var r = { 0, 0};
     var D = (K[1]^2)-(4*K[0]*K[2]);
     if(D > 0){
-        r[0] = ((-K[1])-(D^(1/2)))/(2*K[0]);
-        r[1] = ((-K[1])+(D^(1/2)))/(2*K[0]);
+        r[0] = (nvar(K[1])-(D^(1/2)))/(2*K[0]);
+        r[1] = (nvar(K[1])+(D^(1/2)))/(2*K[0]);
     }
     return r;
 }
 
-func test(var mass){
-    var v = sq_edu(mass);
-    print(v);
-}
+var A = {1, 17, nvar(18)};
 
-var A = {1, 17, (-18)};
+var C = {3, nvar(11), 4};
 
-var C = {3, (-11), 4};
+var D1 = {1, nvar(13), nvar(36)};
 
-var D1 = {1, (-13), (-36)};
-
-test(A);
-test({ 7, 2});
-test(C);
-test(D1);
+print(sq_edu(A));

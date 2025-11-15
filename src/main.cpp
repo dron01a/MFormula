@@ -1,75 +1,73 @@
-#include <iostream>
-#include <iomanip>
-
+#include "main.h"
 #include "string.h"
 
-#include "lexalz.h"
-#include "parse.h"
-#include "processing.h"
-#include "fileio.h"
-
-#define _ERROR(source, mode) catch(error _error){ error_proc(_error, source, mode);}catch(const char * _error){std::cout << _error << std::endl;}
-
-void error_proc(error & _err, std::string source, std::string mode);
-
 int main(int argc, char *argv[]){
-    if(argc < 1 ){
-        std::cout << "not valid args";
-    }
-    environment env;
-    unit_vector _code;
-    if(argc == 1){
-        while(true){
-            std::string source; // string with command 
-            try{
-                std::cout << "mf > ";
-                getline(std::cin,source);
-                _code = lex(source += ";",0);
-                _code = parse(_code, env);
-                eval(_code, env);
-                if(_code.size() != 0 ){
-                    if(_code[0].type == _type::_num || _code[0].type == _type::_string || _code[0].type == _type::_var || _code[0].type == _type::_list){
-                        std::cout << _code[0] << std::endl;
-                    }
-                }
-            }
-            _ERROR(source, "-s");
-        }
-    }
-    else {
-        try{
-            if(strcmp(argv[1],"-s") == 0){
-                _code = lex(std::string("print("+std::string(argv[2])+")"), 0);    // lex data
-            }
-            if(strcmp(argv[1],"-f") == 0){
-                _code = lex_file(argv[2], env);
-            }
-            _code = parse(_code, env);  // parce data
-            eval(_code, env);           // eval
-        }
-        _ERROR(argv[2], argv[1]);
-    }
+	mf::stack_frame * frame = nullptr;
+	mf::lexer * lex = nullptr;
+	mf::unit_vector result;
+	//setlocale(LC_ALL, "Ru-ru");
+	if (argc == 1) {
+		while (true) {
+			std::string source;
+			try {
+				std::cout << "mf > ";
+				getline(std::cin, source);
+				lex = new mf::string_lexer(source += ";");
+				frame = new mf::stack_frame(lex);
+				result = mf::code_exec(lex, frame, [](mf::unit & u) { return u.type != mf::_type::_semicolon; });
+				if(result.size() != 0 ){
+				    if(result[0].type == mf::_type::_num || result[0].type == mf::_type::_string 
+						|| result[0].type == mf::_type::_var || result[0].type == mf::_type::_list){
+				        std::cout << result[0] << std::endl;
+				    }
+				}
+			}
+			_ERROR(source, "-s");
+		}
+	}
+	else {
+		try {
+		    if(strcmp(argv[1],"-s") == 0){
+				lex = new mf::string_lexer(std::string("print("+std::string(argv[2])+")"));
+		    }
+		    if(strcmp(argv[1],"-f") == 0){
+				lex = new mf::file_lexer(argv[2]);
+		    }
+			frame = new mf::stack_frame(lex);
+			lex->src_frame = frame;
+			result = mf::code_exec(lex, frame, [](mf::unit & u) { return u.type != mf::_type::_end_of_code; });
+		}
+		_ERROR(argv[2], argv[1]);
+	}
     return 0;
 }
 
-void error_proc(error & _err, std::string source, std::string mode){
+void error_proc(mf::error & _err, std::string source, std::string mode){
     std::string _error_point;
-    std::string _buf; // temp string 
-    if(mode == "-f"){
-        std::ifstream in = open_file(source); // file with code
-        std::string _error_point;
-        size_t _str = 0;
-        while(std::getline(in,_buf)){
-            if(_str == _err._unit._str){
-                break;
-            }
-            _str++;
-        }
-    }
-    if(mode == "-s"){
-        _buf = source;
-    }
-    _error_point.insert(0, _buf.size(),'-');
-    _error_point.insert(_err._unit._col, "^");
-    std::cout << _err << _buf << std::endl << _error_point << std::endl;
+    //std::string _buf; // temp string 
+    //if(mode == "-f"){
+    //    std::ifstream in = open_file(source); // file with code
+    //    std::string _error_point;
+    //    size_t _str = 0;
+    //    while(std::getline(in, _buf)){
+    //        if(_str == _err._unit._str){
+    //            break;
+    //        }
+    //        _str++;
+    //    }
+    //}
+    //if(mode == "-s"){
+    //    _buf = source;
+    //}
+    //_error_point.insert(0, _buf.size(), '-');
+    //_error_point.insert(_err._unit._col, "^");
+    //std::cout << _err << _buf << std::endl << _error_point << std::endl;
 }
+
+//std::ifstream open_file(std::string name) {
+//	std::ifstream in(name, std::ios::binary); // file with code
+//	if (in.bad()) {
+//		throw "Файл не найден -> " + name;
+//	}
+//	return in;
+//}

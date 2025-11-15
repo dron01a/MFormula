@@ -1,0 +1,17 @@
+include "mfl\\complex.mf"
+
+var a = complex(4, 2);
+
+var b = complex(-1, 1);
+
+print_complex(add(a, b));
+
+print_complex(sub(a, b));
+
+print_complex(mul(a, b));
+
+print_complex(div(a, b));
+
+print_complex(pow(a, 2));
+
+print(get_type(a));

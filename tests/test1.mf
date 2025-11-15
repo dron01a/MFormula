@@ -1,0 +1,5 @@
+var list = {};
+
+for(var i = 0; i < 1000; i++){
+	push_back(list, i * 125 * 963 - 89);
+}

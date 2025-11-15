@@ -8,5 +8,4 @@ print(l1);
 print(a);
 
 
-print(c);
 

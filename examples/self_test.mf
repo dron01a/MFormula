@@ -1,0 +1,55 @@
+var empty_test = false;
+
+var simple_var = 10;
+var simple_var1 = simple_var; 
+
+self self_var = simple_var;
+self self_var1 = simple_var;
+
+self self_to_self = self_var;
+
+self_var += 10;
+simple_var1 -= 1;
+
+print("test: self_var => ", self_var);
+print("test: self_var1 => ", self_var1);
+
+print("test: simple_var => ", simple_var);
+print("test: simple_var1 => ", simple_var1);
+
+print("test: self_var + 5 = ", self_var + 5);
+
+self_var = simple_var1;
+
+print("test: self_var = simple_var1 => ", self_var, " simple_var => ", simple_var);
+
+print("test: self_to_self => ", self_to_self);
+
+var l = { 1, 2, 3 };
+
+self self_to_list_item = l[1];
+
+self_to_list_item = 5; 
+
+print("test: self_to_list_item => ", self_to_list_item, " l[1] => ", l[1]);
+
+func f_self(self a){
+	a = 101;
+}
+
+f_self(simple_var);
+
+print("test: f_self(self) simple_var => ", simple_var);
+
+func f_var(var a){
+	a = 1;
+}
+
+f_var(simple_var);
+
+print("test: f_var(var) simple_var => ", simple_var);
+
+if(empty_test){
+	self empty_self; 
+	print("test: empty_self => ", empty_self);
+}

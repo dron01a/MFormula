@@ -1,0 +1,9 @@
+var list = {};
+
+for(var i = 0; i < 10; i++){
+	var a = 0;
+	for(var j = 0; j < 25; j++){
+		a += j;
+	}
+	push_back(list, i * a / 153);
+}

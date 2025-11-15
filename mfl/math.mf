@@ -1,0 +1,23 @@
+include "complex.mf";
+
+const math_pi = 3.141592653589793; // число пи
+
+func factorial(var num){
+	if(get_type(num) != "number"){
+		error("Неправильный тип");
+	}
+	if(num == 0){
+        return 1;
+    }
+    return num*factorial(num-1);
+}
+
+func fibonacci(var num){
+	if(num <= 1){
+		return 0;
+	}
+	if(num == 2){
+		return 1;
+	}
+	return ( ( ( 1 + 5^(1/2) )/2 )^(num-1)-((1 - 5^(1/2))/2)^(num-1))/5^(1/2);
+}

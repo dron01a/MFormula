@@ -1,0 +1,13 @@
+var sum = 50000;
+var start_sum = sum;
+var pes = 15; 
+var temp = sum; 
+var m_count = 24;
+
+for(var i = 0; i < m_count; i++){
+	temp = sum;
+	sum += sum * 14/100 / 365 * 30;
+	print(i + 1, " - ", sum, " | ", sum - temp);
+} 
+
+print(sum,  " - ", start_sum, " = ", sum - start_sum);

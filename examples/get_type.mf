@@ -1,0 +1,16 @@
+func f (var a, b){
+    return a+b;
+}
+
+var a = f(1 + 1 - 2, 2);
+
+var b = a;
+
+var s = "str" + "str"*2;
+
+var bool = true;
+
+var b2 = !(bool);
+
+print("a => ", get_type(a));
+print("s => ", get_type(s));
